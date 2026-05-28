@@ -1,12 +1,12 @@
 """
-AI Insights Engine - Generate automated insights with OpenAI or rule-based fallback.
+AI Insights Engine - Generate automated insights with Google Gemini or rule-based fallback.
 """
 
 import streamlit as st
 import pandas as pd
 from utils.data_generator import generate_dataset
 from utils.ai_insights import (
-    generate_insights_openai,
+    generate_insights_gemini,
     generate_insights_fallback,
     generate_summary_stats,
     format_summary_as_markdown,
@@ -17,23 +17,25 @@ from utils.ai_insights import (
 )
 
 st.title("\U0001F916 AI Insights Engine")
-st.markdown("Generate automated insights from your data using AI or rule-based analysis.")
+st.markdown("Generate automated insights from your data using **Google Gemini 2.5 Flash** or rule-based analysis.")
 
 # Sidebar - API Key and data source
 with st.sidebar:
     st.header("Configuration")
 
     api_key = st.text_input(
-        "OpenAI API Key (optional)",
+        "Google Gemini API Key (optional)",
         type="password",
-        help="Enter your OpenAI API key for AI-powered insights. "
+        help="Enter your Google Gemini API key for AI-powered insights. "
+             "Get one free at https://aistudio.google.com/apikey. "
              "Leave empty to use rule-based analysis."
     )
 
     st.markdown("---")
     st.markdown(
         "**Note:** Without an API key, the engine uses rule-based analysis "
-        "to generate insights. Results are still meaningful and useful."
+        "to generate insights. With a Gemini API key, you get powerful "
+        "AI-generated natural language insights from Google's latest model."
     )
 
 # Data source selector
@@ -67,19 +69,20 @@ if df is not None:
         with st.spinner("Analyzing data..."):
             # Generate insights
             if api_key and api_key.strip():
-                st.markdown("### AI-Powered Insights")
-                st.caption("Using OpenAI for analysis")
+                st.markdown("### \u2728 AI-Powered Insights (Gemini 2.5 Flash)")
+                st.caption("Using Google Gemini for analysis")
 
                 # Prepare summary for AI
                 summary_stats = generate_summary_stats(df)
                 summary_text = format_summary_as_markdown(df, summary_stats)
-                ai_result = generate_insights_openai(summary_text, api_key)
+                ai_result = generate_insights_gemini(summary_text, api_key)
 
                 if ai_result is not None:
                     st.markdown(ai_result)
                 else:
                     st.warning(
                         "AI analysis is temporarily unavailable. "
+                        "Please check your Gemini API key. "
                         "Falling back to rule-based analysis."
                     )
                     insights = generate_insights_fallback(df)

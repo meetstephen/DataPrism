@@ -1,5 +1,5 @@
 """
-AI-powered insights engine with OpenAI integration and rule-based fallback.
+AI-powered insights engine with Google Gemini integration and rule-based fallback.
 Provides data analysis, anomaly detection, trend analysis, and recommendations.
 """
 
@@ -7,44 +7,41 @@ import pandas as pd
 import numpy as np
 
 
-def generate_insights_openai(df_summary, api_key):
+def generate_insights_gemini(df_summary, api_key):
     """
-    Generate natural language insights using OpenAI chat completions.
+    Generate natural language insights using Google Gemini 2.5 Flash.
 
     Args:
         df_summary (str): A text summary of the dataset to analyze.
-        api_key (str): OpenAI API key.
+        api_key (str): Google Gemini API key.
 
     Returns:
         str or None: AI-generated insights about the data, or None on failure.
     """
     try:
-        from openai import OpenAI
+        import google.generativeai as genai
 
-        client = OpenAI(api_key=api_key)
+        genai.configure(api_key=api_key)
 
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "You are a data analyst expert. Analyze the provided dataset summary "
-                        "and generate clear, actionable insights. Focus on key patterns, "
-                        "anomalies, trends, and recommendations. Format your response with "
-                        "clear sections: Key Findings, Patterns, Concerns, and Recommendations."
-                    )
-                },
-                {
-                    "role": "user",
-                    "content": f"Please analyze this dataset summary and provide insights:\n\n{df_summary}"
-                }
-            ],
-            max_tokens=1000,
-            temperature=0.7
+        model = genai.GenerativeModel("gemini-2.5-flash-preview-04-17")
+
+        system_instruction = (
+            "You are a data analyst expert. Analyze the provided dataset summary "
+            "and generate clear, actionable insights. Focus on key patterns, "
+            "anomalies, trends, and recommendations. Format your response with "
+            "clear sections using markdown headings: "
+            "## Key Findings, ## Patterns, ## Concerns, and ## Recommendations. "
+            "Be specific, cite numbers from the data, and provide practical advice."
         )
 
-        return response.choices[0].message.content
+        prompt = f"{system_instruction}\n\nPlease analyze this dataset summary and provide insights:\n\n{df_summary}"
+
+        response = model.generate_content(prompt)
+
+        if response and response.text:
+            return response.text
+
+        return None
 
     except Exception:
         return None

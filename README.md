@@ -6,7 +6,7 @@ A comprehensive Streamlit web application for analyzing community college data w
 
 - **Interactive Dashboard** - Pre-built visualizations for community college data with KPI metrics, filterable charts, and enrollment analysis
 - **Upload & Analyze** - Upload any CSV or Excel file for instant automated analysis including distributions, correlations, and data quality reports
-- **AI Insights Engine** - Generate natural language insights using OpenAI integration with automatic fallback to rule-based analysis
+- **AI Insights Engine** - Generate natural language insights using Google Gemini 2.5 Flash with automatic fallback to rule-based analysis
 - **Advanced Analytics** - Pivot table builder, custom chart creator, group-by analysis, and statistical summaries
 
 ## Tech Stack
@@ -15,7 +15,7 @@ A comprehensive Streamlit web application for analyzing community college data w
 - **Data Processing:** Pandas, NumPy, SciPy
 - **Visualizations:** Plotly
 - **Machine Learning:** scikit-learn
-- **AI Integration:** OpenAI API (optional)
+- **AI Integration:** Google Gemini 2.5 Flash API (optional, free tier available)
 - **File Support:** openpyxl (Excel files)
 
 ## Setup Instructions
@@ -53,7 +53,7 @@ The app will open in your default browser at `http://localhost:8501`.
 4. Set the main file path to `app.py`
 5. Click "Deploy"
 
-For OpenAI features, add your API key in the app sidebar (it is not stored).
+For AI-powered insights, add your Google Gemini API key in the app sidebar when running. Get a free API key at https://aistudio.google.com/apikey
 
 ## Project Structure
 
