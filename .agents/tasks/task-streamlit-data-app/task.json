@@ -1,0 +1,7 @@
+{
+  "task_id": "task-streamlit-data-app",
+  "task_description": "Build a full-featured Streamlit data analysis web application that includes a pre-built community college dashboard with synthetic data, a universal dataset upload and analysis tool, an AI-powered insights engine with OpenAI integration and rule-based fallback, and advanced analytics features like pivot tables and custom chart builders. The app should be production-ready and deployable on Streamlit Community Cloud.",
+  "status": "in_progress",
+  "feature_order": ["FEAT-001"],
+  "blocked_reason": null
+}

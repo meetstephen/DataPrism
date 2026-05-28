@@ -1,0 +1,801 @@
+Student_ID,Student_Name,Major,Year,Student_Type,Professor,Course,Course_Cost,Evaluation_Score
+STU-0001,Victoria Lewis,English,2021,Full-time,Dr. Emily Rodriguez,English Composition,1359.25,3.2
+STU-0002,Amelia Davis,Biology,2023,Part-time,Dr. Robert Taylor,Microbiology,2336.81,5.0
+STU-0003,Abigail Hill,Engineering,2020,Full-time,Dr. David Martinez,Engineering Physics,1887.52,4.8
+STU-0004,Evelyn Thompson,Mathematics,2022,Full-time,Dr. Christopher Lee,Discrete Mathematics,1019.0,3.4
+STU-0005,Mia Hernandez,Biology,2022,Full-time,Dr. Amanda Thompson,Microbiology,3309.58,4.6
+STU-0006,Matthew Scott,Mathematics,2023,Full-time,Dr. Patricia Davis,Calculus I,1951.92,4.6
+STU-0007,Nathan White,Nursing,2022,Full-time,Dr. Christopher Lee,Pharmacology,2760.75,4.7
+STU-0008,Olivia Perez,Business,2023,Part-time,Dr. Sarah Johnson,Entrepreneurship,2177.38,1.5
+STU-0009,Liam White,Computer Science,2022,Part-time,Dr. Susan Hall,Intro to Programming,2578.25,4.1
+STU-0010,Christian Robinson,Engineering,2021,Full-time,Dr. Kevin White,Engineering Design,2085.03,3.9
+STU-0011,Ryan Johnson,Business,2020,Full-time,Dr. Patricia Davis,Business Ethics,2630.23,3.9
+STU-0012,Abigail Allen,Nursing,2021,Part-time,Dr. Amanda Thompson,Health Assessment,4342.76,3.7
+STU-0013,James Perez,Psychology,2020,Part-time,Dr. Patricia Davis,Social Psychology,2541.22,3.7
+STU-0014,Christian Harris,Psychology,2020,Part-time,Dr. Christopher Lee,Social Psychology,2125.43,4.5
+STU-0015,Zoey Clark,Nursing,2020,Full-time,Dr. Robert Taylor,Fundamentals of Nursing,3534.92,3.9
+STU-0016,Caleb Ramirez,Mathematics,2021,Full-time,Dr. Jennifer Brown,Linear Algebra,934.22,3.7
+STU-0017,Lucas Anderson,English,2020,Full-time,Dr. Kevin White,Creative Writing,1075.66,4.4
+STU-0018,Aurora Williams,English,2021,Full-time,Dr. James Williams,American Literature,686.54,3.8
+STU-0019,Chloe Miller,Mathematics,2023,Full-time,Dr. Emily Rodriguez,Linear Algebra,2920.41,3.9
+STU-0020,Abigail Rodriguez,Psychology,2022,Part-time,Dr. Kevin White,Abnormal Psychology,1097.18,5.0
+STU-0021,Victoria Moore,Psychology,2022,Full-time,Dr. Christopher Lee,Abnormal Psychology,1133.91,3.2
+STU-0022,Noah Harris,Engineering,2020,Full-time,Dr. Patricia Davis,Thermodynamics,4168.73,2.3
+STU-0023,Benjamin Rodriguez,Psychology,2021,Full-time,Dr. Maria Garcia,Intro to Psychology,2876.64,3.6
+STU-0024,Jackson Johnson,Business,2022,Full-time,Dr. Robert Taylor,Principles of Management,2914.57,3.7
+STU-0025,Alexander Ramirez,Psychology,2021,Full-time,Dr. Robert Taylor,Social Psychology,811.89,4.1
+STU-0026,Aurora Miller,Biology,2021,Full-time,Dr. James Williams,General Biology,1504.04,3.6
+STU-0027,Christian Davis,Engineering,2020,Full-time,Dr. Christopher Lee,Engineering Design,2634.3,4.1
+STU-0028,Aurora Wright,Computer Science,2022,Part-time,Dr. Michael Chen,Database Systems,1601.51,5.0
+STU-0029,Benjamin Taylor,Psychology,2020,Part-time,Dr. Susan Hall,Developmental Psychology,840.45,4.1
+STU-0030,Samuel Flores,Mathematics,2020,Full-time,Dr. Patricia Davis,Linear Algebra,1820.95,4.3
+STU-0031,Noah Johnson,Computer Science,2022,Full-time,Dr. Patricia Davis,Web Development,3840.57,3.4
+STU-0032,Ethan Brown,Business,2022,Part-time,Dr. Kevin White,Business Ethics,1809.55,2.4
+STU-0033,Avery Moore,Mathematics,2023,Full-time,Dr. Michael Chen,Calculus I,2254.51,1.7
+STU-0034,Jackson King,Computer Science,2023,Full-time,Dr. Michael Chen,Intro to Programming,3026.26,3.1
+STU-0035,William Scott,Mathematics,2021,Part-time,Dr. David Martinez,Linear Algebra,1352.38,1.4
+STU-0036,Benjamin Walker,Business,2022,Full-time,Dr. Amanda Thompson,Financial Accounting,2626.06,3.9
+STU-0037,Isaac Anderson,Engineering,2023,Full-time,Dr. Thomas Wilson,Engineering Design,2137.0,3.2
+STU-0038,Mason Wilson,Biology,2021,Full-time,Dr. David Martinez,Anatomy & Physiology,1866.02,2.4
+STU-0039,Emily Flores,Business,2021,Full-time,Dr. James Williams,Financial Accounting,2753.46,3.6
+STU-0040,Abigail Thomas,Business,2021,Full-time,Dr. Michelle Clark,Principles of Management,1283.6,2.9
+STU-0041,Lily Moore,Mathematics,2023,Part-time,Dr. Sarah Johnson,Linear Algebra,2993.2,3.9
+STU-0042,Aurora White,Engineering,2022,Full-time,Dr. Patricia Davis,Engineering Design,2050.36,4.1
+STU-0043,Jackson Harris,Nursing,2020,Full-time,Dr. Lisa Anderson,Pharmacology,3782.43,2.9
+STU-0044,Lily Lewis,English,2021,Part-time,Dr. Susan Hall,Technical Writing,1322.75,3.3
+STU-0045,Amelia Smith,Psychology,2023,Full-time,Dr. Christopher Lee,Abnormal Psychology,1078.05,3.7
+STU-0046,Elizabeth Miller,Psychology,2023,Full-time,Dr. Jennifer Brown,Abnormal Psychology,861.26,2.4
+STU-0047,Isabella White,Biology,2020,Part-time,Dr. Maria Garcia,Genetics,3368.2,3.7
+STU-0048,Emma Davis,Biology,2020,Full-time,Dr. Thomas Wilson,Anatomy & Physiology,3920.27,2.4
+STU-0049,Matthew Hernandez,Psychology,2023,Part-time,Dr. James Williams,Intro to Psychology,2652.43,4.0
+STU-0050,Harper Davis,English,2022,Part-time,Dr. Maria Garcia,Technical Writing,1465.43,3.2
+STU-0051,Grace Wright,Psychology,2020,Full-time,Dr. Thomas Wilson,Developmental Psychology,2510.4,2.4
+STU-0052,Scarlett Jones,Nursing,2023,Full-time,Dr. Patricia Davis,Clinical Practicum,4018.54,3.0
+STU-0053,Caleb Hill,English,2020,Part-time,Dr. Thomas Wilson,English Composition,1948.51,3.1
+STU-0054,Riley Ramirez,Biology,2022,Full-time,Dr. David Martinez,Ecology,2977.8,4.4
+STU-0055,Sophia Rodriguez,Computer Science,2021,Part-time,Dr. Michael Chen,Intro to Programming,2973.55,3.6
+STU-0056,Mason Lopez,Mathematics,2020,Full-time,Dr. David Martinez,Calculus I,2572.16,2.7
+STU-0057,Owen Allen,Nursing,2022,Full-time,Dr. Kevin White,Fundamentals of Nursing,3193.65,4.8
+STU-0058,Isaac Thompson,Nursing,2023,Full-time,Dr. Maria Garcia,Pharmacology,4417.94,4.0
+STU-0059,Matthew Torres,Engineering,2020,Part-time,Dr. Emily Rodriguez,Thermodynamics,3276.05,3.2
+STU-0060,Grace Flores,Biology,2020,Part-time,Dr. Christopher Lee,Ecology,1997.7,2.3
+STU-0061,Daniel Clark,Biology,2023,Full-time,Dr. Amanda Thompson,General Biology,1574.05,3.2
+STU-0062,Grace Smith,Business,2021,Full-time,Dr. Amanda Thompson,Financial Accounting,1906.88,3.3
+STU-0063,Grace Torres,Nursing,2023,Part-time,Dr. Thomas Wilson,Pharmacology,3640.09,3.8
+STU-0064,Aurora Wilson,Business,2020,Full-time,Dr. James Williams,Financial Accounting,3099.55,4.0
+STU-0065,Olivia Smith,Business,2023,Full-time,Dr. Jennifer Brown,Financial Accounting,1318.71,4.1
+STU-0066,Ava Sanchez,Mathematics,2022,Part-time,Dr. Michael Chen,Linear Algebra,2560.45,2.2
+STU-0067,Benjamin Hill,Business,2023,Full-time,Dr. Sarah Johnson,Principles of Management,3157.52,3.7
+STU-0068,Sofia Rodriguez,English,2020,Part-time,Dr. Lisa Anderson,English Composition,801.37,3.4
+STU-0069,Amelia Anderson,Psychology,2023,Full-time,Dr. Susan Hall,Social Psychology,2673.51,5.0
+STU-0070,Jackson Gonzalez,Computer Science,2021,Full-time,Dr. Emily Rodriguez,Algorithms,3976.07,3.6
+STU-0071,Aiden Hill,Biology,2023,Full-time,Dr. Emily Rodriguez,Genetics,3680.52,3.0
+STU-0072,Zoey Young,English,2021,Part-time,Dr. Emily Rodriguez,English Composition,2069.54,3.6
+STU-0073,Noah Robinson,Computer Science,2022,Full-time,Dr. Susan Hall,Algorithms,3984.36,3.5
+STU-0074,Chloe Thompson,Nursing,2021,Full-time,Dr. Lisa Anderson,Clinical Practicum,3816.44,1.9
+STU-0075,Victoria Anderson,Nursing,2023,Full-time,Dr. Daniel Harris,Health Assessment,2923.66,3.8
+STU-0076,Aria Lewis,Nursing,2020,Part-time,Dr. Susan Hall,Fundamentals of Nursing,4512.59,3.3
+STU-0077,Samuel Gonzalez,English,2021,Full-time,Dr. Amanda Thompson,Creative Writing,1728.97,3.5
+STU-0078,Aiden Miller,English,2022,Full-time,Dr. James Williams,Creative Writing,1662.39,2.8
+STU-0079,Daniel Ramirez,Biology,2021,Part-time,Dr. Sarah Johnson,Ecology,2260.91,2.6
+STU-0080,Liam Garcia,Psychology,2021,Full-time,Dr. Sarah Johnson,Developmental Psychology,2463.94,4.2
+STU-0081,Sebastian Ramirez,Engineering,2021,Full-time,Dr. Amanda Thompson,Engineering Design,1745.0,4.4
+STU-0082,Christian Martin,Business,2022,Part-time,Dr. Thomas Wilson,Principles of Management,3310.72,3.8
+STU-0083,Jack Hernandez,Nursing,2023,Full-time,Dr. Patricia Davis,Pharmacology,2977.47,2.1
+STU-0084,Sebastian Harris,Mathematics,2021,Part-time,Dr. Jennifer Brown,Statistics,1081.1,3.9
+STU-0085,Victoria Allen,Psychology,2021,Full-time,Dr. Jennifer Brown,Social Psychology,1773.21,2.1
+STU-0086,Emma Clark,Mathematics,2020,Part-time,Dr. Maria Garcia,Linear Algebra,893.43,3.0
+STU-0087,Charlotte Williams,Biology,2022,Full-time,Dr. Sarah Johnson,Microbiology,3553.88,4.2
+STU-0088,Victoria Garcia,Biology,2021,Full-time,Dr. Susan Hall,Anatomy & Physiology,4208.12,4.0
+STU-0089,Mason Clark,Biology,2022,Part-time,Dr. Michael Chen,Anatomy & Physiology,4011.79,3.9
+STU-0090,Isabella Torres,Computer Science,2021,Part-time,Dr. Amanda Thompson,Database Systems,1556.63,4.6
+STU-0091,Scarlett White,Mathematics,2023,Full-time,Dr. Jennifer Brown,Calculus I,1077.8,3.9
+STU-0092,Amelia Young,Psychology,2023,Full-time,Dr. James Williams,Abnormal Psychology,2589.56,1.9
+STU-0093,Aiden White,Engineering,2021,Part-time,Dr. Maria Garcia,Thermodynamics,4272.76,3.2
+STU-0094,Riley Lopez,Psychology,2023,Full-time,Dr. Patricia Davis,Intro to Psychology,1813.47,3.5
+STU-0095,Victoria Johnson,English,2021,Part-time,Dr. Emily Rodriguez,American Literature,1497.94,3.4
+STU-0096,Olivia Torres,English,2023,Part-time,Dr. Christopher Lee,English Composition,1136.52,3.0
+STU-0097,Zoey Taylor,Nursing,2020,Full-time,Dr. Amanda Thompson,Pharmacology,4682.8,2.7
+STU-0098,Zoey Johnson,Engineering,2020,Full-time,Dr. Lisa Anderson,Engineering Design,3434.71,5.0
+STU-0099,Liam Ramirez,English,2020,Part-time,Dr. Michelle Clark,English Composition,1076.5,3.2
+STU-0100,Emily Torres,Biology,2022,Full-time,Dr. Lisa Anderson,General Biology,2396.35,5.0
+STU-0101,Aiden Allen,Psychology,2022,Full-time,Dr. David Martinez,Abnormal Psychology,2760.64,2.6
+STU-0102,Emma Jackson,Mathematics,2020,Part-time,Dr. Maria Garcia,Statistics,829.99,4.0
+STU-0103,Liam Sanchez,Biology,2022,Full-time,Dr. Daniel Harris,Ecology,2468.18,3.7
+STU-0104,Aiden Garcia,Computer Science,2023,Part-time,Dr. James Williams,Data Structures,2752.2,2.8
+STU-0105,Aiden Brown,English,2021,Full-time,Dr. Thomas Wilson,Technical Writing,796.43,3.1
+STU-0106,Mia Taylor,Biology,2021,Full-time,Dr. Michelle Clark,Genetics,1776.3,3.5
+STU-0107,Ryan White,Biology,2021,Full-time,Dr. Amanda Thompson,Ecology,3945.83,2.8
+STU-0108,Ava King,Computer Science,2020,Full-time,Dr. David Martinez,Web Development,3704.33,3.3
+STU-0109,Ethan Perez,Business,2022,Full-time,Dr. Jennifer Brown,Business Ethics,3059.02,1.6
+STU-0110,Mia Thomas,Psychology,2023,Full-time,Dr. Kevin White,Developmental Psychology,2777.33,4.1
+STU-0111,Scarlett Rodriguez,Mathematics,2023,Part-time,Dr. Kevin White,Calculus I,2016.85,4.5
+STU-0112,Ethan Thomas,Nursing,2020,Full-time,Dr. Lisa Anderson,Clinical Practicum,4436.77,3.9
+STU-0113,Avery Williams,Business,2023,Full-time,Dr. Daniel Harris,Financial Accounting,1960.11,5.0
+STU-0114,Alexander Scott,English,2023,Full-time,Dr. Daniel Harris,English Composition,1832.54,4.0
+STU-0115,Evelyn Sanchez,Biology,2023,Full-time,Dr. James Williams,General Biology,4466.51,4.4
+STU-0116,Olivia Jackson,Engineering,2023,Full-time,Dr. Michelle Clark,Circuit Analysis,2177.18,4.5
+STU-0117,Alexander Young,Computer Science,2022,Full-time,Dr. Emily Rodriguez,Database Systems,2291.72,1.3
+STU-0118,Sophia Allen,Computer Science,2023,Full-time,Dr. Maria Garcia,Intro to Programming,2544.13,3.8
+STU-0119,Nathan Hill,Engineering,2021,Full-time,Dr. Sarah Johnson,Engineering Physics,1914.05,2.4
+STU-0120,Henry Flores,Psychology,2020,Full-time,Dr. Emily Rodriguez,Abnormal Psychology,978.28,2.6
+STU-0121,Emma Hernandez,Business,2022,Part-time,Dr. Michelle Clark,Entrepreneurship,3074.31,2.7
+STU-0122,Sebastian Harris,Nursing,2023,Full-time,Dr. David Martinez,Fundamentals of Nursing,4930.38,3.2
+STU-0123,Andrew Thompson,Psychology,2022,Full-time,Dr. James Williams,Social Psychology,1690.4,4.0
+STU-0124,Ella Robinson,Engineering,2023,Full-time,Dr. Michael Chen,Circuit Analysis,1762.95,3.8
+STU-0125,Caleb Wright,Biology,2021,Full-time,Dr. Thomas Wilson,Microbiology,1697.44,3.5
+STU-0126,Sophia Thomas,Engineering,2020,Part-time,Dr. James Williams,Thermodynamics,4173.95,4.1
+STU-0127,Jackson Johnson,Psychology,2023,Full-time,Dr. Emily Rodriguez,Intro to Psychology,1820.39,4.1
+STU-0128,Emma Lopez,Mathematics,2023,Full-time,Dr. Michael Chen,Linear Algebra,1504.06,3.9
+STU-0129,Ava Torres,Computer Science,2023,Full-time,Dr. Susan Hall,Algorithms,2534.09,2.1
+STU-0130,Aiden Rodriguez,Computer Science,2023,Full-time,Dr. Amanda Thompson,Data Structures,2091.25,2.9
+STU-0131,Riley Wright,English,2020,Full-time,Dr. Maria Garcia,American Literature,1478.07,3.5
+STU-0132,Evelyn Thomas,English,2020,Full-time,Dr. Jennifer Brown,American Literature,2219.11,4.1
+STU-0133,Olivia Martin,Engineering,2021,Part-time,Dr. Robert Taylor,Engineering Physics,3276.9,2.4
+STU-0134,Matthew Allen,Nursing,2020,Full-time,Dr. Maria Garcia,Health Assessment,4083.96,3.5
+STU-0135,Matthew Hernandez,Biology,2023,Full-time,Dr. Thomas Wilson,Ecology,2594.01,2.2
+STU-0136,Zoey Davis,Mathematics,2021,Full-time,Dr. David Martinez,Calculus I,2424.71,4.3
+STU-0137,Samuel Nguyen,Business,2021,Full-time,Dr. Lisa Anderson,Financial Accounting,2666.54,3.7
+STU-0138,Nathan Martin,Psychology,2021,Full-time,Dr. Lisa Anderson,Intro to Psychology,1063.04,2.4
+STU-0139,Grace Harris,Nursing,2023,Part-time,Dr. Robert Taylor,Fundamentals of Nursing,3717.93,2.4
+STU-0140,Grace Harris,Biology,2022,Part-time,Dr. Emily Rodriguez,Microbiology,2270.23,3.8
+STU-0141,Avery Moore,English,2023,Full-time,Dr. Michelle Clark,Creative Writing,2108.19,4.6
+STU-0142,Dylan Moore,Engineering,2020,Part-time,Dr. James Williams,Circuit Analysis,2777.81,2.6
+STU-0143,Liam Wright,Psychology,2020,Part-time,Dr. Christopher Lee,Abnormal Psychology,2988.31,4.1
+STU-0144,Lucas Scott,English,2023,Part-time,Dr. Robert Taylor,English Composition,685.0,3.1
+STU-0145,Scarlett Brown,Engineering,2023,Full-time,Dr. James Williams,Circuit Analysis,3841.04,4.2
+STU-0146,Scarlett Wilson,Psychology,2021,Part-time,Dr. Michelle Clark,Abnormal Psychology,2282.14,4.0
+STU-0147,Abigail Martin,Business,2023,Full-time,Dr. Jennifer Brown,Entrepreneurship,2918.75,3.6
+STU-0148,Mason Miller,Biology,2021,Part-time,Dr. Maria Garcia,Microbiology,2422.59,2.0
+STU-0149,Olivia Taylor,Psychology,2020,Full-time,Dr. Amanda Thompson,Intro to Psychology,1882.52,4.0
+STU-0150,Scarlett Lopez,Mathematics,2021,Full-time,Dr. Maria Garcia,Statistics,2552.32,3.9
+STU-0151,Daniel Perez,Nursing,2023,Part-time,Dr. Kevin White,Pharmacology,2697.62,3.8
+STU-0152,Dylan Robinson,Computer Science,2020,Full-time,Dr. Daniel Harris,Data Structures,1832.89,3.7
+STU-0153,Ryan Nguyen,Mathematics,2022,Part-time,Dr. Kevin White,Calculus I,2012.31,2.8
+STU-0154,Lily Davis,Mathematics,2021,Part-time,Dr. Michelle Clark,Linear Algebra,1951.84,4.4
+STU-0155,Sofia Clark,Nursing,2020,Part-time,Dr. James Williams,Fundamentals of Nursing,2846.79,4.2
+STU-0156,Owen Lee,Computer Science,2021,Full-time,Dr. Lisa Anderson,Web Development,2034.61,2.6
+STU-0157,Jack Allen,Mathematics,2020,Part-time,Dr. Kevin White,Discrete Mathematics,1411.26,4.6
+STU-0158,Sebastian Allen,Psychology,2020,Full-time,Dr. David Martinez,Abnormal Psychology,2497.33,3.6
+STU-0159,Ava Jackson,Psychology,2021,Full-time,Dr. Susan Hall,Intro to Psychology,2234.18,3.6
+STU-0160,Noah Wright,Psychology,2022,Part-time,Dr. Kevin White,Social Psychology,2631.32,3.4
+STU-0161,Zoey Taylor,Computer Science,2020,Full-time,Dr. Thomas Wilson,Algorithms,3931.32,3.4
+STU-0162,Christian Ramirez,Mathematics,2020,Full-time,Dr. Thomas Wilson,Discrete Mathematics,1843.16,4.6
+STU-0163,Jack Lewis,Engineering,2020,Part-time,Dr. Michael Chen,Thermodynamics,1700.08,4.3
+STU-0164,Dylan Garcia,Computer Science,2022,Full-time,Dr. Jennifer Brown,Intro to Programming,1334.66,4.3
+STU-0165,Grace Torres,Psychology,2022,Full-time,Dr. Susan Hall,Social Psychology,1450.46,3.6
+STU-0166,Matthew Lewis,Nursing,2023,Part-time,Dr. Patricia Davis,Pharmacology,4797.63,4.2
+STU-0167,Zoey Walker,Mathematics,2021,Full-time,Dr. Thomas Wilson,Discrete Mathematics,1951.07,2.8
+STU-0168,Grace Allen,Mathematics,2022,Part-time,Dr. Susan Hall,Linear Algebra,1397.93,4.0
+STU-0169,Abigail Young,English,2021,Part-time,Dr. James Williams,English Composition,1298.33,3.4
+STU-0170,Emily Allen,English,2023,Part-time,Dr. Kevin White,American Literature,1697.19,1.9
+STU-0171,Olivia Moore,Business,2021,Part-time,Dr. Michelle Clark,Financial Accounting,2632.37,2.2
+STU-0172,Elizabeth Walker,Engineering,2022,Full-time,Dr. Maria Garcia,Circuit Analysis,1961.76,3.0
+STU-0173,Olivia Flores,Engineering,2021,Full-time,Dr. Robert Taylor,Engineering Physics,4431.1,3.8
+STU-0174,Dylan White,Biology,2022,Part-time,Dr. Susan Hall,General Biology,3134.32,3.0
+STU-0175,Andrew Young,Engineering,2021,Part-time,Dr. Sarah Johnson,Engineering Design,1907.06,3.0
+STU-0176,Aurora Perez,English,2022,Full-time,Dr. James Williams,English Composition,2287.27,4.1
+STU-0177,Emily Johnson,Computer Science,2022,Full-time,Dr. Susan Hall,Intro to Programming,1408.99,3.1
+STU-0178,Sofia Johnson,Engineering,2021,Full-time,Dr. Jennifer Brown,Engineering Design,4223.21,4.6
+STU-0179,Jackson Taylor,English,2023,Full-time,Dr. Michael Chen,American Literature,2493.13,4.4
+STU-0180,Nathan Allen,Business,2020,Part-time,Dr. David Martinez,Marketing 101,2751.08,3.5
+STU-0181,Isabella Hill,Mathematics,2023,Full-time,Dr. Michelle Clark,Statistics,2494.98,4.1
+STU-0182,Avery Sanchez,Engineering,2021,Part-time,Dr. Lisa Anderson,Engineering Design,2511.91,4.0
+STU-0183,Grace Harris,Business,2023,Part-time,Dr. Robert Taylor,Principles of Management,3353.94,3.3
+STU-0184,Matthew Gonzalez,Mathematics,2022,Full-time,Dr. Sarah Johnson,Discrete Mathematics,1965.37,4.2
+STU-0185,Sophia Scott,Nursing,2020,Full-time,Dr. Michelle Clark,Health Assessment,4197.17,4.3
+STU-0186,Lily Martin,Nursing,2021,Full-time,Dr. Lisa Anderson,Clinical Practicum,4772.32,2.7
+STU-0187,Emma Davis,Mathematics,2021,Full-time,Dr. Susan Hall,Calculus I,2945.4,3.6
+STU-0188,Dylan Thomas,Engineering,2021,Part-time,Dr. Michael Chen,Engineering Physics,3999.61,3.6
+STU-0189,Benjamin Lopez,Biology,2020,Part-time,Dr. Jennifer Brown,General Biology,2409.05,4.2
+STU-0190,Emily Anderson,English,2022,Part-time,Dr. Jennifer Brown,English Composition,2433.1,3.1
+STU-0191,Sebastian King,Computer Science,2021,Full-time,Dr. Amanda Thompson,Algorithms,2958.73,3.0
+STU-0192,Liam Young,Computer Science,2023,Full-time,Dr. Robert Taylor,Database Systems,3805.8,3.6
+STU-0193,Emily Perez,Psychology,2021,Part-time,Dr. Robert Taylor,Intro to Psychology,2287.43,4.4
+STU-0194,Elizabeth Perez,Mathematics,2021,Full-time,Dr. Emily Rodriguez,Linear Algebra,1475.93,2.5
+STU-0195,Daniel Garcia,Computer Science,2021,Full-time,Dr. Susan Hall,Data Structures,2236.07,2.7
+STU-0196,Amelia Torres,Engineering,2021,Full-time,Dr. Susan Hall,Circuit Analysis,3151.42,3.1
+STU-0197,Scarlett Davis,Biology,2022,Part-time,Dr. Christopher Lee,Anatomy & Physiology,3870.04,3.2
+STU-0198,Christian Jones,Mathematics,2023,Full-time,Dr. Kevin White,Linear Algebra,1499.56,2.1
+STU-0199,Victoria Brown,Biology,2022,Part-time,Dr. Michelle Clark,Anatomy & Physiology,3239.19,4.7
+STU-0200,Ethan Young,Engineering,2023,Part-time,Dr. Amanda Thompson,Thermodynamics,2536.87,3.4
+STU-0201,Jack Wright,Computer Science,2021,Full-time,Dr. Sarah Johnson,Intro to Programming,3484.15,3.3
+STU-0202,Nathan Thomas,Computer Science,2020,Full-time,Dr. Susan Hall,Intro to Programming,2506.84,4.8
+STU-0203,Charlotte Robinson,Psychology,2022,Full-time,Dr. Emily Rodriguez,Social Psychology,968.79,4.1
+STU-0204,Evelyn Taylor,Computer Science,2020,Part-time,Dr. Michelle Clark,Data Structures,1664.95,3.1
+STU-0205,Evelyn Ramirez,Mathematics,2022,Full-time,Dr. James Williams,Calculus I,934.43,3.6
+STU-0206,Jackson Torres,Engineering,2021,Full-time,Dr. James Williams,Engineering Physics,2997.91,3.5
+STU-0207,Jackson Thompson,Nursing,2022,Full-time,Dr. Susan Hall,Fundamentals of Nursing,2319.01,4.7
+STU-0208,Isabella Lopez,Engineering,2021,Part-time,Dr. Patricia Davis,Engineering Design,1842.42,3.4
+STU-0209,Emma Smith,Mathematics,2022,Full-time,Dr. Emily Rodriguez,Linear Algebra,2870.31,2.3
+STU-0210,Aurora King,Mathematics,2021,Part-time,Dr. David Martinez,Discrete Mathematics,2719.84,2.0
+STU-0211,Aiden Harris,Psychology,2021,Part-time,Dr. Daniel Harris,Developmental Psychology,1794.59,4.7
+STU-0212,Nathan Smith,Psychology,2023,Full-time,Dr. Sarah Johnson,Developmental Psychology,2968.77,2.9
+STU-0213,Lucas Hill,Computer Science,2021,Part-time,Dr. Daniel Harris,Data Structures,1200.52,4.0
+STU-0214,Ava Perez,Business,2023,Full-time,Dr. Michael Chen,Entrepreneurship,2534.95,3.6
+STU-0215,Avery Williams,Engineering,2021,Part-time,Dr. James Williams,Engineering Physics,3349.28,3.2
+STU-0216,James Sanchez,Engineering,2020,Part-time,Dr. Robert Taylor,Engineering Design,2872.33,3.3
+STU-0217,Lucas Torres,Business,2021,Part-time,Dr. Sarah Johnson,Marketing 101,1992.37,4.8
+STU-0218,Daniel Lewis,Psychology,2020,Full-time,Dr. Susan Hall,Developmental Psychology,1801.84,2.3
+STU-0219,Benjamin Ramirez,Computer Science,2020,Full-time,Dr. David Martinez,Intro to Programming,2361.89,3.2
+STU-0220,Ava Robinson,Business,2021,Full-time,Dr. Sarah Johnson,Principles of Management,2826.23,4.2
+STU-0221,Dylan Jones,Computer Science,2020,Full-time,Dr. Maria Garcia,Algorithms,1579.0,2.5
+STU-0222,James Thomas,Computer Science,2023,Full-time,Dr. Kevin White,Algorithms,1753.39,4.6
+STU-0223,Jackson Sanchez,Computer Science,2022,Full-time,Dr. Robert Taylor,Algorithms,1705.45,4.2
+STU-0224,Isaac Lee,English,2021,Full-time,Dr. David Martinez,Technical Writing,1024.94,3.7
+STU-0225,Victoria Scott,Mathematics,2020,Full-time,Dr. Amanda Thompson,Calculus I,1955.57,3.1
+STU-0226,Scarlett Robinson,Computer Science,2021,Part-time,Dr. Kevin White,Web Development,1511.38,2.4
+STU-0227,Chloe Thompson,English,2023,Full-time,Dr. Emily Rodriguez,American Literature,2236.34,4.1
+STU-0228,William Jones,Psychology,2021,Full-time,Dr. Christopher Lee,Developmental Psychology,1454.2,5.0
+STU-0229,Samuel King,Business,2021,Full-time,Dr. Kevin White,Marketing 101,1406.34,3.6
+STU-0230,Ella Martinez,Mathematics,2020,Full-time,Dr. Patricia Davis,Linear Algebra,2286.37,2.0
+STU-0231,Evelyn Young,Nursing,2023,Part-time,Dr. Thomas Wilson,Clinical Practicum,2114.26,3.9
+STU-0232,Emma Jones,Business,2022,Full-time,Dr. James Williams,Marketing 101,2549.92,4.2
+STU-0233,Lily Brown,Mathematics,2022,Part-time,Dr. Christopher Lee,Calculus I,2336.04,2.8
+STU-0234,Lucas White,Nursing,2020,Part-time,Dr. Michael Chen,Pharmacology,2644.75,3.0
+STU-0235,Lucas Johnson,Business,2021,Part-time,Dr. Maria Garcia,Marketing 101,1104.91,2.9
+STU-0236,Zoey Ramirez,Mathematics,2020,Part-time,Dr. David Martinez,Discrete Mathematics,1600.02,3.1
+STU-0237,Aiden Clark,Business,2020,Part-time,Dr. Lisa Anderson,Financial Accounting,1246.49,3.4
+STU-0238,Alexander White,Business,2020,Part-time,Dr. Daniel Harris,Business Ethics,1291.19,2.8
+STU-0239,James Wright,Nursing,2021,Full-time,Dr. Emily Rodriguez,Pharmacology,2762.78,2.5
+STU-0240,Scarlett Allen,Business,2023,Full-time,Dr. Kevin White,Entrepreneurship,1738.67,3.6
+STU-0241,Aria Torres,Business,2020,Full-time,Dr. Kevin White,Marketing 101,2324.93,3.4
+STU-0242,James Williams,Nursing,2021,Full-time,Dr. David Martinez,Clinical Practicum,4035.18,3.2
+STU-0243,Emma Allen,Psychology,2023,Full-time,Dr. Sarah Johnson,Social Psychology,2104.1,3.6
+STU-0244,Nathan Martinez,Computer Science,2020,Full-time,Dr. Susan Hall,Data Structures,1615.41,2.3
+STU-0245,Aria Lewis,Engineering,2022,Full-time,Dr. Christopher Lee,Engineering Physics,2016.26,3.7
+STU-0246,Charlotte Lopez,Biology,2023,Full-time,Dr. Patricia Davis,Anatomy & Physiology,4136.31,3.2
+STU-0247,Ella Johnson,English,2020,Full-time,Dr. Maria Garcia,Technical Writing,1616.7,3.7
+STU-0248,Andrew Wright,Biology,2023,Full-time,Dr. Christopher Lee,Microbiology,4109.81,3.8
+STU-0249,Emily Taylor,Biology,2023,Full-time,Dr. Susan Hall,Ecology,2614.64,4.4
+STU-0250,Jackson Davis,Mathematics,2023,Full-time,Dr. Robert Taylor,Discrete Mathematics,2151.68,3.6
+STU-0251,Avery Sanchez,Computer Science,2023,Full-time,Dr. Sarah Johnson,Data Structures,2666.26,4.4
+STU-0252,William Sanchez,Mathematics,2023,Part-time,Dr. Maria Garcia,Discrete Mathematics,1502.07,3.2
+STU-0253,Owen Miller,Computer Science,2023,Full-time,Dr. Daniel Harris,Intro to Programming,2515.76,3.3
+STU-0254,Noah Hernandez,Nursing,2020,Full-time,Dr. Maria Garcia,Fundamentals of Nursing,3507.47,3.4
+STU-0255,Avery Scott,Nursing,2022,Part-time,Dr. Sarah Johnson,Clinical Practicum,2602.31,4.1
+STU-0256,Elizabeth Lee,Engineering,2021,Full-time,Dr. Kevin White,Thermodynamics,2445.03,4.0
+STU-0257,Samuel Martinez,Computer Science,2023,Full-time,Dr. Jennifer Brown,Database Systems,3415.95,3.6
+STU-0258,Chloe Rodriguez,Business,2021,Part-time,Dr. Maria Garcia,Marketing 101,3289.47,2.5
+STU-0259,Matthew Wright,Psychology,2020,Part-time,Dr. Michael Chen,Developmental Psychology,1591.55,4.0
+STU-0260,Zoey Wright,Engineering,2023,Full-time,Dr. Michelle Clark,Engineering Design,2420.92,2.8
+STU-0261,Isaac Scott,Engineering,2022,Full-time,Dr. Lisa Anderson,Thermodynamics,2085.59,2.8
+STU-0262,Henry Hill,Business,2021,Part-time,Dr. James Williams,Marketing 101,2696.23,2.6
+STU-0263,Aiden White,Psychology,2023,Full-time,Dr. Sarah Johnson,Social Psychology,1510.82,3.4
+STU-0264,Emily Young,Mathematics,2020,Full-time,Dr. Amanda Thompson,Calculus I,2973.05,4.5
+STU-0265,Chloe Lopez,Psychology,2022,Part-time,Dr. Lisa Anderson,Developmental Psychology,1516.51,2.7
+STU-0266,Zoey Gonzalez,Mathematics,2021,Full-time,Dr. Michelle Clark,Statistics,1667.1,4.8
+STU-0267,Emily Harris,Nursing,2021,Full-time,Dr. Daniel Harris,Clinical Practicum,3810.0,4.2
+STU-0268,Grace Robinson,Biology,2023,Full-time,Dr. Thomas Wilson,General Biology,3905.05,2.3
+STU-0269,Harper Martin,Nursing,2022,Part-time,Dr. Jennifer Brown,Health Assessment,3408.56,3.2
+STU-0270,Isaac Harris,Nursing,2022,Full-time,Dr. David Martinez,Clinical Practicum,3267.97,2.7
+STU-0271,Daniel Gonzalez,Biology,2022,Part-time,Dr. Thomas Wilson,Microbiology,4486.91,4.0
+STU-0272,Evelyn Scott,Psychology,2022,Full-time,Dr. Susan Hall,Social Psychology,823.09,2.7
+STU-0273,James Jackson,Engineering,2020,Full-time,Dr. Michael Chen,Circuit Analysis,4185.2,2.2
+STU-0274,James Rodriguez,Psychology,2022,Full-time,Dr. Robert Taylor,Social Psychology,1128.11,3.2
+STU-0275,Sophia Ramirez,Mathematics,2021,Part-time,Dr. Maria Garcia,Linear Algebra,2529.04,4.4
+STU-0276,Benjamin Walker,Business,2021,Full-time,Dr. Jennifer Brown,Principles of Management,2544.83,3.3
+STU-0277,Evelyn Thomas,Mathematics,2020,Full-time,Dr. Maria Garcia,Linear Algebra,1552.06,3.8
+STU-0278,Ava Wright,Business,2021,Part-time,Dr. Jennifer Brown,Financial Accounting,3184.69,3.8
+STU-0279,James Harris,Nursing,2021,Full-time,Dr. Susan Hall,Health Assessment,2038.72,2.3
+STU-0280,Abigail Scott,Biology,2022,Part-time,Dr. Susan Hall,Ecology,2180.07,2.8
+STU-0281,Emily Thomas,Nursing,2021,Full-time,Dr. Christopher Lee,Fundamentals of Nursing,3700.68,3.5
+STU-0282,Victoria Hill,Computer Science,2020,Part-time,Dr. Lisa Anderson,Data Structures,2184.32,3.1
+STU-0283,Benjamin Walker,Psychology,2022,Full-time,Dr. Emily Rodriguez,Abnormal Psychology,2142.83,4.9
+STU-0284,Ava Wright,Business,2023,Part-time,Dr. Thomas Wilson,Business Ethics,1060.28,2.5
+STU-0285,Emily Lewis,Mathematics,2022,Full-time,Dr. Michael Chen,Discrete Mathematics,1056.21,2.8
+STU-0286,Aria Hernandez,Biology,2020,Full-time,Dr. Emily Rodriguez,Microbiology,1881.29,3.7
+STU-0287,Henry Lopez,Business,2022,Full-time,Dr. Kevin White,Principles of Management,1473.21,3.0
+STU-0288,Isabella Martinez,Mathematics,2022,Full-time,Dr. Michael Chen,Statistics,1810.53,1.2
+STU-0289,Christian Taylor,Psychology,2020,Full-time,Dr. Thomas Wilson,Social Psychology,2454.68,5.0
+STU-0290,Ryan Miller,Nursing,2022,Part-time,Dr. Robert Taylor,Clinical Practicum,4716.62,2.6
+STU-0291,Dylan Gonzalez,Psychology,2020,Full-time,Dr. Patricia Davis,Social Psychology,2637.82,3.9
+STU-0292,Nathan Rodriguez,English,2020,Part-time,Dr. Lisa Anderson,Creative Writing,893.78,2.5
+STU-0293,Andrew Clark,Computer Science,2023,Full-time,Dr. Michelle Clark,Algorithms,2435.22,2.8
+STU-0294,Liam Jones,English,2021,Part-time,Dr. Robert Taylor,American Literature,898.82,2.2
+STU-0295,Avery Torres,Biology,2021,Full-time,Dr. Jennifer Brown,Ecology,2293.42,2.9
+STU-0296,Ryan Jackson,Business,2022,Full-time,Dr. Christopher Lee,Marketing 101,2258.87,3.0
+STU-0297,Mason Smith,Biology,2022,Part-time,Dr. Emily Rodriguez,Microbiology,1704.33,3.4
+STU-0298,Daniel Taylor,Nursing,2023,Part-time,Dr. Michelle Clark,Health Assessment,2654.52,3.2
+STU-0299,Sophia Harris,Mathematics,2023,Full-time,Dr. Michael Chen,Discrete Mathematics,2857.83,2.3
+STU-0300,Lily Brown,Psychology,2023,Full-time,Dr. Michael Chen,Intro to Psychology,1825.46,3.1
+STU-0301,Samuel Garcia,English,2020,Full-time,Dr. Emily Rodriguez,American Literature,1390.77,4.7
+STU-0302,Ella Jackson,Engineering,2023,Part-time,Dr. Robert Taylor,Thermodynamics,1543.7,4.6
+STU-0303,Christian Hill,English,2023,Full-time,Dr. Michelle Clark,Technical Writing,994.8,3.9
+STU-0304,Sofia Martinez,Nursing,2022,Full-time,Dr. Thomas Wilson,Fundamentals of Nursing,4598.88,4.0
+STU-0305,Jackson Jackson,English,2023,Part-time,Dr. Jennifer Brown,English Composition,829.26,5.0
+STU-0306,Victoria Williams,Nursing,2020,Full-time,Dr. Sarah Johnson,Clinical Practicum,3245.37,4.0
+STU-0307,Lily Gonzalez,Engineering,2020,Full-time,Dr. Kevin White,Circuit Analysis,1542.99,4.0
+STU-0308,Andrew Ramirez,Biology,2022,Full-time,Dr. Robert Taylor,Microbiology,2935.01,2.2
+STU-0309,Alexander Ramirez,Psychology,2023,Part-time,Dr. Jennifer Brown,Abnormal Psychology,846.25,2.6
+STU-0310,Mason Hill,Business,2023,Full-time,Dr. James Williams,Business Ethics,3049.02,3.5
+STU-0311,Emma Williams,Mathematics,2020,Full-time,Dr. Michael Chen,Discrete Mathematics,2614.68,2.9
+STU-0312,Charlotte Ramirez,Business,2023,Full-time,Dr. James Williams,Financial Accounting,2969.36,2.7
+STU-0313,Zoey Harris,Biology,2023,Full-time,Dr. Sarah Johnson,Genetics,2350.09,2.8
+STU-0314,Scarlett Nguyen,Mathematics,2023,Full-time,Dr. Thomas Wilson,Linear Algebra,2641.92,2.4
+STU-0315,Ethan Young,English,2021,Full-time,Dr. Michelle Clark,Technical Writing,1586.0,2.9
+STU-0316,Lily Lee,Engineering,2022,Full-time,Dr. Kevin White,Thermodynamics,2621.42,3.8
+STU-0317,Lucas Lee,Engineering,2021,Full-time,Dr. James Williams,Engineering Design,3375.99,4.9
+STU-0318,Mia Torres,Computer Science,2022,Full-time,Dr. Michael Chen,Intro to Programming,1234.55,4.1
+STU-0319,Samuel Wright,Biology,2020,Full-time,Dr. Amanda Thompson,General Biology,1928.88,4.0
+STU-0320,Evelyn Martin,Biology,2023,Part-time,Dr. Sarah Johnson,Microbiology,3726.88,2.2
+STU-0321,Henry Wilson,Psychology,2022,Full-time,Dr. Susan Hall,Developmental Psychology,1337.16,3.6
+STU-0322,Amelia Walker,Business,2021,Part-time,Dr. Amanda Thompson,Marketing 101,2495.02,3.4
+STU-0323,Emma Williams,Biology,2023,Part-time,Dr. James Williams,Microbiology,2655.31,3.7
+STU-0324,Lucas Thompson,Biology,2020,Full-time,Dr. Lisa Anderson,Ecology,4064.42,3.2
+STU-0325,Mia Lopez,English,2022,Full-time,Dr. Susan Hall,English Composition,2404.83,4.8
+STU-0326,William Young,English,2022,Full-time,Dr. Jennifer Brown,Technical Writing,2267.13,3.5
+STU-0327,Lucas Davis,Mathematics,2022,Full-time,Dr. James Williams,Calculus I,1395.36,3.6
+STU-0328,Ryan Lopez,Nursing,2023,Full-time,Dr. Sarah Johnson,Clinical Practicum,2582.49,1.9
+STU-0329,Matthew Ramirez,Nursing,2021,Full-time,Dr. Thomas Wilson,Pharmacology,3423.3,3.4
+STU-0330,Mason Ramirez,Computer Science,2021,Full-time,Dr. James Williams,Web Development,1220.54,4.4
+STU-0331,Samuel Sanchez,Nursing,2022,Part-time,Dr. Jennifer Brown,Pharmacology,2077.43,3.9
+STU-0332,Mason Ramirez,Psychology,2020,Full-time,Dr. Amanda Thompson,Intro to Psychology,2017.24,1.8
+STU-0333,Sebastian Torres,Computer Science,2020,Part-time,Dr. Daniel Harris,Intro to Programming,2657.26,3.1
+STU-0334,Riley Scott,Mathematics,2021,Full-time,Dr. Thomas Wilson,Discrete Mathematics,2988.08,4.9
+STU-0335,Sofia Taylor,English,2020,Part-time,Dr. Robert Taylor,Creative Writing,903.68,3.4
+STU-0336,Isabella Allen,Nursing,2021,Full-time,Dr. Kevin White,Fundamentals of Nursing,2774.31,3.8
+STU-0337,Alexander Gonzalez,Business,2022,Full-time,Dr. Robert Taylor,Business Ethics,1283.85,4.8
+STU-0338,Sebastian Lewis,English,2021,Part-time,Dr. Susan Hall,Creative Writing,2335.09,3.4
+STU-0339,Charlotte Wright,Engineering,2021,Full-time,Dr. Thomas Wilson,Circuit Analysis,3833.43,4.1
+STU-0340,Ethan Moore,Psychology,2022,Full-time,Dr. Emily Rodriguez,Social Psychology,2609.15,3.8
+STU-0341,Ava Harris,English,2020,Part-time,Dr. Michelle Clark,American Literature,2305.53,4.0
+STU-0342,Liam Martinez,Psychology,2021,Full-time,Dr. Michelle Clark,Developmental Psychology,1954.78,3.8
+STU-0343,Jack Jones,Psychology,2021,Full-time,Dr. James Williams,Intro to Psychology,1792.63,3.1
+STU-0344,Scarlett Smith,Psychology,2022,Part-time,Dr. Jennifer Brown,Intro to Psychology,1526.86,3.1
+STU-0345,Henry Young,Mathematics,2020,Part-time,Dr. Susan Hall,Discrete Mathematics,2096.27,2.8
+STU-0346,Aurora Hernandez,Psychology,2021,Part-time,Dr. Patricia Davis,Intro to Psychology,1799.41,2.2
+STU-0347,Abigail Sanchez,Psychology,2022,Full-time,Dr. Jennifer Brown,Developmental Psychology,1793.44,4.5
+STU-0348,Elizabeth Perez,Engineering,2021,Part-time,Dr. Thomas Wilson,Engineering Physics,4310.78,3.5
+STU-0349,Sofia Gonzalez,Business,2023,Full-time,Dr. Amanda Thompson,Principles of Management,3460.08,4.5
+STU-0350,Scarlett King,Computer Science,2022,Part-time,Dr. David Martinez,Algorithms,3430.16,4.8
+STU-0351,Riley Wright,Biology,2020,Part-time,Dr. Lisa Anderson,Genetics,3770.27,3.5
+STU-0352,Emma Lee,Engineering,2020,Part-time,Dr. Susan Hall,Thermodynamics,3541.67,2.4
+STU-0353,Isaac Garcia,Computer Science,2020,Part-time,Dr. Michelle Clark,Database Systems,1665.01,3.3
+STU-0354,Sebastian Taylor,Psychology,2020,Full-time,Dr. Michelle Clark,Abnormal Psychology,930.03,3.0
+STU-0355,Ava Walker,Business,2021,Part-time,Dr. Sarah Johnson,Business Ethics,2726.82,1.9
+STU-0356,Ava Nguyen,English,2021,Part-time,Dr. Daniel Harris,English Composition,1957.57,3.1
+STU-0357,Olivia Thompson,Business,2020,Full-time,Dr. Maria Garcia,Financial Accounting,1117.43,3.4
+STU-0358,Chloe Torres,Engineering,2020,Part-time,Dr. Patricia Davis,Thermodynamics,4284.16,3.0
+STU-0359,William Martinez,Psychology,2020,Full-time,Dr. Kevin White,Developmental Psychology,1000.51,2.9
+STU-0360,Evelyn Taylor,Business,2021,Part-time,Dr. Michael Chen,Marketing 101,1714.75,2.5
+STU-0361,Abigail Wilson,Nursing,2020,Part-time,Dr. David Martinez,Clinical Practicum,4017.17,3.7
+STU-0362,Isabella Smith,Business,2020,Part-time,Dr. Patricia Davis,Business Ethics,1424.68,5.0
+STU-0363,Lily Gonzalez,Psychology,2023,Full-time,Dr. Emily Rodriguez,Developmental Psychology,921.91,4.5
+STU-0364,Noah Smith,Mathematics,2023,Full-time,Dr. Sarah Johnson,Calculus I,1528.52,4.0
+STU-0365,Zoey Flores,Nursing,2020,Full-time,Dr. Patricia Davis,Clinical Practicum,4297.91,4.0
+STU-0366,Aiden King,Business,2022,Part-time,Dr. Kevin White,Principles of Management,2034.2,3.4
+STU-0367,Sebastian Walker,Biology,2020,Full-time,Dr. Kevin White,Anatomy & Physiology,3458.92,2.1
+STU-0368,Mason Hill,Biology,2023,Full-time,Dr. Thomas Wilson,Ecology,3238.86,3.2
+STU-0369,Jackson King,Business,2022,Part-time,Dr. Robert Taylor,Entrepreneurship,1055.55,2.7
+STU-0370,Olivia Lopez,Mathematics,2022,Full-time,Dr. James Williams,Statistics,2974.79,3.6
+STU-0371,Emma Jones,English,2020,Full-time,Dr. Amanda Thompson,English Composition,582.86,4.5
+STU-0372,Jack Robinson,Psychology,2023,Full-time,Dr. Daniel Harris,Intro to Psychology,2929.17,5.0
+STU-0373,Harper Thompson,Biology,2023,Part-time,Dr. Emily Rodriguez,Ecology,3149.59,3.6
+STU-0374,Amelia Torres,English,2022,Full-time,Dr. Thomas Wilson,Technical Writing,2426.32,2.2
+STU-0375,Abigail Wilson,Business,2020,Full-time,Dr. Robert Taylor,Marketing 101,1286.88,3.6
+STU-0376,Liam Hernandez,Engineering,2021,Full-time,Dr. Sarah Johnson,Engineering Physics,2971.23,3.6
+STU-0377,Victoria Nguyen,English,2021,Full-time,Dr. Daniel Harris,Creative Writing,839.01,4.0
+STU-0378,Owen Nguyen,Nursing,2023,Full-time,Dr. David Martinez,Fundamentals of Nursing,2152.92,3.5
+STU-0379,Andrew King,Computer Science,2021,Full-time,Dr. Daniel Harris,Web Development,2929.08,3.6
+STU-0380,Henry Robinson,Biology,2023,Full-time,Dr. Thomas Wilson,General Biology,2123.35,3.0
+STU-0381,Amelia Clark,Business,2023,Part-time,Dr. Susan Hall,Marketing 101,2469.24,3.3
+STU-0382,Owen Nguyen,Engineering,2023,Full-time,Dr. Jennifer Brown,Engineering Design,1837.09,3.9
+STU-0383,Scarlett White,Psychology,2021,Part-time,Dr. Robert Taylor,Developmental Psychology,1530.37,1.9
+STU-0384,Amelia Robinson,Engineering,2023,Part-time,Dr. Patricia Davis,Engineering Physics,3844.9,3.2
+STU-0385,Caleb Taylor,Mathematics,2022,Part-time,Dr. Lisa Anderson,Discrete Mathematics,1761.51,4.1
+STU-0386,Ava Lewis,Nursing,2020,Part-time,Dr. Susan Hall,Clinical Practicum,3883.24,4.8
+STU-0387,Noah Martinez,Business,2020,Full-time,Dr. Sarah Johnson,Marketing 101,2618.64,3.2
+STU-0388,Harper Martinez,Psychology,2023,Full-time,Dr. Maria Garcia,Developmental Psychology,2656.26,4.4
+STU-0389,Harper Martin,Mathematics,2020,Full-time,Dr. Jennifer Brown,Linear Algebra,1514.83,4.9
+STU-0390,Matthew Jones,Mathematics,2021,Full-time,Dr. Michael Chen,Discrete Mathematics,2312.05,3.2
+STU-0391,Owen Garcia,Business,2021,Part-time,Dr. Patricia Davis,Financial Accounting,3404.04,3.1
+STU-0392,Liam Gonzalez,Nursing,2020,Part-time,Dr. Robert Taylor,Clinical Practicum,4190.73,3.4
+STU-0393,Aria Hernandez,English,2021,Full-time,Dr. David Martinez,American Literature,1479.74,3.4
+STU-0394,Aurora Thompson,English,2020,Full-time,Dr. James Williams,Creative Writing,1761.43,4.4
+STU-0395,Lucas Walker,Mathematics,2020,Part-time,Dr. Patricia Davis,Calculus I,2427.3,2.9
+STU-0396,Mia Thomas,English,2020,Full-time,Dr. Maria Garcia,American Literature,1724.55,4.7
+STU-0397,Mason Brown,Computer Science,2023,Full-time,Dr. Michelle Clark,Web Development,1246.69,2.9
+STU-0398,Nathan Brown,Mathematics,2020,Part-time,Dr. Michael Chen,Calculus I,1228.5,2.5
+STU-0399,Elizabeth Williams,Mathematics,2023,Full-time,Dr. Patricia Davis,Statistics,2583.03,3.9
+STU-0400,Aiden Williams,Psychology,2020,Full-time,Dr. Amanda Thompson,Social Psychology,1399.83,4.5
+STU-0401,Sofia Lewis,English,2020,Full-time,Dr. James Williams,Creative Writing,1963.12,3.6
+STU-0402,Aiden Jackson,Nursing,2020,Part-time,Dr. Lisa Anderson,Pharmacology,3116.36,3.8
+STU-0403,Abigail Jones,Mathematics,2021,Full-time,Dr. Patricia Davis,Calculus I,1948.15,5.0
+STU-0404,Henry Ramirez,Engineering,2023,Full-time,Dr. James Williams,Thermodynamics,1703.92,4.5
+STU-0405,Caleb Perez,Nursing,2023,Full-time,Dr. Michelle Clark,Health Assessment,2543.68,3.5
+STU-0406,Abigail Garcia,Computer Science,2020,Full-time,Dr. Sarah Johnson,Data Structures,3880.15,3.2
+STU-0407,Emma Jones,Psychology,2020,Full-time,Dr. Emily Rodriguez,Intro to Psychology,2758.3,4.4
+STU-0408,Riley Lopez,Business,2021,Part-time,Dr. Daniel Harris,Business Ethics,2630.69,4.2
+STU-0409,Jackson King,Nursing,2021,Full-time,Dr. Robert Taylor,Health Assessment,3378.93,3.8
+STU-0410,Zoey Wilson,Mathematics,2021,Part-time,Dr. Sarah Johnson,Linear Algebra,2286.67,3.2
+STU-0411,Jackson Clark,Computer Science,2023,Full-time,Dr. Robert Taylor,Database Systems,2932.11,3.4
+STU-0412,Isabella Sanchez,Biology,2023,Full-time,Dr. Robert Taylor,General Biology,3205.66,3.4
+STU-0413,Aurora Perez,Computer Science,2023,Full-time,Dr. Kevin White,Database Systems,1365.7,3.3
+STU-0414,Aurora Robinson,Computer Science,2020,Full-time,Dr. Maria Garcia,Intro to Programming,2971.85,3.0
+STU-0415,Aria Taylor,Psychology,2023,Full-time,Dr. Susan Hall,Abnormal Psychology,2491.62,3.7
+STU-0416,Jackson Scott,Business,2022,Full-time,Dr. Thomas Wilson,Entrepreneurship,3485.2,3.0
+STU-0417,Emma Davis,Biology,2022,Full-time,Dr. Lisa Anderson,General Biology,1533.24,3.6
+STU-0418,Zoey Wright,English,2021,Full-time,Dr. Emily Rodriguez,English Composition,1960.35,1.8
+STU-0419,Amelia Perez,English,2023,Full-time,Dr. Amanda Thompson,English Composition,1643.58,3.0
+STU-0420,Benjamin Sanchez,Nursing,2022,Part-time,Dr. Michelle Clark,Health Assessment,3302.16,4.4
+STU-0421,Sebastian Thompson,Computer Science,2021,Part-time,Dr. Emily Rodriguez,Data Structures,1557.2,2.8
+STU-0422,Benjamin White,Engineering,2023,Full-time,Dr. James Williams,Circuit Analysis,2727.26,4.0
+STU-0423,Liam Sanchez,Psychology,2020,Full-time,Dr. Maria Garcia,Developmental Psychology,1579.63,2.8
+STU-0424,Benjamin Miller,Engineering,2022,Full-time,Dr. Sarah Johnson,Engineering Physics,2408.49,4.1
+STU-0425,Olivia Thompson,Psychology,2020,Full-time,Dr. James Williams,Abnormal Psychology,2407.94,3.3
+STU-0426,Dylan Moore,English,2023,Full-time,Dr. Christopher Lee,English Composition,1901.45,3.2
+STU-0427,Ryan Wright,Nursing,2022,Part-time,Dr. Thomas Wilson,Pharmacology,3767.06,3.5
+STU-0428,Amelia Harris,Nursing,2023,Full-time,Dr. Amanda Thompson,Pharmacology,4815.99,2.4
+STU-0429,Chloe Ramirez,Nursing,2020,Full-time,Dr. Daniel Harris,Health Assessment,3049.56,4.3
+STU-0430,William Hill,Biology,2022,Part-time,Dr. Maria Garcia,Ecology,2231.41,4.5
+STU-0431,Harper Hill,Business,2020,Full-time,Dr. James Williams,Principles of Management,2639.76,3.2
+STU-0432,Daniel Sanchez,Biology,2023,Part-time,Dr. Daniel Harris,General Biology,2096.44,3.9
+STU-0433,Christian Harris,Mathematics,2023,Full-time,Dr. Thomas Wilson,Statistics,1493.02,4.1
+STU-0434,Harper Gonzalez,Mathematics,2020,Full-time,Dr. Susan Hall,Statistics,1294.13,3.4
+STU-0435,Alexander Harris,Engineering,2022,Full-time,Dr. Thomas Wilson,Engineering Physics,1707.46,2.6
+STU-0436,Noah Martinez,Business,2020,Full-time,Dr. Lisa Anderson,Principles of Management,3068.75,4.8
+STU-0437,Olivia Moore,English,2023,Part-time,Dr. Kevin White,Creative Writing,1009.08,3.2
+STU-0438,Aurora Scott,Business,2020,Full-time,Dr. Sarah Johnson,Principles of Management,2182.57,3.0
+STU-0439,Aurora Perez,Psychology,2023,Part-time,Dr. Susan Hall,Social Psychology,895.29,4.8
+STU-0440,Owen Davis,Mathematics,2020,Full-time,Dr. Jennifer Brown,Statistics,2338.55,4.0
+STU-0441,Nathan Jackson,Computer Science,2022,Full-time,Dr. Robert Taylor,Web Development,2125.57,3.7
+STU-0442,Caleb Torres,Computer Science,2022,Full-time,Dr. Amanda Thompson,Algorithms,3285.26,2.7
+STU-0443,Ethan Sanchez,English,2020,Full-time,Dr. Emily Rodriguez,Creative Writing,1324.81,4.1
+STU-0444,Owen Garcia,Psychology,2020,Part-time,Dr. Lisa Anderson,Developmental Psychology,1230.66,5.0
+STU-0445,Chloe Allen,Engineering,2022,Full-time,Dr. Jennifer Brown,Thermodynamics,3039.53,4.2
+STU-0446,Daniel Lee,Biology,2023,Full-time,Dr. Maria Garcia,Ecology,1891.51,3.9
+STU-0447,Ethan Garcia,Psychology,2022,Full-time,Dr. Thomas Wilson,Abnormal Psychology,1769.19,4.1
+STU-0448,Isaac Brown,Computer Science,2023,Full-time,Dr. Susan Hall,Web Development,2088.46,3.2
+STU-0449,Jack Hernandez,Computer Science,2020,Full-time,Dr. Christopher Lee,Algorithms,3753.49,3.2
+STU-0450,Jack Walker,Engineering,2020,Full-time,Dr. Kevin White,Engineering Physics,1682.79,3.2
+STU-0451,Matthew Rodriguez,Mathematics,2023,Part-time,Dr. Emily Rodriguez,Calculus I,2326.84,3.0
+STU-0452,Olivia Walker,Psychology,2020,Full-time,Dr. Jennifer Brown,Abnormal Psychology,1202.05,3.2
+STU-0453,Nathan Torres,Psychology,2023,Full-time,Dr. Michelle Clark,Intro to Psychology,1501.9,3.2
+STU-0454,Samuel White,Computer Science,2021,Full-time,Dr. Maria Garcia,Algorithms,2363.44,3.3
+STU-0455,Ella Garcia,Biology,2022,Full-time,Dr. Amanda Thompson,Genetics,4224.05,3.3
+STU-0456,Liam Martin,English,2021,Part-time,Dr. Daniel Harris,Creative Writing,985.16,3.7
+STU-0457,Sebastian Hernandez,Nursing,2023,Full-time,Dr. Michelle Clark,Fundamentals of Nursing,2273.93,3.6
+STU-0458,Noah Anderson,English,2022,Full-time,Dr. Kevin White,Creative Writing,1137.38,3.6
+STU-0459,Ethan Robinson,Psychology,2023,Full-time,Dr. Amanda Thompson,Developmental Psychology,1030.29,4.7
+STU-0460,Ryan Johnson,English,2022,Full-time,Dr. Susan Hall,English Composition,757.19,3.6
+STU-0461,Amelia Hernandez,Computer Science,2022,Full-time,Dr. David Martinez,Intro to Programming,2806.78,5.0
+STU-0462,Mason Sanchez,Computer Science,2022,Part-time,Dr. Michael Chen,Data Structures,1370.53,3.8
+STU-0463,Lily Jones,Engineering,2022,Part-time,Dr. Maria Garcia,Circuit Analysis,1592.79,3.1
+STU-0464,Ethan Sanchez,Psychology,2023,Part-time,Dr. Robert Taylor,Abnormal Psychology,2371.71,4.6
+STU-0465,Noah Jackson,Engineering,2022,Full-time,Dr. Christopher Lee,Engineering Physics,2584.94,3.4
+STU-0466,Alexander Allen,Psychology,2022,Full-time,Dr. Sarah Johnson,Developmental Psychology,1075.83,1.6
+STU-0467,Alexander Lopez,Nursing,2021,Full-time,Dr. Susan Hall,Clinical Practicum,2760.84,3.5
+STU-0468,Aurora Smith,Nursing,2020,Full-time,Dr. Patricia Davis,Pharmacology,3926.26,3.3
+STU-0469,Jackson Wilson,Mathematics,2020,Part-time,Dr. Thomas Wilson,Statistics,1406.18,4.8
+STU-0470,Ryan Torres,Psychology,2021,Full-time,Dr. Daniel Harris,Abnormal Psychology,1887.95,2.8
+STU-0471,Mia Scott,Biology,2021,Part-time,Dr. Thomas Wilson,Microbiology,1865.09,3.2
+STU-0472,Charlotte Williams,English,2023,Part-time,Dr. Michelle Clark,Creative Writing,1676.19,4.5
+STU-0473,Scarlett Garcia,Psychology,2023,Full-time,Dr. James Williams,Social Psychology,1495.37,3.8
+STU-0474,Andrew Martinez,Business,2023,Full-time,Dr. Michael Chen,Principles of Management,2567.42,3.4
+STU-0475,Ava Thompson,Mathematics,2021,Part-time,Dr. Jennifer Brown,Calculus I,2578.47,2.9
+STU-0476,William Johnson,Business,2021,Full-time,Dr. Thomas Wilson,Entrepreneurship,2529.12,3.8
+STU-0477,Charlotte Flores,Computer Science,2022,Part-time,Dr. Patricia Davis,Database Systems,2028.09,3.5
+STU-0478,Liam Martin,Nursing,2023,Full-time,Dr. Daniel Harris,Health Assessment,2767.23,2.9
+STU-0479,Emma Torres,English,2023,Full-time,Dr. Lisa Anderson,American Literature,1154.84,2.9
+STU-0480,Isabella Taylor,Psychology,2023,Full-time,Dr. Michelle Clark,Abnormal Psychology,1162.17,2.8
+STU-0481,Isabella Hernandez,Business,2020,Part-time,Dr. Michelle Clark,Marketing 101,1452.93,2.7
+STU-0482,Amelia White,English,2022,Full-time,Dr. David Martinez,American Literature,2081.38,4.2
+STU-0483,Ryan Wright,Computer Science,2023,Part-time,Dr. Patricia Davis,Database Systems,2277.25,4.1
+STU-0484,Jack Walker,Nursing,2023,Full-time,Dr. Jennifer Brown,Health Assessment,3307.99,4.2
+STU-0485,Zoey Jones,Biology,2023,Part-time,Dr. Michelle Clark,General Biology,3282.15,3.5
+STU-0486,Christian Wilson,Mathematics,2020,Part-time,Dr. Sarah Johnson,Linear Algebra,2097.24,3.3
+STU-0487,Mia Rodriguez,English,2020,Full-time,Dr. Sarah Johnson,American Literature,634.75,3.3
+STU-0488,Owen Lopez,English,2021,Full-time,Dr. Emily Rodriguez,Technical Writing,2163.08,4.3
+STU-0489,Grace Wright,Biology,2022,Part-time,Dr. Thomas Wilson,Genetics,2031.98,2.0
+STU-0490,Emma Flores,English,2021,Full-time,Dr. David Martinez,American Literature,1946.14,3.1
+STU-0491,Daniel Lewis,Computer Science,2022,Part-time,Dr. Michelle Clark,Data Structures,3363.48,2.8
+STU-0492,Mason Hernandez,Computer Science,2020,Full-time,Dr. Thomas Wilson,Database Systems,3201.72,4.6
+STU-0493,Riley Torres,Biology,2023,Part-time,Dr. Sarah Johnson,Ecology,3236.93,3.1
+STU-0494,Benjamin Robinson,Mathematics,2021,Part-time,Dr. Michael Chen,Calculus I,832.14,2.2
+STU-0495,Grace Lee,Psychology,2023,Part-time,Dr. Amanda Thompson,Intro to Psychology,1592.83,3.7
+STU-0496,Chloe Jones,Business,2021,Full-time,Dr. Sarah Johnson,Marketing 101,2512.1,3.2
+STU-0497,Evelyn Wilson,Psychology,2020,Full-time,Dr. Michael Chen,Developmental Psychology,1652.39,3.1
+STU-0498,Jackson Brown,English,2020,Full-time,Dr. Kevin White,English Composition,2226.96,3.0
+STU-0499,Elizabeth Harris,Business,2020,Full-time,Dr. Michelle Clark,Marketing 101,1772.01,2.9
+STU-0500,Henry Flores,Engineering,2021,Full-time,Dr. Amanda Thompson,Engineering Design,2380.6,4.1
+STU-0501,Mason Hill,Biology,2022,Full-time,Dr. Kevin White,Genetics,2297.99,3.7
+STU-0502,Nathan Wilson,Biology,2021,Part-time,Dr. Susan Hall,Ecology,2498.34,3.3
+STU-0503,Aiden Nguyen,Mathematics,2022,Full-time,Dr. Lisa Anderson,Statistics,2026.29,2.6
+STU-0504,Scarlett Thompson,Business,2021,Full-time,Dr. Susan Hall,Business Ethics,2767.54,3.4
+STU-0505,Amelia Allen,Computer Science,2021,Part-time,Dr. Lisa Anderson,Web Development,3055.19,3.7
+STU-0506,Elizabeth Taylor,Business,2020,Full-time,Dr. Amanda Thompson,Financial Accounting,3019.29,3.7
+STU-0507,Scarlett Johnson,English,2023,Full-time,Dr. Maria Garcia,Technical Writing,2271.83,3.6
+STU-0508,Benjamin Flores,Computer Science,2023,Part-time,Dr. Susan Hall,Algorithms,3485.02,2.8
+STU-0509,Nathan Hill,Nursing,2022,Part-time,Dr. Emily Rodriguez,Clinical Practicum,2056.84,1.6
+STU-0510,Ethan Garcia,Nursing,2023,Full-time,Dr. Lisa Anderson,Clinical Practicum,4207.75,4.9
+STU-0511,Olivia Miller,Engineering,2021,Full-time,Dr. Susan Hall,Engineering Design,2125.2,2.5
+STU-0512,Mason Anderson,Nursing,2021,Part-time,Dr. Lisa Anderson,Pharmacology,2398.78,1.9
+STU-0513,Aurora Lewis,Biology,2020,Full-time,Dr. Sarah Johnson,Genetics,3415.47,3.6
+STU-0514,Scarlett Robinson,Business,2020,Full-time,Dr. Susan Hall,Entrepreneurship,1799.36,2.1
+STU-0515,Victoria Clark,Nursing,2023,Full-time,Dr. Susan Hall,Pharmacology,2171.35,2.9
+STU-0516,Samuel Lewis,Psychology,2022,Full-time,Dr. Patricia Davis,Social Psychology,1102.79,3.9
+STU-0517,Ryan Allen,Mathematics,2023,Full-time,Dr. Emily Rodriguez,Discrete Mathematics,802.04,4.9
+STU-0518,Chloe Clark,Psychology,2023,Full-time,Dr. Michelle Clark,Intro to Psychology,2787.09,3.8
+STU-0519,Scarlett Brown,Nursing,2023,Full-time,Dr. Patricia Davis,Pharmacology,2073.85,3.1
+STU-0520,Daniel Johnson,Engineering,2023,Part-time,Dr. Kevin White,Thermodynamics,2128.37,3.5
+STU-0521,William Jones,Mathematics,2021,Full-time,Dr. Jennifer Brown,Linear Algebra,1715.78,2.1
+STU-0522,William Allen,English,2022,Part-time,Dr. Sarah Johnson,Creative Writing,1213.14,3.1
+STU-0523,Ryan Gonzalez,Psychology,2021,Part-time,Dr. Kevin White,Social Psychology,2805.8,3.1
+STU-0524,Ella Scott,Engineering,2022,Full-time,Dr. Jennifer Brown,Engineering Design,1620.87,3.6
+STU-0525,Lily White,Business,2020,Full-time,Dr. Christopher Lee,Marketing 101,2280.54,5.0
+STU-0526,Amelia Lewis,Business,2023,Full-time,Dr. Jennifer Brown,Principles of Management,2701.2,2.0
+STU-0527,Mason Jones,Psychology,2021,Full-time,Dr. Lisa Anderson,Abnormal Psychology,2849.74,3.2
+STU-0528,Avery Brown,Nursing,2022,Part-time,Dr. Daniel Harris,Fundamentals of Nursing,3861.11,2.0
+STU-0529,James Johnson,Engineering,2020,Full-time,Dr. Michael Chen,Circuit Analysis,3911.27,3.1
+STU-0530,Sofia Walker,Business,2020,Part-time,Dr. Jennifer Brown,Financial Accounting,1209.31,2.8
+STU-0531,Samuel Scott,English,2023,Full-time,Dr. Amanda Thompson,American Literature,1271.88,2.3
+STU-0532,Jackson Clark,Computer Science,2022,Full-time,Dr. Michelle Clark,Data Structures,2247.05,4.2
+STU-0533,Ava Martin,Nursing,2021,Full-time,Dr. Emily Rodriguez,Fundamentals of Nursing,4658.86,3.7
+STU-0534,Mia Martinez,Engineering,2023,Full-time,Dr. Patricia Davis,Engineering Physics,1954.11,4.1
+STU-0535,Nathan Nguyen,English,2021,Full-time,Dr. Daniel Harris,Technical Writing,803.77,3.1
+STU-0536,Ethan Davis,Engineering,2020,Full-time,Dr. David Martinez,Thermodynamics,2485.67,3.4
+STU-0537,Emily Sanchez,Mathematics,2021,Full-time,Dr. Kevin White,Statistics,919.83,4.8
+STU-0538,Dylan Lopez,English,2021,Full-time,Dr. Michael Chen,Creative Writing,864.92,3.5
+STU-0539,Jackson Gonzalez,Nursing,2023,Part-time,Dr. David Martinez,Pharmacology,4895.63,4.1
+STU-0540,Nathan Moore,Mathematics,2021,Full-time,Dr. Robert Taylor,Statistics,1742.0,3.0
+STU-0541,Elizabeth Allen,Nursing,2023,Part-time,Dr. Christopher Lee,Pharmacology,3896.06,4.1
+STU-0542,Aurora Flores,Business,2020,Part-time,Dr. Michelle Clark,Entrepreneurship,2815.28,3.1
+STU-0543,Aria Lopez,Computer Science,2023,Part-time,Dr. David Martinez,Web Development,2227.49,2.0
+STU-0544,Christian Scott,Nursing,2023,Full-time,Dr. James Williams,Fundamentals of Nursing,2441.68,3.5
+STU-0545,Isaac Brown,Nursing,2022,Part-time,Dr. Michelle Clark,Health Assessment,2619.74,3.1
+STU-0546,Ava Torres,Business,2021,Full-time,Dr. Susan Hall,Financial Accounting,1783.17,2.2
+STU-0547,Mason Ramirez,Biology,2020,Full-time,Dr. Amanda Thompson,Microbiology,3408.21,3.7
+STU-0548,Ella Rodriguez,Business,2023,Full-time,Dr. Michael Chen,Marketing 101,1995.7,2.8
+STU-0549,Avery Wilson,Mathematics,2020,Part-time,Dr. Amanda Thompson,Statistics,814.99,5.0
+STU-0550,Nathan Perez,Business,2022,Full-time,Dr. Amanda Thompson,Entrepreneurship,2308.52,2.3
+STU-0551,Mia Thompson,Business,2021,Part-time,Dr. Michelle Clark,Entrepreneurship,3303.78,2.5
+STU-0552,Emma Torres,Computer Science,2023,Full-time,Dr. Thomas Wilson,Data Structures,3473.82,4.2
+STU-0553,Abigail Sanchez,Business,2021,Part-time,Dr. Emily Rodriguez,Entrepreneurship,3063.03,3.4
+STU-0554,Dylan Scott,Engineering,2022,Part-time,Dr. Emily Rodriguez,Circuit Analysis,3885.17,4.2
+STU-0555,Emily Smith,Nursing,2022,Full-time,Dr. Daniel Harris,Clinical Practicum,2971.19,3.8
+STU-0556,Nathan Anderson,Engineering,2020,Part-time,Dr. David Martinez,Engineering Design,3795.58,3.0
+STU-0557,Abigail Rodriguez,Computer Science,2023,Full-time,Dr. James Williams,Web Development,1600.85,2.4
+STU-0558,Isabella Martinez,Psychology,2020,Full-time,Dr. Patricia Davis,Abnormal Psychology,2246.98,4.4
+STU-0559,Jackson Wright,Biology,2022,Full-time,Dr. Patricia Davis,Microbiology,3424.71,2.5
+STU-0560,Elizabeth Sanchez,Engineering,2021,Full-time,Dr. Patricia Davis,Circuit Analysis,1576.71,3.9
+STU-0561,Mia Nguyen,Computer Science,2020,Full-time,Dr. Michael Chen,Data Structures,3406.32,4.2
+STU-0562,Liam Miller,Mathematics,2020,Full-time,Dr. Susan Hall,Discrete Mathematics,2787.15,3.4
+STU-0563,Henry Clark,Psychology,2021,Full-time,Dr. Jennifer Brown,Intro to Psychology,1388.31,3.3
+STU-0564,Owen Clark,Computer Science,2020,Part-time,Dr. Michael Chen,Web Development,3474.69,2.7
+STU-0565,Harper White,Computer Science,2021,Part-time,Dr. Michelle Clark,Data Structures,1430.74,3.9
+STU-0566,Elizabeth Miller,Biology,2023,Part-time,Dr. Kevin White,Genetics,3299.9,1.1
+STU-0567,Ethan White,Nursing,2021,Part-time,Dr. James Williams,Pharmacology,3456.94,4.1
+STU-0568,Scarlett Lewis,Engineering,2023,Part-time,Dr. David Martinez,Engineering Design,3137.77,3.6
+STU-0569,Aria Perez,Mathematics,2021,Full-time,Dr. Jennifer Brown,Discrete Mathematics,2837.65,3.3
+STU-0570,Jackson Ramirez,English,2022,Full-time,Dr. Maria Garcia,American Literature,2242.63,3.7
+STU-0571,Andrew Lee,Engineering,2022,Part-time,Dr. Kevin White,Thermodynamics,3855.25,2.4
+STU-0572,Zoey Miller,English,2023,Full-time,Dr. Amanda Thompson,American Literature,1047.4,1.6
+STU-0573,Harper Martin,Computer Science,2023,Part-time,Dr. Lisa Anderson,Data Structures,3753.09,3.9
+STU-0574,Riley Martin,Business,2022,Full-time,Dr. Susan Hall,Marketing 101,1243.77,4.6
+STU-0575,Daniel Ramirez,Mathematics,2023,Full-time,Dr. Emily Rodriguez,Linear Algebra,2677.32,2.1
+STU-0576,Nathan Miller,Psychology,2021,Full-time,Dr. Maria Garcia,Intro to Psychology,1521.95,2.7
+STU-0577,Emma Young,Business,2021,Full-time,Dr. Christopher Lee,Financial Accounting,1134.43,4.1
+STU-0578,Charlotte Robinson,Business,2022,Full-time,Dr. Lisa Anderson,Financial Accounting,2673.39,3.8
+STU-0579,Emily Jackson,Engineering,2020,Part-time,Dr. Jennifer Brown,Engineering Physics,2193.84,5.0
+STU-0580,Aiden Robinson,Mathematics,2021,Full-time,Dr. Robert Taylor,Calculus I,1335.86,4.4
+STU-0581,Avery Lewis,Nursing,2023,Full-time,Dr. Susan Hall,Health Assessment,2918.14,4.2
+STU-0582,Jack Thomas,Computer Science,2020,Part-time,Dr. Kevin White,Web Development,1378.32,2.9
+STU-0583,Nathan Jackson,Computer Science,2020,Part-time,Dr. Emily Rodriguez,Algorithms,1695.96,3.9
+STU-0584,Henry Smith,Computer Science,2021,Full-time,Dr. James Williams,Intro to Programming,1214.39,4.7
+STU-0585,Benjamin Johnson,Computer Science,2021,Part-time,Dr. Thomas Wilson,Database Systems,2447.15,3.4
+STU-0586,Sebastian Robinson,Engineering,2020,Full-time,Dr. Maria Garcia,Circuit Analysis,1752.77,3.4
+STU-0587,Ryan Brown,English,2020,Full-time,Dr. Thomas Wilson,Technical Writing,1865.31,3.6
+STU-0588,Emma Davis,Computer Science,2022,Full-time,Dr. Christopher Lee,Algorithms,1859.74,3.0
+STU-0589,Avery Hill,English,2023,Part-time,Dr. Thomas Wilson,English Composition,2387.15,3.7
+STU-0590,Olivia Young,English,2022,Part-time,Dr. Amanda Thompson,American Literature,2242.5,3.7
+STU-0591,William Martinez,Nursing,2021,Full-time,Dr. Patricia Davis,Pharmacology,2868.32,4.7
+STU-0592,Evelyn King,Computer Science,2022,Part-time,Dr. Kevin White,Algorithms,3393.0,3.3
+STU-0593,Scarlett Thompson,Biology,2022,Full-time,Dr. David Martinez,General Biology,3909.73,4.0
+STU-0594,Sebastian Young,Psychology,2022,Full-time,Dr. David Martinez,Social Psychology,2970.44,3.4
+STU-0595,Andrew Miller,Business,2022,Full-time,Dr. David Martinez,Financial Accounting,2494.6,4.0
+STU-0596,Avery Davis,English,2023,Full-time,Dr. Amanda Thompson,American Literature,663.93,3.3
+STU-0597,Emma Williams,Mathematics,2023,Full-time,Dr. Michael Chen,Statistics,2223.04,4.0
+STU-0598,Matthew Thompson,Mathematics,2020,Full-time,Dr. Christopher Lee,Calculus I,2174.96,4.1
+STU-0599,Mason Torres,Psychology,2021,Part-time,Dr. Thomas Wilson,Developmental Psychology,2204.37,2.6
+STU-0600,Olivia Allen,Mathematics,2022,Full-time,Dr. Christopher Lee,Calculus I,1475.72,4.4
+STU-0601,Sebastian Davis,Biology,2020,Full-time,Dr. Patricia Davis,Anatomy & Physiology,4079.04,3.4
+STU-0602,Owen Wright,Mathematics,2020,Full-time,Dr. Michelle Clark,Calculus I,2910.84,3.1
+STU-0603,Aiden White,Business,2020,Full-time,Dr. Kevin White,Principles of Management,1544.28,2.9
+STU-0604,Benjamin Young,Business,2023,Full-time,Dr. Susan Hall,Business Ethics,1220.38,3.7
+STU-0605,Dylan Thomas,English,2022,Part-time,Dr. Michael Chen,American Literature,889.07,3.5
+STU-0606,Noah Torres,Computer Science,2022,Full-time,Dr. Christopher Lee,Web Development,3497.55,3.8
+STU-0607,Abigail Wilson,Nursing,2021,Part-time,Dr. Susan Hall,Health Assessment,4029.93,3.8
+STU-0608,Ella Moore,Biology,2022,Part-time,Dr. Robert Taylor,Ecology,3408.14,4.0
+STU-0609,Sophia Martinez,English,2022,Full-time,Dr. Michelle Clark,American Literature,1303.59,5.0
+STU-0610,Sophia Allen,Biology,2020,Part-time,Dr. Emily Rodriguez,Genetics,3233.48,3.5
+STU-0611,Emily Lee,Computer Science,2021,Full-time,Dr. Robert Taylor,Intro to Programming,2062.05,2.9
+STU-0612,Evelyn Jackson,Engineering,2022,Full-time,Dr. Emily Rodriguez,Engineering Design,2931.6,1.9
+STU-0613,Samuel Lewis,Mathematics,2023,Full-time,Dr. Sarah Johnson,Statistics,2544.74,2.5
+STU-0614,Henry Johnson,Mathematics,2022,Full-time,Dr. Amanda Thompson,Calculus I,2958.73,4.5
+STU-0615,Emma Jones,Nursing,2020,Full-time,Dr. Daniel Harris,Clinical Practicum,4797.47,4.1
+STU-0616,Alexander Hernandez,Computer Science,2023,Full-time,Dr. Amanda Thompson,Intro to Programming,3814.82,2.4
+STU-0617,Caleb Johnson,English,2020,Full-time,Dr. James Williams,Creative Writing,1304.45,5.0
+STU-0618,Olivia Thompson,Nursing,2022,Full-time,Dr. Lisa Anderson,Pharmacology,3406.37,3.8
+STU-0619,James Martin,Computer Science,2023,Full-time,Dr. Thomas Wilson,Data Structures,3175.78,3.9
+STU-0620,Ava Torres,Psychology,2021,Part-time,Dr. Lisa Anderson,Intro to Psychology,2828.82,5.0
+STU-0621,Ryan Robinson,Business,2021,Part-time,Dr. Michelle Clark,Business Ethics,1354.99,4.9
+STU-0622,Isabella King,Nursing,2023,Full-time,Dr. Michelle Clark,Pharmacology,2912.73,4.1
+STU-0623,Christian Wright,Nursing,2023,Full-time,Dr. James Williams,Health Assessment,2417.74,4.2
+STU-0624,Daniel White,English,2020,Part-time,Dr. Robert Taylor,American Literature,1724.02,4.2
+STU-0625,Harper Martinez,Biology,2023,Part-time,Dr. Maria Garcia,General Biology,2418.9,3.3
+STU-0626,Jack Thompson,Psychology,2020,Part-time,Dr. Christopher Lee,Intro to Psychology,1517.44,3.7
+STU-0627,Aiden Taylor,English,2022,Full-time,Dr. Sarah Johnson,Creative Writing,641.83,4.0
+STU-0628,Andrew Taylor,Computer Science,2020,Full-time,Dr. David Martinez,Algorithms,2179.43,3.4
+STU-0629,Benjamin Rodriguez,Computer Science,2023,Full-time,Dr. Sarah Johnson,Database Systems,3614.99,2.7
+STU-0630,Nathan Johnson,Computer Science,2023,Full-time,Dr. Maria Garcia,Data Structures,1852.6,3.3
+STU-0631,Lily Harris,Engineering,2022,Part-time,Dr. Robert Taylor,Circuit Analysis,3585.56,2.7
+STU-0632,Victoria Rodriguez,Computer Science,2023,Part-time,Dr. Emily Rodriguez,Algorithms,2962.96,3.6
+STU-0633,Daniel Brown,Biology,2023,Full-time,Dr. Michelle Clark,Anatomy & Physiology,4090.45,2.1
+STU-0634,Jackson Lewis,Psychology,2021,Part-time,Dr. Maria Garcia,Abnormal Psychology,1091.03,3.8
+STU-0635,Lily King,Mathematics,2021,Full-time,Dr. Daniel Harris,Calculus I,2950.7,2.2
+STU-0636,Emily Torres,Business,2022,Full-time,Dr. Kevin White,Entrepreneurship,2456.57,3.2
+STU-0637,Mia Garcia,Biology,2020,Full-time,Dr. Robert Taylor,Ecology,4486.42,3.9
+STU-0638,Henry Lee,Biology,2021,Part-time,Dr. Daniel Harris,General Biology,4234.54,4.1
+STU-0639,Caleb Scott,Engineering,2020,Full-time,Dr. David Martinez,Engineering Design,2164.55,4.0
+STU-0640,Riley Nguyen,Mathematics,2023,Part-time,Dr. Lisa Anderson,Statistics,923.56,3.8
+STU-0641,Owen Taylor,Mathematics,2021,Part-time,Dr. David Martinez,Discrete Mathematics,1362.41,2.6
+STU-0642,Chloe Harris,Business,2022,Full-time,Dr. Amanda Thompson,Business Ethics,2318.91,4.3
+STU-0643,Ryan Lopez,Business,2022,Full-time,Dr. Robert Taylor,Financial Accounting,1428.99,2.6
+STU-0644,Emily Perez,Mathematics,2022,Part-time,Dr. Michael Chen,Calculus I,1168.41,4.4
+STU-0645,Abigail Clark,Computer Science,2021,Full-time,Dr. David Martinez,Data Structures,2495.26,4.0
+STU-0646,Ella Garcia,Biology,2020,Part-time,Dr. Patricia Davis,Microbiology,1599.8,4.6
+STU-0647,Sofia Flores,English,2023,Part-time,Dr. Sarah Johnson,Creative Writing,743.78,3.5
+STU-0648,Owen Lopez,Business,2020,Full-time,Dr. Robert Taylor,Marketing 101,2039.65,2.8
+STU-0649,Lily Miller,Engineering,2020,Full-time,Dr. Kevin White,Thermodynamics,1689.39,2.5
+STU-0650,William Taylor,Engineering,2023,Part-time,Dr. Christopher Lee,Engineering Design,2690.27,2.6
+STU-0651,Jackson Lee,Business,2023,Part-time,Dr. Patricia Davis,Principles of Management,2185.02,2.2
+STU-0652,Sebastian Johnson,Mathematics,2021,Full-time,Dr. Thomas Wilson,Linear Algebra,1792.79,4.3
+STU-0653,Aria Smith,Psychology,2021,Full-time,Dr. Emily Rodriguez,Developmental Psychology,2712.18,4.4
+STU-0654,Samuel Sanchez,English,2021,Full-time,Dr. Amanda Thompson,American Literature,1560.12,3.9
+STU-0655,Avery Lee,English,2021,Part-time,Dr. Emily Rodriguez,English Composition,1435.96,3.5
+STU-0656,Mia Flores,Business,2021,Part-time,Dr. Michelle Clark,Marketing 101,2026.77,5.0
+STU-0657,Mia Scott,Computer Science,2023,Part-time,Dr. Kevin White,Data Structures,3489.35,3.4
+STU-0658,Zoey Hill,Psychology,2020,Full-time,Dr. Amanda Thompson,Social Psychology,2769.12,3.7
+STU-0659,Nathan Wright,English,2021,Full-time,Dr. Susan Hall,Creative Writing,2206.48,3.5
+STU-0660,Owen White,Business,2021,Part-time,Dr. Emily Rodriguez,Principles of Management,2683.87,3.2
+STU-0661,Daniel Jones,Engineering,2020,Full-time,Dr. Patricia Davis,Engineering Design,1912.09,4.0
+STU-0662,Scarlett Scott,English,2021,Full-time,Dr. Patricia Davis,American Literature,1053.74,3.0
+STU-0663,Aurora Martin,Nursing,2020,Full-time,Dr. Kevin White,Health Assessment,2138.19,2.9
+STU-0664,Evelyn Wright,Psychology,2020,Part-time,Dr. Emily Rodriguez,Abnormal Psychology,2847.81,4.0
+STU-0665,Aria Taylor,Psychology,2023,Part-time,Dr. Robert Taylor,Social Psychology,2253.76,3.1
+STU-0666,Lily King,Nursing,2022,Full-time,Dr. Daniel Harris,Pharmacology,4239.09,3.6
+STU-0667,Isabella Sanchez,Biology,2023,Full-time,Dr. Susan Hall,Genetics,2434.72,3.2
+STU-0668,Liam Rodriguez,Engineering,2022,Full-time,Dr. James Williams,Engineering Design,4036.96,3.5
+STU-0669,Isabella Flores,Nursing,2022,Part-time,Dr. Michelle Clark,Fundamentals of Nursing,2778.81,3.0
+STU-0670,Harper Smith,Mathematics,2022,Full-time,Dr. Patricia Davis,Discrete Mathematics,803.62,3.0
+STU-0671,Elizabeth Flores,Mathematics,2021,Full-time,Dr. Emily Rodriguez,Linear Algebra,1628.11,2.8
+STU-0672,Caleb Harris,Business,2023,Full-time,Dr. Emily Rodriguez,Business Ethics,2426.9,4.2
+STU-0673,Victoria Wright,Psychology,2022,Part-time,Dr. Kevin White,Developmental Psychology,1853.15,3.6
+STU-0674,Olivia Torres,Biology,2020,Full-time,Dr. Maria Garcia,Anatomy & Physiology,4086.23,4.2
+STU-0675,Christian Robinson,Biology,2021,Full-time,Dr. Thomas Wilson,Anatomy & Physiology,1816.22,4.3
+STU-0676,Ryan King,English,2023,Full-time,Dr. James Williams,American Literature,1607.65,3.1
+STU-0677,James Jackson,English,2022,Part-time,Dr. Patricia Davis,American Literature,1525.96,4.2
+STU-0678,Chloe Taylor,Nursing,2020,Full-time,Dr. Michael Chen,Health Assessment,2844.18,3.5
+STU-0679,William Lopez,Biology,2023,Part-time,Dr. Thomas Wilson,Genetics,3966.68,3.4
+STU-0680,Lucas White,Nursing,2023,Full-time,Dr. Patricia Davis,Clinical Practicum,4258.55,4.5
+STU-0681,Evelyn Davis,Engineering,2021,Full-time,Dr. Kevin White,Engineering Physics,3698.58,3.9
+STU-0682,Ella Lee,Nursing,2023,Full-time,Dr. Patricia Davis,Pharmacology,4628.58,3.2
+STU-0683,Harper Thompson,English,2021,Part-time,Dr. Daniel Harris,American Literature,1945.57,3.9
+STU-0684,Chloe Thomas,Psychology,2022,Full-time,Dr. Michael Chen,Intro to Psychology,1310.05,2.5
+STU-0685,Ethan Davis,Nursing,2021,Part-time,Dr. Maria Garcia,Health Assessment,4116.69,3.7
+STU-0686,Elizabeth Moore,Computer Science,2020,Part-time,Dr. Maria Garcia,Web Development,2061.57,2.3
+STU-0687,Elizabeth Lopez,Psychology,2021,Full-time,Dr. Christopher Lee,Intro to Psychology,1332.78,2.7
+STU-0688,Amelia Sanchez,Biology,2020,Part-time,Dr. James Williams,Genetics,1719.01,4.0
+STU-0689,Riley Sanchez,Biology,2021,Part-time,Dr. Susan Hall,Ecology,3732.09,1.4
+STU-0690,Aurora Young,Nursing,2023,Full-time,Dr. Thomas Wilson,Clinical Practicum,4133.0,4.9
+STU-0691,William Thomas,Psychology,2022,Full-time,Dr. Robert Taylor,Intro to Psychology,1315.9,4.2
+STU-0692,Sophia Taylor,English,2020,Part-time,Dr. Daniel Harris,Creative Writing,1998.76,2.0
+STU-0693,Emily Sanchez,English,2021,Full-time,Dr. Patricia Davis,Technical Writing,2335.68,5.0
+STU-0694,Abigail Perez,Mathematics,2021,Part-time,Dr. Patricia Davis,Discrete Mathematics,1037.66,5.0
+STU-0695,Sophia Wilson,Biology,2021,Part-time,Dr. Patricia Davis,Genetics,2197.91,3.4
+STU-0696,Amelia Miller,Business,2023,Full-time,Dr. Christopher Lee,Entrepreneurship,2875.65,2.8
+STU-0697,Isabella Davis,Mathematics,2023,Part-time,Dr. Maria Garcia,Linear Algebra,1403.91,4.8
+STU-0698,Andrew Thompson,English,2020,Full-time,Dr. Jennifer Brown,Technical Writing,1749.33,3.2
+STU-0699,Avery Moore,Psychology,2020,Full-time,Dr. Jennifer Brown,Intro to Psychology,978.56,3.6
+STU-0700,Ella Robinson,Engineering,2023,Full-time,Dr. Thomas Wilson,Circuit Analysis,2856.61,4.5
+STU-0701,Victoria Wright,English,2020,Full-time,Dr. Sarah Johnson,American Literature,1978.18,3.4
+STU-0702,Henry Hill,Psychology,2022,Part-time,Dr. Lisa Anderson,Social Psychology,2310.33,3.3
+STU-0703,Harper Wilson,Mathematics,2022,Part-time,Dr. James Williams,Statistics,2593.16,2.5
+STU-0704,Ella White,Biology,2023,Part-time,Dr. Sarah Johnson,Microbiology,4132.36,3.0
+STU-0705,Grace King,English,2020,Full-time,Dr. Michelle Clark,American Literature,2046.37,3.3
+STU-0706,Olivia Torres,Nursing,2021,Full-time,Dr. David Martinez,Fundamentals of Nursing,4014.76,2.5
+STU-0707,Aria Flores,Psychology,2022,Part-time,Dr. Christopher Lee,Social Psychology,869.79,2.6
+STU-0708,Jackson Thompson,Biology,2023,Full-time,Dr. Michelle Clark,Genetics,3104.9,3.5
+STU-0709,Christian Hill,Engineering,2020,Part-time,Dr. Susan Hall,Engineering Physics,1613.09,2.0
+STU-0710,Amelia Brown,Engineering,2023,Part-time,Dr. Daniel Harris,Engineering Physics,3924.2,2.8
+STU-0711,Avery Perez,Business,2021,Part-time,Dr. Daniel Harris,Entrepreneurship,1801.81,5.0
+STU-0712,Elizabeth Gonzalez,Psychology,2022,Part-time,Dr. Kevin White,Abnormal Psychology,2037.34,3.2
+STU-0713,Henry Allen,Mathematics,2023,Full-time,Dr. Sarah Johnson,Linear Algebra,1414.78,3.1
+STU-0714,Lucas Johnson,Business,2023,Part-time,Dr. Patricia Davis,Financial Accounting,2956.25,3.2
+STU-0715,Grace King,Business,2023,Full-time,Dr. Michelle Clark,Financial Accounting,3216.26,3.2
+STU-0716,Jack Gonzalez,Computer Science,2021,Part-time,Dr. Christopher Lee,Algorithms,2316.2,4.0
+STU-0717,Charlotte Moore,English,2023,Full-time,Dr. David Martinez,English Composition,2225.84,3.9
+STU-0718,Aiden Young,Psychology,2021,Part-time,Dr. Robert Taylor,Developmental Psychology,1387.57,3.2
+STU-0719,Grace Hill,Business,2021,Part-time,Dr. Emily Rodriguez,Entrepreneurship,2336.65,3.3
+STU-0720,Dylan Lewis,Computer Science,2021,Full-time,Dr. Amanda Thompson,Web Development,3604.53,4.6
+STU-0721,Zoey Lewis,Mathematics,2022,Full-time,Dr. Amanda Thompson,Linear Algebra,1516.94,2.3
+STU-0722,Christian Thomas,Biology,2022,Part-time,Dr. Michael Chen,Genetics,4362.13,3.5
+STU-0723,Christian Martinez,Nursing,2023,Full-time,Dr. Maria Garcia,Fundamentals of Nursing,2365.64,3.6
+STU-0724,Jack Harris,Nursing,2023,Full-time,Dr. Susan Hall,Clinical Practicum,2054.83,2.9
+STU-0725,Victoria Martin,Psychology,2022,Full-time,Dr. Robert Taylor,Intro to Psychology,2789.1,3.4
+STU-0726,Ava Smith,Business,2020,Full-time,Dr. Michael Chen,Financial Accounting,1171.62,2.8
+STU-0727,Jack Williams,Nursing,2022,Part-time,Dr. James Williams,Pharmacology,4975.67,4.0
+STU-0728,Lily Wilson,English,2021,Full-time,Dr. Patricia Davis,Creative Writing,2402.79,2.4
+STU-0729,Jack Brown,Nursing,2022,Full-time,Dr. David Martinez,Clinical Practicum,2411.06,4.3
+STU-0730,Henry Torres,Nursing,2021,Full-time,Dr. Christopher Lee,Clinical Practicum,3612.75,3.4
+STU-0731,Elizabeth Smith,Nursing,2023,Full-time,Dr. David Martinez,Pharmacology,2554.76,3.1
+STU-0732,Dylan Anderson,Engineering,2020,Full-time,Dr. Patricia Davis,Engineering Physics,2784.47,2.7
+STU-0733,Isabella Anderson,Computer Science,2023,Full-time,Dr. David Martinez,Database Systems,1371.99,4.3
+STU-0734,Zoey White,Business,2021,Full-time,Dr. David Martinez,Entrepreneurship,1559.81,3.0
+STU-0735,Noah Lopez,English,2021,Full-time,Dr. Susan Hall,American Literature,1226.55,2.6
+STU-0736,Chloe Torres,Business,2021,Part-time,Dr. Kevin White,Business Ethics,2096.62,4.3
+STU-0737,Aria Garcia,Engineering,2020,Full-time,Dr. Daniel Harris,Engineering Physics,4432.49,2.8
+STU-0738,Victoria White,Psychology,2022,Full-time,Dr. Patricia Davis,Abnormal Psychology,2577.3,3.4
+STU-0739,Mia Gonzalez,Psychology,2023,Full-time,Dr. Lisa Anderson,Developmental Psychology,2422.3,4.2
+STU-0740,Owen Harris,Psychology,2023,Full-time,Dr. Kevin White,Developmental Psychology,1981.49,3.6
+STU-0741,Sophia Brown,Mathematics,2022,Part-time,Dr. Amanda Thompson,Calculus I,2648.0,4.9
+STU-0742,Mason Martin,Nursing,2023,Full-time,Dr. Michelle Clark,Clinical Practicum,3017.97,2.8
+STU-0743,Avery Martinez,Mathematics,2020,Part-time,Dr. Kevin White,Statistics,2359.58,3.3
+STU-0744,Aria King,Computer Science,2023,Part-time,Dr. Jennifer Brown,Database Systems,3982.6,3.4
+STU-0745,Jackson Williams,Psychology,2021,Full-time,Dr. Emily Rodriguez,Social Psychology,1492.18,4.0
+STU-0746,Ethan Jones,Engineering,2022,Part-time,Dr. Maria Garcia,Thermodynamics,3522.05,4.5
+STU-0747,Ava Thompson,English,2020,Full-time,Dr. Thomas Wilson,Technical Writing,2188.63,3.6
+STU-0748,Zoey Rodriguez,Business,2022,Full-time,Dr. Susan Hall,Principles of Management,3289.52,3.4
+STU-0749,Grace Martin,Nursing,2020,Full-time,Dr. Michelle Clark,Health Assessment,4153.8,2.3
+STU-0750,Zoey Wright,Biology,2021,Full-time,Dr. David Martinez,Anatomy & Physiology,2350.82,3.6
+STU-0751,Andrew Moore,English,2022,Part-time,Dr. Michelle Clark,American Literature,1152.56,3.0
+STU-0752,Harper White,Nursing,2023,Part-time,Dr. Daniel Harris,Pharmacology,2062.27,4.0
+STU-0753,Olivia Young,Mathematics,2020,Part-time,Dr. Lisa Anderson,Statistics,2473.95,3.2
+STU-0754,Grace Nguyen,Mathematics,2022,Full-time,Dr. Christopher Lee,Discrete Mathematics,894.03,3.3
+STU-0755,Charlotte Harris,English,2023,Full-time,Dr. Susan Hall,American Literature,2229.3,2.3
+STU-0756,Isabella Brown,Mathematics,2022,Full-time,Dr. Susan Hall,Linear Algebra,1061.05,2.1
+STU-0757,Benjamin Torres,Psychology,2022,Part-time,Dr. Thomas Wilson,Intro to Psychology,1178.13,5.0
+STU-0758,Owen Hernandez,Computer Science,2022,Full-time,Dr. Daniel Harris,Database Systems,2534.27,3.6
+STU-0759,Riley Williams,Business,2020,Part-time,Dr. Patricia Davis,Principles of Management,2844.7,3.8
+STU-0760,Sebastian Lewis,Computer Science,2023,Full-time,Dr. Michael Chen,Database Systems,1589.21,2.8
+STU-0761,Isabella Williams,Nursing,2021,Full-time,Dr. Lisa Anderson,Pharmacology,3320.21,4.2
+STU-0762,Elizabeth King,Business,2020,Part-time,Dr. Christopher Lee,Business Ethics,2207.13,4.1
+STU-0763,James Rodriguez,Engineering,2020,Full-time,Dr. Michael Chen,Engineering Physics,2136.86,2.9
+STU-0764,Amelia Flores,Business,2020,Full-time,Dr. Robert Taylor,Financial Accounting,1288.9,2.7
+STU-0765,Elizabeth Jones,Computer Science,2021,Part-time,Dr. Thomas Wilson,Algorithms,3541.98,2.9
+STU-0766,Mia King,English,2023,Full-time,Dr. Michelle Clark,English Composition,1504.93,3.5
+STU-0767,Matthew Anderson,Business,2023,Part-time,Dr. Maria Garcia,Business Ethics,1035.95,3.6
+STU-0768,Ryan Davis,Engineering,2023,Full-time,Dr. Emily Rodriguez,Engineering Design,3908.94,3.5
+STU-0769,Ava Sanchez,Engineering,2022,Part-time,Dr. Maria Garcia,Engineering Physics,4442.38,4.5
+STU-0770,Henry Garcia,Engineering,2022,Part-time,Dr. David Martinez,Engineering Design,3317.78,2.9
+STU-0771,Chloe Gonzalez,Computer Science,2022,Full-time,Dr. David Martinez,Data Structures,2610.38,2.6
+STU-0772,Sebastian Jones,Business,2021,Full-time,Dr. David Martinez,Entrepreneurship,3196.04,3.5
+STU-0773,Charlotte Taylor,Biology,2022,Part-time,Dr. Christopher Lee,Microbiology,4357.55,2.1
+STU-0774,Andrew Flores,English,2021,Full-time,Dr. David Martinez,English Composition,2009.07,4.1
+STU-0775,Lily Young,Psychology,2023,Part-time,Dr. Patricia Davis,Developmental Psychology,1780.0,3.6
+STU-0776,Avery Williams,Business,2022,Full-time,Dr. Daniel Harris,Financial Accounting,2480.55,3.2
+STU-0777,Nathan King,Engineering,2022,Full-time,Dr. David Martinez,Thermodynamics,3602.81,3.2
+STU-0778,Nathan Clark,Biology,2020,Part-time,Dr. Thomas Wilson,Microbiology,2082.82,4.2
+STU-0779,Charlotte Allen,Psychology,2021,Part-time,Dr. Lisa Anderson,Developmental Psychology,1783.84,4.2
+STU-0780,Ethan White,Psychology,2023,Full-time,Dr. Susan Hall,Abnormal Psychology,2625.61,3.3
+STU-0781,Evelyn Thomas,Nursing,2020,Part-time,Dr. James Williams,Clinical Practicum,3964.18,4.0
+STU-0782,Nathan Ramirez,Business,2020,Full-time,Dr. Amanda Thompson,Marketing 101,2028.01,4.2
+STU-0783,Scarlett Gonzalez,Computer Science,2023,Full-time,Dr. James Williams,Intro to Programming,3057.42,3.8
+STU-0784,Aria Harris,Business,2020,Part-time,Dr. Maria Garcia,Entrepreneurship,1295.56,3.3
+STU-0785,Caleb Scott,Biology,2021,Part-time,Dr. James Williams,Ecology,2704.49,3.8
+STU-0786,Sofia Nguyen,Psychology,2021,Part-time,Dr. Robert Taylor,Abnormal Psychology,2544.88,2.7
+STU-0787,Sophia Jones,Business,2022,Full-time,Dr. Michael Chen,Marketing 101,1551.27,3.6
+STU-0788,Aria Walker,Computer Science,2020,Full-time,Dr. Patricia Davis,Web Development,1720.69,3.3
+STU-0789,Emily Martinez,Nursing,2022,Full-time,Dr. Daniel Harris,Clinical Practicum,4852.46,3.2
+STU-0790,Aiden Robinson,Business,2020,Full-time,Dr. Maria Garcia,Business Ethics,1524.74,2.1
+STU-0791,Victoria Walker,English,2021,Full-time,Dr. Robert Taylor,American Literature,1021.84,2.7
+STU-0792,Henry Scott,Nursing,2021,Part-time,Dr. Thomas Wilson,Clinical Practicum,4908.85,3.1
+STU-0793,Liam Wilson,Computer Science,2021,Full-time,Dr. David Martinez,Data Structures,3257.18,4.2
+STU-0794,Charlotte Lewis,Biology,2020,Part-time,Dr. Daniel Harris,Microbiology,3598.79,3.7
+STU-0795,James Hill,Psychology,2021,Part-time,Dr. Emily Rodriguez,Developmental Psychology,2676.44,4.3
+STU-0796,Liam Young,Business,2020,Full-time,Dr. Christopher Lee,Financial Accounting,1289.56,4.5
+STU-0797,Charlotte Clark,Computer Science,2022,Part-time,Dr. Kevin White,Intro to Programming,3176.68,3.8
+STU-0798,Zoey Taylor,Nursing,2020,Part-time,Dr. Susan Hall,Clinical Practicum,3511.07,3.6
+STU-0799,Nathan Walker,English,2022,Full-time,Dr. Sarah Johnson,Technical Writing,2158.3,2.7
+STU-0800,Owen White,Computer Science,2020,Full-time,Dr. Thomas Wilson,Web Development,2622.8,5.0
