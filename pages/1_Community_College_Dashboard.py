@@ -12,12 +12,6 @@ from utils.visualizations import (
 )
 from utils.data_generator import generate_dataset
 
-st.set_page_config(
-    page_title="Community College Dashboard",
-    page_icon="\U0001F4CA",
-    layout="wide"
-)
-
 st.title("\U0001F4CA Community College Dashboard")
 
 # Load data

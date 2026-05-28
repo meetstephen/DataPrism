@@ -201,3 +201,24 @@ def create_box_plot(df, x, y, title):
         color_discrete_sequence=COLOR_SEQUENCE
     )
     return _apply_layout(fig, title)
+
+
+def create_line_chart(df, x, y, title, color=None):
+    """
+    Create a line chart.
+
+    Args:
+        df: DataFrame with data.
+        x: Column name for x-axis.
+        y: Column name for y-axis.
+        title: Chart title.
+        color: Optional column for color grouping.
+
+    Returns:
+        plotly.graph_objects.Figure
+    """
+    fig = px.line(
+        df, x=x, y=y, title=title, color=color,
+        color_discrete_sequence=COLOR_SEQUENCE
+    )
+    return _apply_layout(fig, title)

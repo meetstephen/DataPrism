@@ -10,13 +10,8 @@ from utils.visualizations import (
     create_bar_chart,
     create_scatter_plot,
     create_histogram,
-    create_box_plot
-)
-
-st.set_page_config(
-    page_title="Advanced Analytics",
-    page_icon="\U0001F527",
-    layout="wide"
+    create_box_plot,
+    create_line_chart
 )
 
 st.title("\U0001F527 Advanced Analytics")
@@ -153,13 +148,11 @@ with tab2:
                     chart_df = df.groupby([x_axis, color_param])[y_axis].mean().reset_index()
                 else:
                     chart_df = df.groupby(x_axis)[y_axis].mean().reset_index()
-                import plotly.express as px
-                fig = px.line(
-                    chart_df, x=x_axis, y=y_axis,
-                    color=color_param,
-                    title=f"{y_axis} over {x_axis}"
+                fig = create_line_chart(
+                    chart_df, x_axis, y_axis,
+                    f"{y_axis} over {x_axis}",
+                    color=color_param
                 )
-                fig.update_layout(template="plotly_dark", height=400)
 
             elif chart_type == "Box":
                 fig = create_box_plot(df, x_axis, y_axis, f"{y_axis} by {x_axis}")

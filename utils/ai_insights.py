@@ -16,7 +16,7 @@ def generate_insights_openai(df_summary, api_key):
         api_key (str): OpenAI API key.
 
     Returns:
-        str: AI-generated insights about the data.
+        str or None: AI-generated insights about the data, or None on failure.
     """
     try:
         from openai import OpenAI
@@ -46,8 +46,8 @@ def generate_insights_openai(df_summary, api_key):
 
         return response.choices[0].message.content
 
-    except Exception as e:
-        return f"Error generating AI insights: {str(e)}. Falling back to rule-based analysis."
+    except Exception:
+        return None
 
 
 def generate_insights_fallback(df):
@@ -197,6 +197,74 @@ def generate_summary_stats(df):
     }
 
     return stats
+
+
+def format_summary_as_markdown(df, stats):
+    """
+    Format summary statistics as clean markdown text suitable for LLM prompts.
+
+    Args:
+        df (pd.DataFrame): The dataset being summarized.
+        stats (dict): Summary statistics dict from generate_summary_stats.
+
+    Returns:
+        str: Markdown-formatted summary text.
+    """
+    lines = []
+    lines.append(f"## Dataset Overview")
+    lines.append(f"- Rows: {stats['shape']['rows']}")
+    lines.append(f"- Columns: {stats['shape']['columns']}")
+    lines.append(f"- Column names: {', '.join(df.columns.tolist())}")
+    lines.append("")
+
+    # Numeric summary
+    numeric_summary = stats.get("numeric_summary", {})
+    if numeric_summary:
+        lines.append("## Numeric Columns")
+        lines.append("")
+        # Build a markdown table
+        cols = list(numeric_summary.keys())
+        metrics = ["count", "mean", "std", "min", "25%", "50%", "75%", "max"]
+        header = "| Metric | " + " | ".join(cols) + " |"
+        separator = "|---| " + " | ".join(["---"] * len(cols)) + " |"
+        lines.append(header)
+        lines.append(separator)
+        for metric in metrics:
+            row_values = []
+            for col in cols:
+                val = numeric_summary[col].get(metric, "N/A")
+                row_values.append(str(val))
+            lines.append(f"| {metric} | " + " | ".join(row_values) + " |")
+        lines.append("")
+
+    # Categorical summary
+    cat_summary = stats.get("categorical_summary", {})
+    if cat_summary:
+        lines.append("## Categorical Columns")
+        lines.append("")
+        lines.append("| Column | Unique Values | Most Common | Frequency |")
+        lines.append("|---|---|---|---|")
+        for col, info in cat_summary.items():
+            lines.append(
+                f"| {col} | {info['unique_count']} | "
+                f"{info['top_value']} | {info['top_frequency']} |"
+            )
+        lines.append("")
+
+    # Missing values
+    missing = stats.get("missing_values", {})
+    if missing:
+        lines.append("## Missing Values")
+        lines.append("")
+        lines.append("| Column | Count | Percentage |")
+        lines.append("|---|---|---|")
+        for col, info in missing.items():
+            lines.append(f"| {col} | {info['count']} | {info['percentage']}% |")
+    else:
+        lines.append("## Missing Values")
+        lines.append("No missing values detected.")
+
+    return "\n".join(lines)
 
 
 def detect_anomalies(df):

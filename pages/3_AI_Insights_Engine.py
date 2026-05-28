@@ -9,16 +9,11 @@ from utils.ai_insights import (
     generate_insights_openai,
     generate_insights_fallback,
     generate_summary_stats,
+    format_summary_as_markdown,
     detect_anomalies,
     detect_trends,
     generate_recommendations,
     generate_data_quality_report
-)
-
-st.set_page_config(
-    page_title="AI Insights Engine",
-    page_icon="\U0001F916",
-    layout="wide"
 )
 
 st.title("\U0001F916 AI Insights Engine")
@@ -77,15 +72,36 @@ if df is not None:
 
                 # Prepare summary for AI
                 summary_stats = generate_summary_stats(df)
-                summary_text = f"""
-Dataset Shape: {summary_stats['shape']['rows']} rows, {summary_stats['shape']['columns']} columns
-Columns: {', '.join(df.columns.tolist())}
-Numeric Summary: {summary_stats.get('numeric_summary', 'N/A')}
-Categorical Summary: {summary_stats.get('categorical_summary', 'N/A')}
-Missing Values: {summary_stats.get('missing_values', 'None')}
-"""
+                summary_text = format_summary_as_markdown(df, summary_stats)
                 ai_result = generate_insights_openai(summary_text, api_key)
-                st.markdown(ai_result)
+
+                if ai_result is not None:
+                    st.markdown(ai_result)
+                else:
+                    st.warning(
+                        "AI analysis is temporarily unavailable. "
+                        "Falling back to rule-based analysis."
+                    )
+                    insights = generate_insights_fallback(df)
+
+                    st.markdown("#### Key Findings")
+                    for finding in insights.get("key_findings", []):
+                        st.markdown(f"- {finding}")
+
+                    if insights.get("patterns"):
+                        st.markdown("#### Patterns Detected")
+                        for pattern in insights["patterns"]:
+                            st.markdown(f"- {pattern}")
+
+                    if insights.get("concerns"):
+                        st.markdown("#### Concerns")
+                        for concern in insights["concerns"]:
+                            st.markdown(f"- \u26A0\uFE0F {concern}")
+
+                    if insights.get("recommendations"):
+                        st.markdown("#### Recommendations")
+                        for rec in insights["recommendations"]:
+                            st.markdown(f"- {rec}")
             else:
                 st.markdown("### Rule-Based Insights")
                 st.caption("Using automated rule-based analysis (no API key provided)")
