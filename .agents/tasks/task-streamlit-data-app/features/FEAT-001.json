@@ -1,0 +1,40 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Create the complete Streamlit data analysis application with all pages, utilities, configuration, and synthetic dataset. This is a greenfield build - no existing code to modify.",
+  "status": "completed",
+  "steps": [
+    "Create requirements.txt with: streamlit, pandas, plotly, scikit-learn, openpyxl, openai, numpy, scipy",
+    "Create .streamlit/config.toml with professional dark theme configuration",
+    "Create utils/__init__.py as empty module init",
+    "Create utils/data_generator.py that generates a realistic synthetic dataset of ~800 rows with fields: Student_ID, Student_Name, Major (8 majors), Year (2020-2023), Student_Type (Full-time/Part-time), Professor (15+ professors), Course (20+ courses), Course_Cost ($500-$5000), Evaluation_Score (1.0-5.0). Use numpy random with a seed for reproducibility. Include a generate_dataset() function and a save_dataset() function.",
+    "Create utils/visualizations.py with reusable Plotly chart functions: create_bar_chart, create_grouped_bar_chart, create_pie_chart, create_horizontal_bar_chart, create_scatter_plot, create_histogram, create_heatmap, create_box_plot. Each should accept a dataframe and relevant parameters, return a plotly figure with consistent professional styling.",
+    "Create utils/ai_insights.py with: (1) An OpenAI-powered analysis function that takes a dataframe summary and generates natural language insights using the chat completions API. (2) A rule-based fallback function that generates insights by analyzing numeric columns (mean, median, std, outliers), categorical columns (distribution, top values), correlations, and trends. (3) Functions for: generate_summary_stats, detect_anomalies (using IQR method), detect_trends (year-over-year changes), generate_recommendations, generate_data_quality_report. The module should gracefully handle missing OpenAI API key by falling back to rule-based analysis.",
+    "Create data/ directory and generate the synthetic CSV dataset by running the data_generator",
+    "Create app.py as the main entry point with: page config (wide layout, page title, icon), sidebar with app title/description/navigation hints, and a welcome/home page with app overview and feature descriptions",
+    "Create pages/1_Community_College_Dashboard.py with: KPI cards (total students, unique majors, avg evaluation score, avg course cost, total professors, total courses), interactive sidebar filters (year, major, professor, course), and 6 main visualizations: (1) Student Majors by Year grouped bar chart, (2) Proportion of Student Types pie/donut chart, (3) Top Professors by Average Evaluations horizontal bar, (4) Top Courses by Average Evaluations horizontal bar, (5) Professors by Average Course Cost bar chart, (6) Courses by Average Course Cost bar chart. All charts should update based on filters.",
+    "Create pages/2_Upload_and_Analyze.py with: file upload widget (CSV/Excel), automatic column type detection (numeric/categorical/datetime), data preview with head/tail/info, summary statistics table, automatic chart suggestions based on detected column types, correlation heatmap for numeric columns, distribution plots for each numeric column, missing data analysis with visualization, and a data quality report section.",
+    "Create pages/3_AI_Insights_Engine.py with: option to use uploaded data or built-in community college data, OpenAI API key input (via sidebar text_input with password type), natural language insights generation, key findings summary with bullet points, trend detection results, anomaly detection results with flagged rows, automated recommendations section. Should work with rule-based fallback when no API key is provided.",
+    "Create pages/4_Advanced_Analytics.py with: pivot table builder (select rows, columns, values, aggregation function), custom chart builder (user picks X axis, Y axis, color/group column, chart type from bar/scatter/line/box/histogram), statistical summary section with descriptive stats, groupby analysis tool (select groupby column and aggregation), correlation analysis with p-values where applicable.",
+    "Update README.md with comprehensive documentation: app description, features list, setup instructions, deployment guide for Streamlit Community Cloud, screenshots placeholder descriptions, technology stack, and usage guide."
+  ],
+  "acceptance_criteria": [
+    "All Python files pass syntax validation via py_compile",
+    "requirements.txt contains all necessary dependencies",
+    ".streamlit/config.toml exists with valid theme configuration",
+    "utils/data_generator.py successfully generates a CSV with ~800 rows and all required columns",
+    "The app.py file imports successfully without errors",
+    "All page files import successfully without errors",
+    "The AI insights module gracefully handles missing OpenAI API key",
+    "All visualization functions return valid Plotly figure objects"
+  ],
+  "verification": [
+    "Run 'pip install -r requirements.txt' and confirm all packages install successfully",
+    "Run 'python -m py_compile' on every .py file in the project to verify no syntax errors",
+    "Run 'python -c \"from utils.data_generator import generate_dataset; df = generate_dataset(); print(df.shape, df.columns.tolist())\"' to verify dataset generation",
+    "Run 'python -c \"import app\"' to verify the main app file has no import errors",
+    "Run 'python -c \"from utils.ai_insights import generate_insights_fallback; print(generate_insights_fallback.__doc__)\"' to verify AI module loads"
+  ],
+  "blocked_reason": null,
+  "findings": "All files created and verified. py_compile passes on all Python files. import app succeeds (Streamlit warnings about ScriptRunContext are expected when running outside streamlit server). All visualization functions return valid Plotly Figure objects. AI insights fallback works correctly. Dataset generates 800 rows with all 9 required columns. Used Python 3.12.13 via pyenv."
+}
