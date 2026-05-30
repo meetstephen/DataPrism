@@ -38,6 +38,7 @@ def drop_missing_rows(df, columns):
 
 
 def fill_missing(df, column, strategy="mean"):
+    df = df.copy()
     count = int(df[column].isna().sum())
     if strategy == "mean":
         df[column] = df[column].fillna(df[column].mean())

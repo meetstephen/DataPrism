@@ -149,13 +149,19 @@ if user_input:
                         code_blocks = response_text.split("```python")
                         for block in code_blocks[1:]:
                             code = block.split("```")[0].strip()
+                            # Basic safety check - reject dangerous patterns
+                            dangerous_patterns = ['import os', 'import subprocess', 'import sys', '__import__',
+                                                  'eval(', 'exec(', 'open(', 'import shutil', 'import socket']
+                            code_lower = code.lower()
+                            if any(pattern in code_lower for pattern in dangerous_patterns):
+                                continue  # Skip this code block
                             try:
                                 local_vars = {"df": chat_df, "pd": pd, "np": np}
                                 import plotly.express as px
                                 import plotly.graph_objects as go
                                 local_vars["px"] = px
                                 local_vars["go"] = go
-                                exec(code, {}, local_vars)
+                                exec(code, {"__builtins__": {}}, local_vars)
                                 if "fig" in local_vars:
                                     fig = local_vars["fig"]
                                     break

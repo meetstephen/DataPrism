@@ -306,7 +306,7 @@ if uploaded_file:
                 with box_cols[i % 2]:
                     try:
                         fig = px.box(df, y=col, title=f"Box Plot: {col}",
-                                     color_discrete_sequence=["#6C63FF"])
+                                     color_discrete_sequence=["#00D4FF"])
                         fig.update_layout(template="plotly_dark", height=350)
                         st.plotly_chart(fig, use_container_width=True)
                     except Exception:

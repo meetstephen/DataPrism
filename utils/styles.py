@@ -2,6 +2,7 @@
 
 GLOBAL_CSS = """
 <style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');
 #MainMenu, footer, .stDeployButton { visibility: hidden; display: none; }
 html, body, [class*="css"] { font-family: 'DM Sans', 'Segoe UI', sans-serif; }
 h1, h2, h3 { letter-spacing: -0.02em; }
