@@ -4,6 +4,8 @@ Upload and Analyze - Universal dataset analysis tool.
 
 import streamlit as st
 st.set_page_config(page_title="Upload & Analyze", page_icon="\U0001F4C1", layout="wide")
+from utils.styles import inject_global_css
+inject_global_css()
 
 import pandas as pd
 import numpy as np

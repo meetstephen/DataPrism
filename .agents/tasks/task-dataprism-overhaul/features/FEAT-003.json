@@ -1,0 +1,25 @@
+{
+  "id": "FEAT-003",
+  "type": "chore",
+  "description": "Update requirements.txt with new dependencies, update report_generator.py CSS colors to match DataPrism theme, and completely rewrite README.md for DataPrism branding.",
+  "status": "pending",
+  "steps": [
+    "Update requirements.txt: Append 'statsmodels>=0.14.0' and 'chardet>=5.2.0' to the existing file. Do NOT remove any existing dependencies.",
+    "Update utils/report_generator.py: In the get_report_css() function, replace all occurrences of #6C63FF with #00D4FF, replace #9D97FF with #4DD8FF (lighter cyan), replace #B8B3FF with #80E5FF (even lighter cyan), replace #D4D1FF with #B3F0FF, replace #1A1F2E with #1A2740, replace #0E1117 with #0F1C2E. Also update the footer text from 'Community College Data Analyzer' to 'DataPrism'. Update the histogram color_discrete_sequence from ['#6C63FF'] to ['#00D4FF'].",
+    "Rewrite README.md completely as DataPrism branding. Include: (1) Title: '# DataPrism' with tagline 'Raw Data. Refined Intelligence.', (2) Brief description of the enterprise data analysis platform, (3) Feature table listing all 9 pages with descriptions (Dashboard, Upload & Analyze, AI Insights Engine, Advanced Analytics, Online Data Explorer, Report Generator, Expert Analyst, Data Cleaning, Chat With Data), (4) Tech stack section, (5) Setup instructions with pip install and streamlit run app.py, (6) Deployment guide for Streamlit Cloud, (7) Secrets configuration section (GEMINI_API_KEY), (8) Project structure tree showing all files including new ones, (9) Screenshots section with placeholder text, (10) Enterprise features highlight (premium dark theme, data cleaning with undo/redo, natural language chat, Power BI support, AI-powered insights, etc.), (11) License section. Write it professionally to match enterprise/premium positioning."
+  ],
+  "acceptance_criteria": [
+    "requirements.txt contains statsmodels>=0.14.0 and chardet>=5.2.0 in addition to all existing deps",
+    "utils/report_generator.py CSS uses #00D4FF instead of #6C63FF, #1A2740 instead of #1A1F2E",
+    "README.md is rewritten with DataPrism branding and all 9 pages documented",
+    "All modified files pass py_compile (for .py files)"
+  ],
+  "verification": [
+    "python -m py_compile utils/report_generator.py",
+    "python -c \"from utils.report_generator import get_report_css; css = get_report_css(); assert '#00D4FF' in css; assert '#6C63FF' not in css; assert '#1A2740' in css\"",
+    "grep -q 'statsmodels' requirements.txt && grep -q 'chardet' requirements.txt",
+    "grep -q 'DataPrism' README.md"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

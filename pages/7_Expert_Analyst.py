@@ -1,5 +1,7 @@
 import streamlit as st
 st.set_page_config(page_title="Expert Data Analyst", page_icon="\U0001F393", layout="wide")
+from utils.styles import inject_global_css
+inject_global_css()
 
 import pandas as pd
 import numpy as np

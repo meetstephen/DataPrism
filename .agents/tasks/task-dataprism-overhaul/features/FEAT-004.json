@@ -1,0 +1,24 @@
+{
+  "id": "FEAT-004",
+  "type": "chore",
+  "description": "Create the new branch feat/dataprism-overhaul from the current feat/enterprise-upgrade branch, commit all changes, and push to remote for PR creation.",
+  "status": "pending",
+  "steps": [
+    "Create and checkout a new branch 'feat/dataprism-overhaul' from the current HEAD (which is feat/enterprise-upgrade).",
+    "Stage all new and modified files: utils/styles.py, utils/data_engine.py, pages/8_Data_Cleaning.py, pages/9_Chat_With_Data.py, app.py, .streamlit/config.toml, requirements.txt, README.md, utils/report_generator.py, pages/1_Community_College_Dashboard.py, pages/2_Upload_and_Analyze.py, pages/3_AI_Insights_Engine.py, pages/4_Advanced_Analytics.py, pages/5_Online_Data_Explorer.py, pages/6_Report_Generator.py, pages/7_Expert_Analyst.py. Do NOT stage __pycache__ or .agents/ directories.",
+    "Commit with message: 'feat: DataPrism enterprise overhaul - premium theme, data cleaning engine, AI chat, rebranding'",
+    "Push the branch to origin: git push origin feat/dataprism-overhaul"
+  ],
+  "acceptance_criteria": [
+    "Branch feat/dataprism-overhaul exists and is pushed to origin",
+    "All implementation files are committed",
+    "No __pycache__ or .agents/ files are included in the commit"
+  ],
+  "verification": [
+    "git log --oneline -1 shows the commit message",
+    "git branch shows feat/dataprism-overhaul as current branch",
+    "git status shows clean working tree (except untracked __pycache__ and .agents/)"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

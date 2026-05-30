@@ -10,6 +10,7 @@ import pandas as pd
 import os
 
 from utils.data_generator import generate_dataset, save_dataset
+from utils.styles import inject_global_css
 
 # Page configuration
 st.set_page_config(
@@ -18,6 +19,7 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+inject_global_css()
 
 # Load dataset into session state
 if "df" not in st.session_state:

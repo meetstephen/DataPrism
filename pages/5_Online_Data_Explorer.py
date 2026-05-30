@@ -1,6 +1,8 @@
 import streamlit as st
 
 st.set_page_config(page_title="Online Data Explorer", page_icon="\U0001F310", layout="wide")
+from utils.styles import inject_global_css
+inject_global_css()
 
 import pandas as pd
 from utils.online_data import (
