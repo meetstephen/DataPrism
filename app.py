@@ -106,6 +106,20 @@ with col2:
         """
     )
 
+# Additional feature cards
+col3, col4 = st.columns(2)
+with col3:
+    st.markdown(
+        """
+        #### \U0001F310 Online Data Explorer
+        Fetch datasets from anywhere on the web:
+        - Load CSV, JSON, or Excel from any URL
+        - Browse curated public dataset catalog
+        - Scrape tables from web pages
+        - Preview and use remote data instantly
+        """
+    )
+
 st.markdown("---")
 
 # Dataset overview
