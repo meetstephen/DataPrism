@@ -39,6 +39,14 @@ if "generated_report" not in st.session_state:
     st.session_state.generated_report = None
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
+if "doc_chat_history" not in st.session_state:
+    st.session_state.doc_chat_history = []
+if "doc_content" not in st.session_state:
+    st.session_state.doc_content = None
+if "doc_name" not in st.session_state:
+    st.session_state.doc_name = None
+if "gemini_api_key" not in st.session_state:
+    st.session_state.gemini_api_key = None
 
 # Initialize cleaning state
 init_cleaning_state()
@@ -63,6 +71,7 @@ with st.sidebar:
         - \U0001F393 **Expert Analyst** - Deep file analysis
         - \U0001f9f9 **Data Cleaning** - Transform & prepare
         - \U0001F4AC **Chat With Data** - Natural language queries
+        - \U0001F4C4 **Document Chat** - Chat with any document
         """
     )
     st.markdown("---")
@@ -194,6 +203,19 @@ with col7:
         - Auto-generated Plotly visualizations
         - Contextual follow-up questions
         - Powered by Gemini 2.5 Flash
+        """
+    )
+
+with col8:
+    st.markdown(
+        """
+        #### \U0001F4C4 Document Chat
+        Chat with any uploaded document:
+        - Upload PDF, Word, Excel, CSV, JSON, or text files
+        - Get AI-powered summaries and key insights
+        - Ask questions in natural language
+        - Extract data and patterns from documents
+        - Export conversation history
         """
     )
 

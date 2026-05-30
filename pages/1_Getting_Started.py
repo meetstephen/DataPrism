@@ -20,6 +20,7 @@ You have three ways to get data into DataPrism:
 | **Upload a file** | Upload & Analyze | CSV or Excel files up to 200MB |
 | **Fetch from web** | Online Data Explorer | Load from any URL or browse public datasets |
 | **Use built-in data** | Community College Dashboard | Pre-loaded sample dataset for exploration |
+| **Chat with documents** | Document Chat | Upload PDF, Word, Excel, or text and have a conversation about it |
 """)
 
 st.markdown("### Step 2: Explore & Clean")
@@ -36,6 +37,7 @@ st.markdown("""
 - **AI Insights Engine** → Get Gemini-powered findings, risks, and recommendations
 - **Chat With Data** → Ask questions in natural language, get charts back
 - **Report Generator** → Export professional HTML reports with AI executive summaries
+- **Document Chat** → Upload any document (PDF, Word, Excel, CSV) and chat with it for insights
 """)
 
 st.markdown("---")
@@ -48,7 +50,7 @@ DataPrism works without an API key using rule-based analysis. For AI-powered fea
 2. Enter it in the sidebar on any AI-powered page
 3. Or add it to Streamlit secrets for automatic loading
 
-**AI-powered pages:** AI Insights Engine, Chat With Data, Report Generator, Expert Analyst
+**AI-powered pages:** AI Insights Engine, Chat With Data, Document Chat, Report Generator, Expert Analyst
 """)
 
 st.markdown("---")

@@ -20,6 +20,7 @@ DataPrism is an enterprise-grade data intelligence platform built with Streamlit
 | 8 | **Expert Data Analyst** | Upload any file (CSV, Excel, Power BI exports) for deep automated analysis with AI insights |
 | 9 | **Data Cleaning Engine** | Comprehensive data cleaning with undo/redo, missing value handling, outlier removal, and audit logging |
 | 10 | **Chat With Your Data** | Natural language AI chat interface - ask questions about your data and get answers with auto-generated charts |
+| 11 | **Document Chat** | Upload any document (PDF, Word, Excel, CSV, JSON, text) and chat with it using AI for insights and analysis |
 
 ---
 
@@ -33,7 +34,7 @@ DataPrism is an enterprise-grade data intelligence platform built with Streamlit
 | **Machine Learning** | scikit-learn |
 | **AI Integration** | Google Gemini 2.5 Flash API |
 | **Web Scraping** | BeautifulSoup4, requests, lxml |
-| **File Support** | openpyxl (Excel), CSV, JSON, Power BI exports |
+| **File Support** | openpyxl (Excel), PyMuPDF (PDF), python-docx (Word), CSV, JSON, Power BI exports |
 | **Encoding Detection** | chardet |
 
 ---
@@ -122,7 +123,8 @@ community-college-data-analysis/
 │   ├── 7_Report_Generator.py                 # Professional report generation
 │   ├── 8_Expert_Analyst.py                   # Expert analysis with Power BI support
 │   ├── 9_Data_Cleaning.py                    # Data cleaning engine with undo/redo
-│   └── 10_Chat_With_Data.py                  # Natural language data chat
+│   ├── 10_Chat_With_Data.py                  # Natural language data chat
+│   └── 11_Document_Chat.py                   # Document chat interface
 ├── utils/
 │   ├── __init__.py                           # Module init
 │   ├── styles.py                             # Global CSS & premium theme system
@@ -189,6 +191,7 @@ DataPrism pages are interconnected. Data loaded on one page is automatically ava
 - **Premium Dark Theme** - Custom enterprise styling with gradient buttons, styled metrics, and polished UI
 - **Data Cleaning with Undo/Redo** - Non-destructive data transformations with full audit trail
 - **Natural Language Chat** - Ask questions about your data in plain English, get answers with charts
+- **Document Chat** - Upload any document (PDF, Word, Excel, CSV) and chat with it for AI-powered insights
 - **Power BI Integration** - Upload Power BI Desktop exports for instant analysis
 - **AI-Powered Insights** - Structured executive reports from Google Gemini 2.5 Flash
 - **Multiple Data Sources** - Built-in data, file upload, URL fetch, web scraping
