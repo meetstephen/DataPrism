@@ -17,27 +17,75 @@ if "chat_history" not in st.session_state:
 
 # --- Data Source Selection ---
 st.markdown("---")
-source_options = []
-if "uploaded_df" in st.session_state and st.session_state.uploaded_df is not None:
-    source_options.append("Uploaded Data")
-if "df" in st.session_state and st.session_state.df is not None:
-    source_options.append("Built-in Dataset")
-if "online_df" in st.session_state and st.session_state.online_df is not None:
-    source_options.append("Online Data")
+st.markdown("### Load Data")
 
-if not source_options:
-    st.warning("No data available. Please upload a dataset or load data from the home page.")
+source_tab1, source_tab2 = st.tabs(["📁 Upload New File", "📂 Use Existing Data"])
+
+with source_tab1:
+    chat_upload = st.file_uploader(
+        "Upload a CSV or Excel file to chat with",
+        type=["csv", "xlsx", "xls"],
+        key="chat_file_uploader",
+        help="Upload a structured data file (CSV or Excel) and ask questions about it."
+    )
+    if chat_upload is not None:
+        try:
+            if chat_upload.name.endswith(".csv"):
+                new_df = pd.read_csv(chat_upload)
+            else:
+                new_df = pd.read_excel(chat_upload)
+            if new_df.empty or len(new_df.columns) < 1:
+                st.error("The uploaded file is empty or has no columns.")
+            else:
+                st.session_state.uploaded_df = new_df
+                st.session_state["_chat_df"] = new_df
+                save_session_state()
+                st.success(f"✅ Loaded **{chat_upload.name}** ({len(new_df):,} rows x {len(new_df.columns)} columns)")
+        except Exception as e:
+            st.error(f"Error reading file: {str(e)}")
+
+with source_tab2:
+    source_options = []
+    if "uploaded_df" in st.session_state and st.session_state.uploaded_df is not None:
+        source_options.append("Uploaded Data")
+    if "df" in st.session_state and st.session_state.df is not None:
+        source_options.append("Built-in Dataset")
+    if "online_df" in st.session_state and st.session_state.online_df is not None:
+        source_options.append("Online Data")
+    if "working_df" in st.session_state and st.session_state.working_df is not None:
+        source_options.append("Cleaned Data")
+
+    if not source_options:
+        st.info("No existing data loaded. Upload a file above, or load data from the Online Explorer or Home page.")
+    else:
+        selected_source = st.selectbox("Select data source for chat:", source_options, key="chat_data_source")
+
+        if st.button("Use This Dataset", type="primary", key="load_existing_for_chat"):
+            if selected_source == "Uploaded Data":
+                st.session_state["_chat_df"] = st.session_state.uploaded_df
+            elif selected_source == "Online Data":
+                st.session_state["_chat_df"] = st.session_state.online_df
+            elif selected_source == "Cleaned Data":
+                st.session_state["_chat_df"] = st.session_state.working_df
+            else:
+                st.session_state["_chat_df"] = st.session_state.df
+            st.success(f"✅ Using '{selected_source}' for chat.")
+            st.rerun()
+
+# Determine active chat dataframe
+chat_df = st.session_state.get("_chat_df")
+if chat_df is None:
+    # Fallback: try to find any available data
+    if st.session_state.get("uploaded_df") is not None:
+        chat_df = st.session_state.uploaded_df
+    elif st.session_state.get("df") is not None:
+        chat_df = st.session_state.df
+    elif st.session_state.get("online_df") is not None:
+        chat_df = st.session_state.online_df
+
+if chat_df is None:
+    st.info("👆 Upload a file or select existing data above to start chatting.")
     st.stop()
-
-selected_source = st.selectbox("Select data source for chat:", source_options, key="chat_data_source")
-
-# Load the selected dataframe
-if selected_source == "Uploaded Data":
-    chat_df = st.session_state.uploaded_df
-elif selected_source == "Online Data":
-    chat_df = st.session_state.online_df
-else:
-    chat_df = st.session_state.df
 
 # Show data preview
 with st.expander("Preview Data", expanded=False):

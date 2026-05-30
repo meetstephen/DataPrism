@@ -49,9 +49,36 @@ with st.sidebar:
 
 # Data source selector
 st.markdown("### Select Data Source")
-data_source_options = ["Built-in Community College Data", "Uploaded Data"]
+
+# Quick upload option
+with st.expander("📁 Upload a new file for analysis", expanded=False):
+    ai_upload = st.file_uploader(
+        "Upload CSV or Excel",
+        type=["csv", "xlsx", "xls"],
+        key="ai_insights_file_uploader",
+        help="Upload a fresh dataset directly here for AI analysis."
+    )
+    if ai_upload is not None:
+        try:
+            if ai_upload.name.endswith(".csv"):
+                new_df = pd.read_csv(ai_upload)
+            else:
+                new_df = pd.read_excel(ai_upload)
+            if not new_df.empty and len(new_df.columns) >= 1:
+                st.session_state.uploaded_df = new_df
+                st.success(f"✅ Loaded **{ai_upload.name}** ({len(new_df):,} rows x {len(new_df.columns)} columns)")
+            else:
+                st.error("The uploaded file is empty or has no columns.")
+        except Exception as e:
+            st.error(f"Error reading file: {str(e)}")
+
+data_source_options = ["Built-in Community College Data"]
+if st.session_state.get("uploaded_df") is not None:
+    data_source_options.append("Uploaded Data")
 if "online_df" in st.session_state and st.session_state.online_df is not None:
     data_source_options.append("Online Data")
+if st.session_state.get("working_df") is not None:
+    data_source_options.append("Cleaned Data")
 data_source = st.radio(
     "Choose data to analyze:",
     data_source_options,
@@ -72,12 +99,19 @@ elif data_source == "Online Data":
     else:
         st.warning("No online data available. Go to 'Online Data Explorer' to fetch data.")
         st.stop()
+elif data_source == "Cleaned Data":
+    if st.session_state.get("working_df") is not None:
+        df = st.session_state.working_df.copy()
+        st.info(f"Using cleaned dataset: {len(df)} rows, {len(df.columns)} columns")
+    else:
+        st.warning("No cleaned data available. Go to 'Data Cleaning' to clean a dataset.")
+        st.stop()
 else:
-    if "uploaded_df" in st.session_state:
+    if st.session_state.get("uploaded_df") is not None:
         df = st.session_state.uploaded_df.copy()
         st.info(f"Using uploaded dataset: {len(df)} rows, {len(df.columns)} columns")
     else:
-        st.warning("No data has been uploaded yet. Go to 'Upload & Analyze' to upload a file.")
+        st.warning("No data has been uploaded yet. Upload a file above or go to 'Upload & Analyze'.")
         st.stop()
 
 if df is not None:
