@@ -6,6 +6,7 @@ inject_global_css()
 
 import pandas as pd
 import numpy as np
+from utils.persistence import save_session_state
 
 st.title("\U0001f4ac Chat With Your Data")
 st.markdown("Ask questions about your data in natural language and get AI-powered answers with optional visualizations.")
@@ -178,10 +179,12 @@ if user_input:
                     if fig:
                         history_entry["figure"] = fig
                     st.session_state.chat_history.append(history_entry)
+                    save_session_state()
                 else:
                     fallback_msg = "I was unable to generate a response. Please try rephrasing your question."
                     st.warning(fallback_msg)
                     st.session_state.chat_history.append({"role": "assistant", "content": fallback_msg})
+                    save_session_state()
 
             except Exception as e:
                 import logging
@@ -192,3 +195,4 @@ if user_input:
                 )
                 st.warning(fallback_msg)
                 st.session_state.chat_history.append({"role": "assistant", "content": fallback_msg})
+                save_session_state()

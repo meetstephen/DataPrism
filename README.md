@@ -129,6 +129,7 @@ community-college-data-analysis/
 │   ├── __init__.py                           # Module init
 │   ├── styles.py                             # Global CSS & premium theme system
 │   ├── data_engine.py                        # Data cleaning engine with audit log
+│   ├── persistence.py                        # Session persistence (save/restore to disk)
 │   ├── data_generator.py                     # Synthetic data generation
 │   ├── visualizations.py                     # Reusable Plotly charts
 │   ├── ai_insights.py                        # AI and rule-based analysis engine
@@ -188,6 +189,7 @@ DataPrism pages are interconnected. Data loaded on one page is automatically ava
 
 ## Enterprise Features
 
+- **Session Persistence** - Your work survives page refreshes and app reboots. Data, chat history, and cleaning logs are automatically saved.
 - **Premium Dark Theme** - Custom enterprise styling with gradient buttons, styled metrics, and polished UI
 - **Data Cleaning with Undo/Redo** - Non-destructive data transformations with full audit trail
 - **Natural Language Chat** - Ask questions about your data in plain English, get answers with charts

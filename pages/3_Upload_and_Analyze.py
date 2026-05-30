@@ -62,6 +62,8 @@ if uploaded_file is not None:
 
             # Store in session state for use in other pages
             st.session_state.uploaded_df = df
+            from utils.persistence import save_session_state
+            save_session_state()
 
             st.success(f"File loaded successfully: {uploaded_file.name}")
 

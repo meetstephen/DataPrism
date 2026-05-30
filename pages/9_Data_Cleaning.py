@@ -16,6 +16,7 @@ from utils.data_engine import (
     drop_columns,
     rename_columns,
 )
+from utils.persistence import save_session_state
 
 # Ensure cleaning state is initialized
 init_cleaning_state()
@@ -144,6 +145,7 @@ with tab_missing:
                 fill_col,
                 fill_strategy
             )
+            save_session_state()
             st.success(f"Filled {rows_affected} missing values in '{fill_col}' using {fill_strategy}.")
             st.rerun()
 
@@ -159,6 +161,7 @@ with tab_missing:
                 drop_missing_rows,
                 drop_cols
             )
+            save_session_state()
             st.success(f"Removed {rows_affected} rows with missing values.")
             st.rerun()
 
@@ -186,6 +189,7 @@ with tab_duplicates:
                 remove_duplicates,
                 keep_strategy
             )
+            save_session_state()
             st.success(f"Removed {rows_affected} duplicate rows.")
             st.rerun()
     else:
@@ -244,6 +248,7 @@ with tab_outliers:
                         outlier_col,
                         multiplier
                     )
+                    save_session_state()
                     st.success(f"Removed {rows_affected} outlier rows from '{outlier_col}'.")
                     st.rerun()
             else:
@@ -263,6 +268,7 @@ with tab_columns:
             drop_columns,
             cols_to_drop
         )
+        save_session_state()
         st.success(f"Dropped {len(cols_to_drop)} column(s).")
         st.rerun()
 
@@ -285,6 +291,7 @@ with tab_columns:
                 rename_columns,
                 {col_to_rename: new_name}
             )
+            save_session_state()
             st.success(f"Renamed '{col_to_rename}' to '{new_name}'.")
             st.rerun()
 

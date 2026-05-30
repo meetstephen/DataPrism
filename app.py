@@ -12,6 +12,7 @@ import os
 from utils.data_generator import generate_dataset, save_dataset
 from utils.styles import inject_global_css
 from utils.data_engine import init_cleaning_state
+from utils.persistence import restore_session_state, save_session_state, get_last_saved_time, clear_persisted_session
 
 # Page configuration
 st.set_page_config(
@@ -51,6 +52,13 @@ if "gemini_api_key" not in st.session_state:
 # Initialize cleaning state
 init_cleaning_state()
 
+# Restore persisted session on first load
+if "session_restored" not in st.session_state:
+    restored = restore_session_state()
+    st.session_state.session_restored = True
+    if restored:
+        st.toast("\u2705 Previous session restored!", icon="\U0001F4BE")
+
 # Sidebar
 with st.sidebar:
     st.title("\U0001f4a0 DataPrism")
@@ -76,6 +84,20 @@ with st.sidebar:
     )
     st.markdown("---")
     st.caption("DataPrism | Enterprise Data Intelligence")
+    st.markdown("---")
+    st.markdown("##### \U0001F4BE Session")
+    last_saved = get_last_saved_time()
+    if last_saved:
+        st.caption(f"Last saved: {last_saved[:19]}")
+    save_col, clear_col = st.columns(2)
+    with save_col:
+        if st.button("\U0001F4BE Save", use_container_width=True, help="Save current work"):
+            save_session_state()
+            st.toast("\u2705 Session saved!", icon="\U0001F4BE")
+    with clear_col:
+        if st.button("\U0001F5D1\uFE0F Clear", use_container_width=True, help="Clear saved session"):
+            clear_persisted_session()
+            st.toast("\U0001F5D1\uFE0F Session cleared!", icon="\U0001F5D1\uFE0F")
 
 # Main content - Welcome page
 st.title("\U0001f4a0 DataPrism")

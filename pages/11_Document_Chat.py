@@ -6,6 +6,7 @@ inject_global_css()
 
 import pandas as pd
 from io import StringIO, BytesIO
+from utils.persistence import save_session_state
 
 st.title("📄 Document Chat")
 st.markdown("Upload any document and have an AI-powered conversation about its contents. Get insights, summaries, and answers to your questions.")
@@ -266,6 +267,7 @@ if st.session_state.doc_content:
                 
                 st.markdown(answer)
                 st.session_state.doc_chat_history.append({"role": "assistant", "content": answer})
+                save_session_state()
 
     # Sidebar for this page
     with st.sidebar:
