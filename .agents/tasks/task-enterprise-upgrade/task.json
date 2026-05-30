@@ -1,6 +1,6 @@
 {
   "task_id": "task-enterprise-upgrade",
-  "task_description": "Upgrade the Streamlit data analysis app to enterprise/international standard quality. Add online data fetching (URL fetch, public dataset catalog, web scraping), report generation (HTML reports with charts and AI summaries), fix bugs (st.set_page_config ordering, edge cases, error handling), and add premium features (caching, export buttons, improved AI prompts, session state management).",
+  "task_description": "Upgrade the Streamlit data analysis app to enterprise/international standard quality. Add online data fetching (URL fetch, public dataset catalog, web scraping), report generation (HTML reports with charts and AI summaries), expert data analyst page (Power BI support, domain detection, AI Q&A), fix bugs (st.set_page_config ordering, XSS, edge cases, error handling), and add premium features (caching, export buttons, improved AI prompts, session state management, enterprise theme).",
   "status": "completed",
   "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003", "FEAT-004"],
   "blocked_reason": null,
@@ -9,6 +9,6 @@
     "tests": "pass",
     "test_quality": "pass",
     "docker_build": "skipped",
-    "summary": "All dependencies install successfully. All 6 pages and all utility modules pass AST syntax validation. All module imports succeed. Report generation produces valid 61K+ char HTML. Dataset catalog contains 18 entries. DataFrame validation correctly handles edge cases. st.set_page_config is confirmed as first st.* call in every page file."
+    "summary": "All 13 source files pass AST syntax validation. All module imports succeed. Report generation produces valid HTML with XSS-safe title escaping. Dataset catalog contains 18 entries. Theme uses enterprise purple palette (#6C63FF) consistently in app and reports. st.set_page_config confirmed as first st.* call in all 7 pages. Expert Analyst page supports Power BI exported data with domain detection."
   }
 }
