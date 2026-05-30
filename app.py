@@ -27,6 +27,14 @@ if "df" not in st.session_state:
     else:
         st.session_state.df = save_dataset(data_path)
 
+# Initialize session state
+if "online_df" not in st.session_state:
+    st.session_state.online_df = None
+if "uploaded_df" not in st.session_state:
+    st.session_state.uploaded_df = None
+if "generated_report" not in st.session_state:
+    st.session_state.generated_report = None
+
 # Sidebar
 with st.sidebar:
     st.title("\U0001F393 Data Analyzer")
@@ -41,10 +49,13 @@ with st.sidebar:
         - **Upload & Analyze** - Your own datasets
         - **AI Insights** - Automated analysis
         - **Advanced Analytics** - Custom tools
+        - **Online Explorer** - Web data fetching
+        - **Report Generator** - Export reports
+        - **Expert Analyst** - Deep file analysis
         """
     )
     st.markdown("---")
-    st.caption("Built with Streamlit & Plotly")
+    st.caption("Built with Streamlit & Plotly | Enterprise Edition")
 
 # Main content - Welcome page
 st.title("\U0001F393 Community College Data Analyzer")
@@ -103,6 +114,47 @@ with col2:
         - Custom chart creator
         - Group-by analysis
         - Statistical summaries
+        """
+    )
+
+# Additional feature cards
+col3, col4 = st.columns(2)
+with col3:
+    st.markdown(
+        """
+        #### \U0001F310 Online Data Explorer
+        Fetch datasets from anywhere on the web:
+        - Load CSV, JSON, or Excel from any URL
+        - Browse curated public dataset catalog
+        - Scrape tables from web pages
+        - Preview and use remote data instantly
+        """
+    )
+
+with col4:
+    st.markdown(
+        """
+        #### \U0001F4CB Report Generator
+        Create professional analysis reports:
+        - Comprehensive HTML reports with charts
+        - AI-generated executive summaries
+        - Embedded interactive visualizations
+        - One-click download for sharing
+        """
+    )
+
+# Expert Analyst feature card
+col5, col6 = st.columns(2)
+with col5:
+    st.markdown(
+        """
+        #### \U0001F393 Expert Data Analyst
+        Get professional-grade analysis of any dataset:
+        - Upload CSV, Excel, or Power BI exports
+        - Automatic data domain detection
+        - AI-powered narrative insights
+        - Ask questions about your data
+        - Anomaly detection and recommendations
         """
     )
 

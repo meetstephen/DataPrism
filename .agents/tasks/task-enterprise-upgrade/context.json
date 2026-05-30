@@ -1,0 +1,28 @@
+{
+  "project_type": "Python Streamlit multi-page data analysis application",
+  "language": "Python 3.11",
+  "build_system": "pip with requirements.txt, no Makefile or build script",
+  "test_framework": "No test infrastructure exists - validation via streamlit run and python import checks",
+  "build_command": "pip install -r requirements.txt",
+  "test_command": "python -c \"import app; import utils.data_generator; import utils.visualizations; import utils.ai_insights\"",
+  "verification_instructions": "1. pip install -r requirements.txt  2. python -c to import all modules  3. Confirm no import errors or syntax errors",
+  "snapshot_or_generated_files": "data/community_college_data.csv is pre-generated but checked in; no need to regenerate",
+  "setup_instructions": "pip install -r requirements.txt",
+  "environment_constraints": "OPEN_INTERNET - full network access, can install all packages. Python 3.11 available. No Docker needed for validation.",
+  "contribution_requirements": "No CONTRIBUTING.md. Must work on Streamlit Community Cloud. Gemini API key optional via sidebar or secrets.",
+  "key_patterns": "1. Each page is in pages/ with numeric prefix for ordering. 2. st.set_page_config() must be FIRST streamlit call in each page. 3. Utils are in utils/ package. 4. Visualizations use Plotly via utils/visualizations.py with consistent _apply_layout pattern. 5. Session state used for df (built-in) and uploaded_df (user uploaded). 6. AI uses google-generativeai with fallback to rule-based. 7. Dark theme configured in .streamlit/config.toml. 8. All charts use CHART_TEMPLATE='plotly_dark' and COLOR_SEQUENCE=Set2.",
+  "relevant_files": [
+    "requirements.txt",
+    "app.py",
+    "pages/1_Community_College_Dashboard.py",
+    "pages/2_Upload_and_Analyze.py",
+    "pages/3_AI_Insights_Engine.py",
+    "pages/4_Advanced_Analytics.py",
+    "utils/__init__.py",
+    "utils/ai_insights.py",
+    "utils/visualizations.py",
+    "utils/data_generator.py",
+    ".streamlit/config.toml"
+  ],
+  "directory_structure": "Root: app.py (entry), requirements.txt, .streamlit/config.toml. pages/: numbered page files (1-4 currently). utils/: data_generator.py, visualizations.py, ai_insights.py. data/: community_college_data.csv."
+}
