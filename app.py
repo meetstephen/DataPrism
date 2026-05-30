@@ -120,6 +120,18 @@ with col3:
         """
     )
 
+with col4:
+    st.markdown(
+        """
+        #### \U0001F4CB Report Generator
+        Create professional analysis reports:
+        - Comprehensive HTML reports with charts
+        - AI-generated executive summaries
+        - Embedded interactive visualizations
+        - One-click download for sharing
+        """
+    )
+
 st.markdown("---")
 
 # Dataset overview
