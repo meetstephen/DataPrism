@@ -53,15 +53,16 @@ with st.sidebar:
 
         Navigate using the pages in the sidebar:
 
-        - **Dashboard** - Pre-built visualizations
-        - **Upload & Analyze** - Your own datasets
-        - **AI Insights** - Automated analysis
-        - **Advanced Analytics** - Custom tools
-        - **Online Explorer** - Web data fetching
-        - **Report Generator** - Export reports
-        - **Expert Analyst** - Deep file analysis
-        - **Data Cleaning** - Transform & prepare data
-        - **Chat With Data** - Natural language queries
+        - \U0001F680 **Getting Started** - Quick start guide
+        - \U0001F4CA **Dashboard** - Pre-built visualizations
+        - \U0001F4C1 **Upload & Analyze** - Your own datasets
+        - \U0001F916 **AI Insights** - Automated analysis
+        - \U0001F527 **Advanced Analytics** - Custom tools
+        - \U0001F310 **Online Explorer** - Web data fetching
+        - \U0001F4CB **Report Generator** - Export reports
+        - \U0001F393 **Expert Analyst** - Deep file analysis
+        - \U0001f9f9 **Data Cleaning** - Transform & prepare
+        - \U0001F4AC **Chat With Data** - Natural language queries
         """
     )
     st.markdown("---")

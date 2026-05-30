@@ -10,15 +10,16 @@ DataPrism is an enterprise-grade data intelligence platform built with Streamlit
 
 | # | Page | Description |
 |---|------|-------------|
-| 1 | **Community College Dashboard** | Pre-built interactive visualizations with KPI metrics, multi-filter sidebar, and data export |
-| 2 | **Upload & Analyze** | Upload CSV/Excel for instant automated analysis with distributions, correlations, and data quality reports |
-| 3 | **AI Insights Engine** | Natural language insights via Google Gemini 2.5 Flash with structured executive reports and rule-based fallback |
-| 4 | **Advanced Analytics** | Pivot table builder, custom chart creator, group-by analysis, and statistical summaries |
-| 5 | **Online Data Explorer** | Fetch datasets from any URL (CSV, JSON, Excel), browse curated public catalogs, scrape web tables |
-| 6 | **Report Generator** | Generate comprehensive HTML analysis reports with embedded charts and AI summaries |
-| 7 | **Expert Data Analyst** | Upload any file (CSV, Excel, Power BI exports) for deep automated analysis with AI insights |
-| 8 | **Data Cleaning Engine** | Comprehensive data cleaning with undo/redo, missing value handling, outlier removal, and audit logging |
-| 9 | **Chat With Your Data** | Natural language AI chat interface - ask questions about your data and get answers with auto-generated charts |
+| 1 | **Getting Started** | Quick start guide with 3-step onboarding, data flow diagram, and AI feature overview |
+| 2 | **Community College Dashboard** | Pre-built interactive visualizations with KPI metrics, multi-filter sidebar, and data export |
+| 3 | **Upload & Analyze** | Upload CSV/Excel for instant automated analysis with distributions, correlations, and data quality reports |
+| 4 | **AI Insights Engine** | Natural language insights via Google Gemini 2.5 Flash with structured executive reports and rule-based fallback |
+| 5 | **Advanced Analytics** | Pivot table builder, custom chart creator, group-by analysis, and statistical summaries |
+| 6 | **Online Data Explorer** | Fetch datasets from any URL (CSV, JSON, Excel), browse curated public catalogs, scrape web tables |
+| 7 | **Report Generator** | Generate comprehensive HTML analysis reports with embedded charts and AI summaries |
+| 8 | **Expert Data Analyst** | Upload any file (CSV, Excel, Power BI exports) for deep automated analysis with AI insights |
+| 9 | **Data Cleaning Engine** | Comprehensive data cleaning with undo/redo, missing value handling, outlier removal, and audit logging |
+| 10 | **Chat With Your Data** | Natural language AI chat interface - ask questions about your data and get answers with auto-generated charts |
 
 ---
 
@@ -112,15 +113,16 @@ community-college-data-analysis/
 ├── .streamlit/
 │   └── config.toml                           # Enterprise dark theme & server config
 ├── pages/
-│   ├── 1_Community_College_Dashboard.py      # Interactive dashboard with filters
-│   ├── 2_Upload_and_Analyze.py               # Universal file analyzer
-│   ├── 3_AI_Insights_Engine.py               # AI-powered insights (Gemini + fallback)
-│   ├── 4_Advanced_Analytics.py               # Pivot tables, charts, statistics
-│   ├── 5_Online_Data_Explorer.py             # Web data fetching & scraping
-│   ├── 6_Report_Generator.py                 # Professional report generation
-│   ├── 7_Expert_Analyst.py                   # Expert analysis with Power BI support
-│   ├── 8_Data_Cleaning.py                    # Data cleaning engine with undo/redo
-│   └── 9_Chat_With_Data.py                   # Natural language data chat
+│   ├── 1_Getting_Started.py                  # Quick start guide & onboarding
+│   ├── 2_Community_College_Dashboard.py      # Interactive dashboard with filters
+│   ├── 3_Upload_and_Analyze.py               # Universal file analyzer
+│   ├── 4_AI_Insights_Engine.py               # AI-powered insights (Gemini + fallback)
+│   ├── 5_Advanced_Analytics.py               # Pivot tables, charts, statistics
+│   ├── 6_Online_Data_Explorer.py             # Web data fetching & scraping
+│   ├── 7_Report_Generator.py                 # Professional report generation
+│   ├── 8_Expert_Analyst.py                   # Expert analysis with Power BI support
+│   ├── 9_Data_Cleaning.py                    # Data cleaning engine with undo/redo
+│   └── 10_Chat_With_Data.py                  # Natural language data chat
 ├── utils/
 │   ├── __init__.py                           # Module init
 │   ├── styles.py                             # Global CSS & premium theme system
@@ -133,6 +135,46 @@ community-college-data-analysis/
 └── data/
     └── community_college_data.csv            # Built-in synthetic dataset
 ```
+
+---
+
+## Page Flow & Data Routing
+
+DataPrism pages are interconnected. Data loaded on one page is automatically available across the platform:
+
+```
+                      ┌─────────────────────────────────────┐
+                      │         app.py (Home Page)           │
+                      │   Loads built-in dataset into state  │
+                      └──────────────┬──────────────────────┘
+                                     │
+          ┌──────────────────────────┼──────────────────────────┐
+          │                          │                           │
+          v                          v                           v
+  ┌───────────────┐      ┌────────────────────┐      ┌──────────────────┐
+  │ Upload &      │      │ Online Data        │      │ Community College│
+  │ Analyze       │      │ Explorer           │      │ Dashboard        │
+  │ (uploaded_df) │      │ (online_df)        │      │ (df)             │
+  └───────┬───────┘      └────────┬───────────┘      └────────┬─────────┘
+          │                       │                            │
+          └───────────────────────┼────────────────────────────┘
+                                  │
+                                  v
+                      ┌───────────────────────┐
+                      │   Data Cleaning       │
+                      │   (working_df)        │
+                      └───────────┬───────────┘
+                                  │
+          ┌───────────────────────┼───────────────────────────┐
+          │                       │                            │
+          v                       v                            v
+  ┌───────────────┐    ┌──────────────────┐      ┌────────────────────┐
+  │ AI Insights   │    │ Chat With Data   │      │ Report Generator   │
+  │ Engine        │    │                  │      │                    │
+  └───────────────┘    └──────────────────┘      └────────────────────┘
+```
+
+**Cross-module navigation** buttons on the Upload & Analyze and Data Cleaning pages let you send data directly to the next step in your workflow.
 
 ---
 

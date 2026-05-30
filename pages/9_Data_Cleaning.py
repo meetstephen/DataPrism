@@ -30,6 +30,8 @@ st.markdown("### Select Data Source")
 source_options = []
 if "uploaded_df" in st.session_state and st.session_state.uploaded_df is not None:
     source_options.append("Uploaded Data")
+if "online_df" in st.session_state and st.session_state.online_df is not None:
+    source_options.append("Online Data")
 if "df" in st.session_state and st.session_state.df is not None:
     source_options.append("Built-in Dataset")
 
@@ -44,6 +46,8 @@ load_key = f"cleaning_source_{selected_source}"
 if st.session_state.working_df is None or st.session_state.get("_cleaning_source") != selected_source:
     if selected_source == "Uploaded Data":
         st.session_state.raw_df = st.session_state.uploaded_df.copy()
+    elif selected_source == "Online Data":
+        st.session_state.raw_df = st.session_state.online_df.copy()
     else:
         st.session_state.raw_df = st.session_state.df.copy()
     st.session_state.working_df = st.session_state.raw_df.copy()
@@ -307,3 +311,14 @@ with download_col1:
         type="primary",
         use_container_width=True,
     )
+
+# Cross-module navigation
+st.markdown("---")
+st.markdown("### \U0001F517 Next Steps")
+col1, col2, col3 = st.columns(3)
+with col1:
+    st.page_link("pages/4_AI_Insights_Engine.py", label="\U0001F916 Analyze with AI", icon="\U0001F916")
+with col2:
+    st.page_link("pages/10_Chat_With_Data.py", label="\U0001F4AC Chat With Data", icon="\U0001F4AC")
+with col3:
+    st.page_link("pages/7_Report_Generator.py", label="\U0001F4CB Generate Report", icon="\U0001F4CB")
