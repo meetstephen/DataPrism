@@ -3,6 +3,8 @@ AI Insights Engine - Generate automated insights with Google Gemini or rule-base
 """
 
 import streamlit as st
+st.set_page_config(page_title="AI Insights Engine", page_icon="\U0001F916", layout="wide")
+
 import pandas as pd
 from utils.data_generator import generate_dataset
 from utils.ai_insights import (
@@ -23,13 +25,18 @@ st.markdown("Generate automated insights from your data using **Google Gemini 2.
 with st.sidebar:
     st.header("Configuration")
 
-    api_key = st.text_input(
-        "Google Gemini API Key (optional)",
-        type="password",
-        help="Enter your Google Gemini API key for AI-powered insights. "
-             "Get one free at https://aistudio.google.com/apikey. "
-             "Leave empty to use rule-based analysis."
-    )
+    api_key = ""
+    try:
+        api_key = st.secrets["GEMINI_API_KEY"]
+        st.sidebar.success("API key loaded from secrets")
+    except Exception:
+        api_key = st.text_input(
+            "Google Gemini API Key (optional)",
+            type="password",
+            help="Enter your Google Gemini API key for AI-powered insights. "
+                 "Get one free at https://aistudio.google.com/apikey. "
+                 "Leave empty to use rule-based analysis."
+        )
 
     st.markdown("---")
     st.markdown(
@@ -40,9 +47,12 @@ with st.sidebar:
 
 # Data source selector
 st.markdown("### Select Data Source")
+data_source_options = ["Built-in Community College Data", "Uploaded Data"]
+if "online_df" in st.session_state and st.session_state.online_df is not None:
+    data_source_options.append("Online Data")
 data_source = st.radio(
     "Choose data to analyze:",
-    ["Built-in Community College Data", "Uploaded Data"],
+    data_source_options,
     horizontal=True
 )
 
@@ -53,6 +63,13 @@ if data_source == "Built-in Community College Data":
         st.session_state.df = generate_dataset()
     df = st.session_state.df.copy()
     st.info(f"Using built-in dataset: {len(df)} rows, {len(df.columns)} columns")
+elif data_source == "Online Data":
+    if "online_df" in st.session_state and st.session_state.online_df is not None:
+        df = st.session_state.online_df.copy()
+        st.info(f"Using online dataset: {len(df)} rows, {len(df.columns)} columns")
+    else:
+        st.warning("No online data available. Go to 'Online Data Explorer' to fetch data.")
+        st.stop()
 else:
     if "uploaded_df" in st.session_state:
         df = st.session_state.uploaded_df.copy()

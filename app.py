@@ -27,6 +27,14 @@ if "df" not in st.session_state:
     else:
         st.session_state.df = save_dataset(data_path)
 
+# Initialize session state
+if "online_df" not in st.session_state:
+    st.session_state.online_df = None
+if "uploaded_df" not in st.session_state:
+    st.session_state.uploaded_df = None
+if "generated_report" not in st.session_state:
+    st.session_state.generated_report = None
+
 # Sidebar
 with st.sidebar:
     st.title("\U0001F393 Data Analyzer")
@@ -41,10 +49,12 @@ with st.sidebar:
         - **Upload & Analyze** - Your own datasets
         - **AI Insights** - Automated analysis
         - **Advanced Analytics** - Custom tools
+        - **Online Explorer** - Web data fetching
+        - **Report Generator** - Export reports
         """
     )
     st.markdown("---")
-    st.caption("Built with Streamlit & Plotly")
+    st.caption("Built with Streamlit & Plotly | Enterprise Edition")
 
 # Main content - Welcome page
 st.title("\U0001F393 Community College Data Analyzer")

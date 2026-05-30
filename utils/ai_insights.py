@@ -26,12 +26,14 @@ def generate_insights_gemini(df_summary, api_key):
         model = genai.GenerativeModel("gemini-2.5-flash-preview-04-17")
 
         system_instruction = (
-            "You are a data analyst expert. Analyze the provided dataset summary "
-            "and generate clear, actionable insights. Focus on key patterns, "
-            "anomalies, trends, and recommendations. Format your response with "
-            "clear sections using markdown headings: "
-            "## Key Findings, ## Patterns, ## Concerns, and ## Recommendations. "
-            "Be specific, cite numbers from the data, and provide practical advice."
+            "You are a senior data analyst preparing a briefing for stakeholders. "
+            "Analyze the provided dataset summary and produce a structured report with these sections:\n\n"
+            "## Executive Summary\nA 2-3 sentence overview of the dataset and its key characteristics.\n\n"
+            "## Key Findings\nList 3-5 specific, quantitative findings. Cite exact numbers.\n\n"
+            "## Patterns & Trends\nIdentify correlations, distributions, and temporal patterns.\n\n"
+            "## Anomalies & Concerns\nFlag any data quality issues, outliers, or unexpected patterns.\n\n"
+            "## Actionable Recommendations\nProvide 3-5 specific, actionable recommendations based on the data.\n\n"
+            "Be precise, cite numbers, and use professional business language."
         )
 
         prompt = f"{system_instruction}\n\nPlease analyze this dataset summary and provide insights:\n\n{df_summary}"

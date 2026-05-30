@@ -1,0 +1,29 @@
+{
+  "id": "FEAT-004",
+  "type": "fix",
+  "description": "Upgrade all existing pages with enterprise-quality improvements: add @st.cache_data for performance, fix the st.set_page_config bug (must be first Streamlit call on every page), add session state management, add data export buttons, improve error handling, add loading spinners, and improve AI prompts. Also update app.py feature cards to reference new pages.",
+  "status": "in_progress",
+  "steps": [
+    "Fix pages/1_Community_College_Dashboard.py: (a) Add st.set_page_config() as the very first Streamlit command (before any other st. calls). (b) Add a 'Download filtered data as CSV' button using st.download_button after the filter section. (c) Add @st.cache_data to any data transformation that is repeated. (d) Wrap chart generation in try/except with user-friendly error messages.",
+    "Fix pages/2_Upload_and_Analyze.py: (a) Add st.set_page_config() as the very first Streamlit command. (b) Add st.download_button to export the analysis results as CSV. (c) Add loading spinners (with st.spinner) around chart generation and data quality report. (d) Handle edge case where uploaded file has 0 rows or only 1 column gracefully.",
+    "Fix pages/3_AI_Insights_Engine.py: (a) Add st.set_page_config() as the very first Streamlit command. (b) Improve the Gemini system prompt to be more structured: request JSON-like structured output with specific sections, ask for quantitative evidence, and request confidence levels. (c) Add the ability to also read API key from st.secrets (try st.secrets['GEMINI_API_KEY'] with fallback to sidebar input). (d) Add @st.cache_data(ttl=300) around the generate_insights_gemini call to avoid re-calling API on reruns. (e) Add a 'Copy insights to clipboard' button. (f) Also support online_df from session state as a data source option.",
+    "Fix pages/4_Advanced_Analytics.py: (a) Add st.set_page_config() as the very first Streamlit command. (b) Add export buttons for pivot tables (download as CSV). (c) Add st.spinner around pivot table and chart generation. (d) Also support online_df from session state as a data source option. (e) Handle edge case where user selects same column for X and Y axis gracefully.",
+    "Update app.py: (a) Add two new feature cards for 'Online Data Explorer' and 'Report Generator' in the main page layout (add a third row of columns). (b) Update the sidebar navigation text to mention all 6 pages. (c) Add a session state initialization section that properly initializes all session state keys used across pages (online_df, uploaded_df, api_key)."
+  ],
+  "acceptance_criteria": [
+    "All 4 existing pages have st.set_page_config() as their FIRST Streamlit command (before st.title or any other st. call)",
+    "All pages that load data have @st.cache_data where appropriate",
+    "Download/export buttons exist on Dashboard, Upload, and Advanced Analytics pages",
+    "AI Insights page checks st.secrets for GEMINI_API_KEY before using sidebar input",
+    "All pages support online_df as a data source where applicable",
+    "Edge cases handled: empty dataframes show info messages instead of crashing",
+    "python -c imports all page modules without syntax errors"
+  ],
+  "verification": [
+    "python -c \"import ast; import os; pages = [f for f in os.listdir('pages') if f.endswith('.py') and not f.startswith('__')]; [ast.parse(open(f'pages/{p}').read()) for p in pages]; print(f'All {len(pages)} pages parse OK')\"",
+    "python -c \"import ast; tree=ast.parse(open('app.py').read()); print('app.py syntax OK')\"",
+    "python -c \"from utils.ai_insights import generate_insights_gemini, generate_insights_fallback; from utils.visualizations import create_bar_chart; from utils.data_generator import generate_dataset; print('All utils OK')\""
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

@@ -3,6 +3,8 @@ Upload and Analyze - Universal dataset analysis tool.
 """
 
 import streamlit as st
+st.set_page_config(page_title="Upload & Analyze", page_icon="\U0001F4C1", layout="wide")
+
 import pandas as pd
 import numpy as np
 from utils.visualizations import (
@@ -40,6 +42,14 @@ if uploaded_file is not None:
             else:
                 df = pd.read_excel(uploaded_file)
 
+            # Edge case: empty dataframe
+            if len(df) == 0:
+                st.warning("The uploaded file contains 0 rows. Please upload a file with data.")
+                st.stop()
+
+            # Edge case: single column
+            single_column = len(df.columns) == 1
+
             # Row count warning
             MAX_ROWS_WARNING = 100_000
             if len(df) > MAX_ROWS_WARNING:
@@ -52,6 +62,14 @@ if uploaded_file is not None:
             st.session_state.uploaded_df = df
 
             st.success(f"File loaded successfully: {uploaded_file.name}")
+
+            # Download button for loaded data
+            st.download_button(
+                "\U0001F4E5 Download Data as CSV",
+                df.to_csv(index=False),
+                "analyzed_data.csv",
+                "text/csv"
+            )
 
             # Data Preview
             st.markdown("### Data Preview")
@@ -99,34 +117,37 @@ if uploaded_file is not None:
             # Automatic Chart Suggestions
             st.markdown("### Automatic Visualizations")
 
-            # Histograms for numeric columns
-            if numeric_cols:
-                st.markdown("#### Distributions (Numeric Columns)")
-                hist_cols = st.columns(min(len(numeric_cols), 2))
-                for idx, col in enumerate(numeric_cols[:4]):
-                    with hist_cols[idx % 2]:
-                        fig = create_histogram(df, col, f"Distribution of {col}")
-                        st.plotly_chart(fig, use_container_width=True)
+            with st.spinner("Generating visualizations..."):
+                # Histograms for numeric columns
+                if numeric_cols:
+                    st.markdown("#### Distributions (Numeric Columns)")
+                    hist_cols = st.columns(min(len(numeric_cols), 2))
+                    for idx, col in enumerate(numeric_cols[:4]):
+                        with hist_cols[idx % 2]:
+                            fig = create_histogram(df, col, f"Distribution of {col}")
+                            st.plotly_chart(fig, use_container_width=True)
 
-            # Bar charts for categorical columns with few unique values
-            low_cardinality = [c for c in categorical_cols if df[c].nunique() <= 15]
-            if low_cardinality:
-                st.markdown("#### Category Distributions")
-                bar_cols = st.columns(min(len(low_cardinality), 2))
-                for idx, col in enumerate(low_cardinality[:4]):
-                    with bar_cols[idx % 2]:
-                        value_counts = df[col].value_counts().reset_index()
-                        value_counts.columns = [col, "Count"]
-                        fig = create_bar_chart(value_counts, col, "Count", f"Distribution of {col}")
-                        fig.update_layout(xaxis_tickangle=-45)
-                        st.plotly_chart(fig, use_container_width=True)
+                # Bar charts for categorical columns with few unique values
+                low_cardinality = [c for c in categorical_cols if df[c].nunique() <= 15]
+                if low_cardinality:
+                    st.markdown("#### Category Distributions")
+                    bar_cols = st.columns(min(len(low_cardinality), 2))
+                    for idx, col in enumerate(low_cardinality[:4]):
+                        with bar_cols[idx % 2]:
+                            value_counts = df[col].value_counts().reset_index()
+                            value_counts.columns = [col, "Count"]
+                            fig = create_bar_chart(value_counts, col, "Count", f"Distribution of {col}")
+                            fig.update_layout(xaxis_tickangle=-45)
+                            st.plotly_chart(fig, use_container_width=True)
 
-            # Correlation Heatmap
-            if len(numeric_cols) >= 2:
-                st.markdown("### Correlation Analysis")
-                corr_matrix = df[numeric_cols].corr()
-                fig = create_heatmap(corr_matrix, "Correlation Heatmap")
-                st.plotly_chart(fig, use_container_width=True)
+                # Correlation Heatmap
+                if len(numeric_cols) >= 2 and not single_column:
+                    st.markdown("### Correlation Analysis")
+                    corr_matrix = df[numeric_cols].corr()
+                    fig = create_heatmap(corr_matrix, "Correlation Heatmap")
+                    st.plotly_chart(fig, use_container_width=True)
+                elif single_column:
+                    st.info("Only 1 column available. Correlation analysis requires at least 2 numeric columns.")
 
             # Missing Data Analysis
             st.markdown("### Missing Data Analysis")
@@ -150,24 +171,25 @@ if uploaded_file is not None:
 
             # Data Quality Report
             st.markdown("### Data Quality Report")
-            quality_report = generate_data_quality_report(df)
+            with st.spinner("Generating data quality report..."):
+                quality_report = generate_data_quality_report(df)
 
-            qual_col1, qual_col2, qual_col3 = st.columns(3)
-            with qual_col1:
-                st.metric("Completeness", f"{quality_report['completeness_score']}%")
-            with qual_col2:
-                st.metric("Duplicate Rows", quality_report["duplicate_rows"])
-            with qual_col3:
-                st.metric("Total Cells", f"{quality_report['total_cells']:,}")
+                qual_col1, qual_col2, qual_col3 = st.columns(3)
+                with qual_col1:
+                    st.metric("Completeness", f"{quality_report['completeness_score']}%")
+                with qual_col2:
+                    st.metric("Duplicate Rows", quality_report["duplicate_rows"])
+                with qual_col3:
+                    st.metric("Total Cells", f"{quality_report['total_cells']:,}")
 
-            with st.expander("Detailed Column Report"):
-                for col_name, info in quality_report["columns"].items():
-                    st.markdown(f"**{col_name}** (`{info['dtype']}`)")
-                    st.markdown(
-                        f"  - Non-null: {info['non_null_count']} | "
-                        f"Null: {info['null_count']} ({info['null_percentage']}%) | "
-                        f"Unique: {info['unique_count']} ({info['unique_percentage']}%)"
-                    )
+                with st.expander("Detailed Column Report"):
+                    for col_name, info in quality_report["columns"].items():
+                        st.markdown(f"**{col_name}** (`{info['dtype']}`)")
+                        st.markdown(
+                            f"  - Non-null: {info['non_null_count']} | "
+                            f"Null: {info['null_count']} ({info['null_percentage']}%) | "
+                            f"Unique: {info['unique_count']} ({info['unique_percentage']}%)"
+                        )
 
         except Exception as e:
             st.error(f"Error loading file: {str(e)}")
