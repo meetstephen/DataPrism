@@ -1,7 +1,7 @@
 """
-Community College Data Analyzer - Main Application Entry Point.
+DataPrism - Enterprise Data Intelligence Platform.
 
-A comprehensive Streamlit web application for analyzing community college data
+A comprehensive Streamlit web application for analyzing, cleaning, and exploring data
 with interactive dashboards, AI-powered insights, and advanced analytics tools.
 """
 
@@ -11,11 +11,12 @@ import os
 
 from utils.data_generator import generate_dataset, save_dataset
 from utils.styles import inject_global_css
+from utils.data_engine import init_cleaning_state
 
 # Page configuration
 st.set_page_config(
-    page_title="Community College Data Analyzer",
-    page_icon="\U0001F393",
+    page_title="DataPrism",
+    page_icon="\U0001f4a0",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -36,16 +37,21 @@ if "uploaded_df" not in st.session_state:
     st.session_state.uploaded_df = None
 if "generated_report" not in st.session_state:
     st.session_state.generated_report = None
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+
+# Initialize cleaning state
+init_cleaning_state()
 
 # Sidebar
 with st.sidebar:
-    st.title("\U0001F393 Data Analyzer")
+    st.title("\U0001f4a0 DataPrism")
     st.markdown("---")
     st.markdown(
         """
-        **Community College Data Analysis Platform**
+        **Enterprise Data Intelligence Platform**
 
-        Navigate using the pages in the sidebar to explore:
+        Navigate using the pages in the sidebar:
 
         - **Dashboard** - Pre-built visualizations
         - **Upload & Analyze** - Your own datasets
@@ -54,19 +60,21 @@ with st.sidebar:
         - **Online Explorer** - Web data fetching
         - **Report Generator** - Export reports
         - **Expert Analyst** - Deep file analysis
+        - **Data Cleaning** - Transform & prepare data
+        - **Chat With Data** - Natural language queries
         """
     )
     st.markdown("---")
-    st.caption("Built with Streamlit & Plotly | Enterprise Edition")
+    st.caption("DataPrism | Enterprise Data Intelligence")
 
 # Main content - Welcome page
-st.title("\U0001F393 Community College Data Analyzer")
-st.markdown("### Welcome to the Data Analysis Platform")
+st.title("\U0001f4a0 DataPrism")
+st.markdown("### Raw Data. Refined Intelligence.")
 st.markdown(
     """
-    This application provides comprehensive data analysis tools for community college data.
-    Explore pre-built dashboards, upload your own datasets, generate AI-powered insights,
-    and perform advanced analytics with interactive tools.
+    DataPrism is an enterprise-grade data intelligence platform that transforms raw data
+    into actionable insights. Explore interactive dashboards, clean and transform datasets,
+    generate AI-powered analysis, and have natural conversations with your data.
     """
 )
 
@@ -160,6 +168,34 @@ with col5:
         """
     )
 
+with col6:
+    st.markdown(
+        """
+        #### \U0001f9f9 Data Cleaning Engine
+        Transform and prepare your data for analysis:
+        - Handle missing values with multiple strategies
+        - Remove duplicates and outliers (IQR method)
+        - Drop or rename columns interactively
+        - Full undo support and audit logging
+        - Export cleaned data as CSV
+        """
+    )
+
+# Chat feature card
+col7, col8 = st.columns(2)
+with col7:
+    st.markdown(
+        """
+        #### \U0001f4ac Chat With Your Data
+        Natural language data analysis:
+        - Ask questions in plain English
+        - Get AI-powered answers with data citations
+        - Auto-generated Plotly visualizations
+        - Contextual follow-up questions
+        - Powered by Gemini 2.5 Flash
+        """
+    )
+
 st.markdown("---")
 
 # Dataset overview
@@ -181,3 +217,4 @@ with col4:
 
 st.markdown("---")
 st.markdown("*Select a page from the sidebar to get started.*")
+st.caption("DataPrism | Enterprise Data Intelligence")
