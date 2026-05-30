@@ -1,0 +1,26 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Create the Online Data Explorer utility module and page. This adds web-connected data fetching capabilities: fetch CSV/JSON/Excel from URLs, scrape HTML tables, and a built-in catalog of popular public datasets.",
+  "status": "completed",
+  "steps": [
+    "Create utils/online_data.py with these functions: (a) fetch_data_from_url(url, file_type='auto') - downloads and parses CSV/JSON/Excel from a URL using requests, returns DataFrame. (b) scrape_tables_from_url(url) - uses pandas.read_html with lxml/bs4 to extract HTML tables, returns list of DataFrames. (c) get_dataset_catalog() - returns a dict of categorized public datasets with name, description, url, and format. Include 15+ datasets from World Bank, US Gov (data.gov CSVs), UCI ML Repo, and other direct-download CSV URLs. (d) validate_dataframe(df) - checks for empty, all-null columns, excessively large datasets, returns dict with is_valid and issues list. (e) detect_file_type(url) - infer CSV/JSON/Excel from URL extension or content-type header. All functions must have proper error handling returning None or error messages on failure. Use @st.cache_data with ttl=3600 for fetch_data_from_url.",
+    "Create pages/5_Online_Data_Explorer.py with: (a) st.set_page_config as FIRST call. (b) Section 1: 'Fetch from URL' - text input for URL, auto-detect file type or let user override (CSV/JSON/Excel), fetch button with spinner, display preview and stats on success. (c) Section 2: 'Public Dataset Catalog' - display the catalog organized by category (Government, Education, Health, Economics, etc.) with st.expander for each category, each dataset shows name/description/format, 'Load' button fetches and previews it. (d) Section 3: 'Scrape Tables from Web Page' - text input for URL, scrape button, display found tables with index selector, let user pick which table to use. (e) All loaded data stored in st.session_state.online_df for use in other pages. (f) Add download button to export loaded data as CSV. (g) Add proper error handling with user-friendly messages for network errors, invalid URLs, parsing failures, and timeouts. (h) Add a data source selector in the sidebar that remembers what was loaded.",
+    "Update app.py to mention the new Online Data Explorer in the feature cards section, adding a new card describing web data fetching capabilities."
+  ],
+  "acceptance_criteria": [
+    "utils/online_data.py exists with all specified functions",
+    "pages/5_Online_Data_Explorer.py exists and has st.set_page_config as first Streamlit call",
+    "The dataset catalog contains at least 15 real, working public dataset URLs",
+    "python -c \"from utils.online_data import fetch_data_from_url, scrape_tables_from_url, get_dataset_catalog, validate_dataframe\" imports without error",
+    "The page supports CSV, JSON, and Excel URL fetching with auto-detection",
+    "Error handling covers: network timeout, invalid URL, parse errors, empty response"
+  ],
+  "verification": [
+    "python -c \"from utils.online_data import fetch_data_from_url, scrape_tables_from_url, get_dataset_catalog, validate_dataframe; catalog = get_dataset_catalog(); print(f'Catalog has {sum(len(v) for v in catalog.values())} datasets'); print('OK')\"",
+    "python -c \"import ast; f=open('pages/5_Online_Data_Explorer.py').read(); tree=ast.parse(f); print('Syntax OK')\"",
+    "pip install -r requirements.txt"
+  ],
+  "blocked_reason": null,
+  "findings": "All verification passed. Catalog has 18 datasets across 6 categories. Use python3 (not python). Streamlit warnings about missing ScriptRunContext are expected when importing outside of streamlit run."
+}

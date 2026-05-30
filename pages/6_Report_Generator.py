@@ -10,9 +10,9 @@ st.markdown("Generate comprehensive, downloadable HTML analysis reports.")
 # Data Source Selection
 st.markdown("### Select Data Source")
 sources = ["Built-in Community College Data"]
-if "uploaded_df" in st.session_state:
+if st.session_state.get("uploaded_df") is not None:
     sources.append("Uploaded Data")
-if "online_df" in st.session_state:
+if st.session_state.get("online_df") is not None:
     sources.append("Online Data")
 
 data_source = st.radio("Choose data:", sources, horizontal=True)

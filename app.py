@@ -51,6 +51,7 @@ with st.sidebar:
         - **Advanced Analytics** - Custom tools
         - **Online Explorer** - Web data fetching
         - **Report Generator** - Export reports
+        - **Expert Analyst** - Deep file analysis
         """
     )
     st.markdown("---")
@@ -139,6 +140,21 @@ with col4:
         - AI-generated executive summaries
         - Embedded interactive visualizations
         - One-click download for sharing
+        """
+    )
+
+# Expert Analyst feature card
+col5, col6 = st.columns(2)
+with col5:
+    st.markdown(
+        """
+        #### \U0001F393 Expert Data Analyst
+        Get professional-grade analysis of any dataset:
+        - Upload CSV, Excel, or Power BI exports
+        - Automatic data domain detection
+        - AI-powered narrative insights
+        - Ask questions about your data
+        - Anomaly detection and recommendations
         """
     )
 

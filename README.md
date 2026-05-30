@@ -12,6 +12,7 @@
 | **Advanced Analytics** | Pivot table builder, custom chart creator, group-by analysis, and statistical summaries |
 | **Online Data Explorer** | Fetch datasets from any URL (CSV, JSON, Excel), browse curated public catalogs, scrape web tables |
 | **Report Generator** | Generate comprehensive HTML analysis reports with embedded charts and AI summaries |
+| **Expert Data Analyst** | Upload any file (CSV, Excel, Power BI exports) for deep automated analysis with AI insights |
 
 ## Tech Stack
 
@@ -83,7 +84,8 @@ community-college-data-analysis/
 │   ├── 3_AI_Insights_Engine.py           # AI-powered insights (Gemini + fallback)
 │   ├── 4_Advanced_Analytics.py           # Pivot tables, charts, statistics
 │   ├── 5_Online_Data_Explorer.py         # Web data fetching & scraping
-│   └── 6_Report_Generator.py            # Professional report generation
+│   ├── 6_Report_Generator.py            # Professional report generation
+│   └── 7_Expert_Analyst.py              # Expert data analyst with Power BI support
 ├── utils/
 │   ├── __init__.py                 # Module init
 │   ├── data_generator.py          # Synthetic data generation
@@ -150,6 +152,20 @@ Create professional analysis reports:
 - AI-generated executive summaries (when API key is available)
 - One-click download for sharing with stakeholders
 - Supports all data sources available in the platform
+
+### Expert Data Analyst
+
+Upload any data file for comprehensive expert-level analysis:
+- Supports CSV, Excel, and Power BI exported data files
+- **Power BI support:** Export your visuals/tables from Power BI Desktop as CSV or Excel, then upload here
+- Automatic data domain detection (Financial, Time-Series, HR, Survey, Education)
+- Complete data profiling with statistics for numeric and categorical columns
+- AI-powered narrative insights via Gemini (with rule-based fallback)
+- Ask questions about your data in natural language
+- Auto-generated visualizations: distributions, correlations, scatter plots, box plots
+- Anomaly detection using the IQR method with detailed outlier information
+- Actionable recommendations based on data patterns
+- Export analyzed data and insights reports
 
 ## Data Description
 

@@ -3,6 +3,7 @@ Report generator for creating comprehensive HTML analysis reports.
 Generates standalone HTML files with embedded charts, statistics, and optional AI summaries.
 """
 
+import html
 import pandas as pd
 import numpy as np
 import plotly.express as px
@@ -11,41 +12,41 @@ from datetime import datetime
 
 
 def get_report_css():
-    """Return CSS stylesheet string for the HTML report. Uses a professional dark theme
-    that matches the app (background #1E1E2E, text #FFFFFF, accent #4CAF50, cards with #2D2D44)."""
+    """Return CSS stylesheet string for the HTML report. Uses a premium enterprise dark theme
+    (background #0E1117, text #FAFAFA, accent #6C63FF, cards with #1A1F2E)."""
     return """
     body {
-        background-color: #1E1E2E;
-        color: #FFFFFF;
+        background-color: #0E1117;
+        color: #FAFAFA;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         margin: 0;
         padding: 20px 40px;
         line-height: 1.6;
     }
     h1 {
-        color: #4CAF50;
-        border-bottom: 2px solid #4CAF50;
+        color: #6C63FF;
+        border-bottom: 2px solid #6C63FF;
         padding-bottom: 10px;
         margin-top: 30px;
     }
     h2 {
-        color: #81C784;
+        color: #9D97FF;
         margin-top: 30px;
-        border-bottom: 1px solid #3D3D5C;
+        border-bottom: 1px solid #2A3040;
         padding-bottom: 8px;
     }
     h3 {
-        color: #A5D6A7;
+        color: #B8B3FF;
         margin-top: 20px;
     }
     h4 {
-        color: #C8E6C9;
+        color: #D4D1FF;
         margin-top: 15px;
     }
     .report-header {
         text-align: center;
         padding: 30px;
-        background-color: #2D2D44;
+        background-color: #1A1F2E;
         border-radius: 10px;
         margin-bottom: 30px;
     }
@@ -59,7 +60,7 @@ def get_report_css():
         margin: 5px 0;
     }
     .card {
-        background-color: #2D2D44;
+        background-color: #1A1F2E;
         border-radius: 8px;
         padding: 20px;
         margin: 15px 0;
@@ -69,27 +70,27 @@ def get_report_css():
         width: 100%;
         border-collapse: collapse;
         margin: 15px 0;
-        background-color: #2D2D44;
+        background-color: #1A1F2E;
         border-radius: 8px;
         overflow: hidden;
     }
     th {
-        background-color: #3D3D5C;
-        color: #4CAF50;
+        background-color: #2A3040;
+        color: #6C63FF;
         padding: 12px 15px;
         text-align: left;
         font-weight: 600;
     }
     td {
         padding: 10px 15px;
-        border-bottom: 1px solid #3D3D5C;
+        border-bottom: 1px solid #2A3040;
         color: #E0E0E0;
     }
     tr:hover td {
-        background-color: #3D3D5C;
+        background-color: #2A3040;
     }
     .chart-container {
-        background-color: #2D2D44;
+        background-color: #1A1F2E;
         border-radius: 8px;
         padding: 15px;
         margin: 20px 0;
@@ -101,16 +102,16 @@ def get_report_css():
         margin: 20px 0;
     }
     .metric-card {
-        background-color: #2D2D44;
+        background-color: #1A1F2E;
         border-radius: 8px;
         padding: 20px;
         text-align: center;
-        border-left: 4px solid #4CAF50;
+        border-left: 4px solid #6C63FF;
     }
     .metric-card .value {
         font-size: 1.8em;
         font-weight: bold;
-        color: #4CAF50;
+        color: #6C63FF;
     }
     .metric-card .label {
         color: #B0B0B0;
@@ -118,7 +119,7 @@ def get_report_css():
         margin-top: 5px;
     }
     .quality-bar {
-        background-color: #3D3D5C;
+        background-color: #2A3040;
         border-radius: 4px;
         height: 20px;
         overflow: hidden;
@@ -133,16 +134,16 @@ def get_report_css():
         text-align: center;
         padding: 20px;
         margin-top: 40px;
-        border-top: 1px solid #3D3D5C;
+        border-top: 1px solid #2A3040;
         color: #808080;
         font-size: 0.85em;
     }
     .summary-text {
-        background-color: #2D2D44;
+        background-color: #1A1F2E;
         border-radius: 8px;
         padding: 20px 25px;
         margin: 15px 0;
-        border-left: 4px solid #4CAF50;
+        border-left: 4px solid #6C63FF;
         line-height: 1.8;
     }
     """
@@ -217,6 +218,8 @@ def generate_executive_summary(df, api_key=None):
             import google.generativeai as genai
 
             genai.configure(api_key=api_key)
+            # NOTE: This duplicates the Gemini pattern from ai_insights.py for isolation.
+            # Future refactoring could unify these into a shared Gemini client utility.
             model = genai.GenerativeModel("gemini-2.5-flash-preview-04-17")
 
             # Build data summary for context
@@ -240,8 +243,10 @@ def generate_executive_summary(df, api_key=None):
             response = model.generate_content(prompt)
             if response and response.text:
                 return response.text
-        except Exception:
-            pass
+        except Exception as e:
+            import logging
+            logging.warning(f"Gemini executive summary generation failed: {str(e)}")
+            # Fall through to rule-based summary below
 
     # Rule-based fallback
     return _generate_rule_based_summary(df)
@@ -320,6 +325,7 @@ def generate_html_report(df, title="Data Analysis Report", include_ai_summary=Fa
 
     css = get_report_css()
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    safe_title = html.escape(title)
 
     html_parts = []
 
@@ -329,7 +335,7 @@ def generate_html_report(df, title="Data Analysis Report", include_ai_summary=Fa
     html_parts.append("<head>")
     html_parts.append("<meta charset='UTF-8'>")
     html_parts.append("<meta name='viewport' content='width=device-width, initial-scale=1.0'>")
-    html_parts.append(f"<title>{title}</title>")
+    html_parts.append(f"<title>{safe_title}</title>")
     html_parts.append("<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>")
     html_parts.append(f"<style>{css}</style>")
     html_parts.append("</head>")
@@ -337,7 +343,7 @@ def generate_html_report(df, title="Data Analysis Report", include_ai_summary=Fa
 
     # Report header
     html_parts.append("<div class='report-header'>")
-    html_parts.append(f"<h1>{title}</h1>")
+    html_parts.append(f"<h1>{safe_title}</h1>")
     html_parts.append(f"<p>Generated on {now}</p>")
     html_parts.append(f"<p>{len(df):,} rows x {len(df.columns)} columns</p>")
     html_parts.append("</div>")
@@ -366,12 +372,12 @@ def generate_html_report(df, title="Data Analysis Report", include_ai_summary=Fa
                 fig = px.histogram(
                     df, x=col, title=f"Distribution of {col}",
                     template="plotly_dark",
-                    color_discrete_sequence=["#4CAF50"]
+                    color_discrete_sequence=["#6C63FF"]
                 )
                 fig.update_layout(
-                    paper_bgcolor="#2D2D44",
-                    plot_bgcolor="#1E1E2E",
-                    font_color="#FFFFFF",
+                    paper_bgcolor="#1A1F2E",
+                    plot_bgcolor="#0E1117",
+                    font_color="#FAFAFA",
                     height=350
                 )
                 html_parts.append("<div class='chart-container'>")
@@ -398,9 +404,9 @@ def generate_html_report(df, title="Data Analysis Report", include_ai_summary=Fa
             fig.update_layout(
                 title="Correlation Matrix",
                 template="plotly_dark",
-                paper_bgcolor="#2D2D44",
-                plot_bgcolor="#1E1E2E",
-                font_color="#FFFFFF",
+                paper_bgcolor="#1A1F2E",
+                plot_bgcolor="#0E1117",
+                font_color="#FAFAFA",
                 height=500
             )
             html_parts.append("<div class='chart-container'>")
@@ -428,16 +434,17 @@ def _generate_empty_report(title):
     """Generate a minimal report for empty dataframes."""
     css = get_report_css()
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    safe_title = html.escape(title)
     return f"""<!DOCTYPE html>
 <html lang='en'>
 <head>
 <meta charset='UTF-8'>
-<title>{title}</title>
+<title>{safe_title}</title>
 <style>{css}</style>
 </head>
 <body>
 <div class='report-header'>
-<h1>{title}</h1>
+<h1>{safe_title}</h1>
 <p>Generated on {now}</p>
 </div>
 <div class='card'>
@@ -510,7 +517,7 @@ def _generate_quality_section(df):
 
     # Color based on completeness
     if completeness >= 95:
-        bar_color = "#4CAF50"
+        bar_color = "#6C63FF"
     elif completeness >= 80:
         bar_color = "#FFC107"
     else:

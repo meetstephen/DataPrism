@@ -45,7 +45,9 @@ def generate_insights_gemini(df_summary, api_key):
 
         return None
 
-    except Exception:
+    except Exception as e:
+        import logging
+        logging.warning(f"Gemini API call failed: {str(e)}")
         return None
 
 
