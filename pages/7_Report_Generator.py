@@ -11,11 +11,36 @@ st.markdown("Generate comprehensive, downloadable HTML analysis reports.")
 
 # Data Source Selection
 st.markdown("### Select Data Source")
+
+# Quick upload option
+with st.expander("📁 Upload a new file for report", expanded=False):
+    report_upload = st.file_uploader(
+        "Upload CSV or Excel",
+        type=["csv", "xlsx", "xls"],
+        key="report_file_uploader",
+        help="Upload a fresh dataset to generate a report from."
+    )
+    if report_upload is not None:
+        try:
+            if report_upload.name.endswith(".csv"):
+                new_df = pd.read_csv(report_upload)
+            else:
+                new_df = pd.read_excel(report_upload)
+            if not new_df.empty and len(new_df.columns) >= 1:
+                st.session_state.uploaded_df = new_df
+                st.success(f"✅ Loaded **{report_upload.name}** ({len(new_df):,} rows x {len(new_df.columns)} columns)")
+            else:
+                st.error("The uploaded file is empty or has no columns.")
+        except Exception as e:
+            st.error(f"Error reading file: {str(e)}")
+
 sources = ["Built-in Community College Data"]
 if st.session_state.get("uploaded_df") is not None:
     sources.append("Uploaded Data")
 if st.session_state.get("online_df") is not None:
     sources.append("Online Data")
+if st.session_state.get("working_df") is not None:
+    sources.append("Cleaned Data")
 
 data_source = st.radio("Choose data:", sources, horizontal=True)
 
@@ -36,6 +61,11 @@ elif data_source == "Online Data":
     df = st.session_state.get("online_df")
     if df is None:
         st.error("No online data found. Please fetch data from the Online Data Explorer first.")
+        st.stop()
+elif data_source == "Cleaned Data":
+    df = st.session_state.get("working_df")
+    if df is None:
+        st.error("No cleaned data found. Please clean a dataset in the Data Cleaning page first.")
         st.stop()
 
 st.markdown(f"**Selected dataset:** {len(df):,} rows x {len(df.columns)} columns")

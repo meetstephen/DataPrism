@@ -27,34 +27,70 @@ st.markdown("Clean, transform, and prepare your data with full undo support and 
 st.markdown("---")
 
 # --- Data Source Selection ---
-st.markdown("### Select Data Source")
-source_options = []
-if "uploaded_df" in st.session_state and st.session_state.uploaded_df is not None:
-    source_options.append("Uploaded Data")
-if "online_df" in st.session_state and st.session_state.online_df is not None:
-    source_options.append("Online Data")
-if "df" in st.session_state and st.session_state.df is not None:
-    source_options.append("Built-in Dataset")
+st.markdown("### Load Data")
 
-if not source_options:
-    st.warning("No data available. Please upload a dataset or load the built-in data from the home page.")
-    st.stop()
+source_tab1, source_tab2 = st.tabs(["📁 Upload New File", "📂 Use Existing Data"])
 
-selected_source = st.selectbox("Choose dataset to clean:", source_options)
+with source_tab1:
+    cleaning_upload = st.file_uploader(
+        "Upload a CSV or Excel file to clean",
+        type=["csv", "xlsx", "xls"],
+        key="cleaning_file_uploader",
+        help="Upload a fresh dataset directly here for cleaning."
+    )
+    if cleaning_upload is not None:
+        try:
+            if cleaning_upload.name.endswith(".csv"):
+                new_df = pd.read_csv(cleaning_upload)
+            else:
+                new_df = pd.read_excel(cleaning_upload)
+            if new_df.empty or len(new_df.columns) < 1:
+                st.error("The uploaded file is empty or has no columns.")
+            else:
+                st.session_state.uploaded_df = new_df
+                st.session_state.raw_df = new_df.copy()
+                st.session_state.working_df = new_df.copy()
+                st.session_state.cleaning_log = []
+                st.session_state.cleaning_history = []
+                st.session_state["_cleaning_source"] = "Uploaded Data"
+                save_session_state()
+                st.success(f"✅ Loaded **{cleaning_upload.name}** ({len(new_df):,} rows x {len(new_df.columns)} columns)")
+        except Exception as e:
+            st.error(f"Error reading file: {str(e)}")
 
-# Load data into working_df on first selection or source change
-load_key = f"cleaning_source_{selected_source}"
-if st.session_state.working_df is None or st.session_state.get("_cleaning_source") != selected_source:
-    if selected_source == "Uploaded Data":
-        st.session_state.raw_df = st.session_state.uploaded_df.copy()
-    elif selected_source == "Online Data":
-        st.session_state.raw_df = st.session_state.online_df.copy()
+with source_tab2:
+    source_options = []
+    if "uploaded_df" in st.session_state and st.session_state.uploaded_df is not None:
+        source_options.append("Uploaded Data")
+    if "online_df" in st.session_state and st.session_state.online_df is not None:
+        source_options.append("Online Data")
+    if "df" in st.session_state and st.session_state.df is not None:
+        source_options.append("Built-in Dataset")
+
+    if not source_options:
+        st.info("No existing data loaded. Upload a file above, or load data from the Online Explorer or Home page.")
     else:
-        st.session_state.raw_df = st.session_state.df.copy()
-    st.session_state.working_df = st.session_state.raw_df.copy()
-    st.session_state.cleaning_log = []
-    st.session_state.cleaning_history = []
-    st.session_state["_cleaning_source"] = selected_source
+        selected_source = st.selectbox("Choose dataset to clean:", source_options)
+
+        if st.button("Load Selected Dataset", type="primary", key="load_existing_for_cleaning"):
+            if selected_source == "Uploaded Data":
+                st.session_state.raw_df = st.session_state.uploaded_df.copy()
+            elif selected_source == "Online Data":
+                st.session_state.raw_df = st.session_state.online_df.copy()
+            else:
+                st.session_state.raw_df = st.session_state.df.copy()
+            st.session_state.working_df = st.session_state.raw_df.copy()
+            st.session_state.cleaning_log = []
+            st.session_state.cleaning_history = []
+            st.session_state["_cleaning_source"] = selected_source
+            save_session_state()
+            st.success(f"✅ Loaded '{selected_source}' for cleaning.")
+            st.rerun()
+
+# Check if working_df is loaded
+if st.session_state.working_df is None:
+    st.info("👆 Select a data source above to begin cleaning.")
+    st.stop()
 
 df = st.session_state.working_df
 
