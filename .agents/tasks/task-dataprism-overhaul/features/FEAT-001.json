@@ -1,0 +1,32 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Create the premium enterprise theme system (utils/styles.py), update .streamlit/config.toml to DataPrism branding, and inject the global CSS into ALL existing page files (app.py, pages/1-7). This is the foundation for the visual overhaul.",
+  "status": "completed",
+  "steps": [
+    "Create utils/styles.py with the GLOBAL_CSS constant, inject_global_css() function, render_insight_card() function, and render_empty_state() function exactly as specified in the upgrade instructions. The CSS must hide MainMenu/footer/deploy button, set DM Sans font, style sidebar with #0F1C2E, style primary buttons with gradient #00D4FF to #0066FF, style metrics with #1A2740 background, style tabs with cyan highlight, and style file upload dropzone with cyan dashed border.",
+    "Update .streamlit/config.toml to the new DataPrism theme: primaryColor=#00D4FF, backgroundColor=#0F1C2E, secondaryBackgroundColor=#1A2740, textColor=#F0F4F8, font=sans serif. Add [server] maxUploadSize=200, headless=true. Add [browser] gatherUsageStats=false.",
+    "Inject CSS into app.py: Add 'from utils.styles import inject_global_css' import and call inject_global_css() immediately after st.set_page_config().",
+    "Inject CSS into pages/1_Community_College_Dashboard.py: Add the import and inject_global_css() call after st.set_page_config().",
+    "Inject CSS into pages/2_Upload_and_Analyze.py: Add the import and inject_global_css() call after st.set_page_config().",
+    "Inject CSS into pages/3_AI_Insights_Engine.py: Add the import and inject_global_css() call after st.set_page_config().",
+    "Inject CSS into pages/4_Advanced_Analytics.py: Add the import and inject_global_css() call after st.set_page_config().",
+    "Inject CSS into pages/5_Online_Data_Explorer.py: Add the import and inject_global_css() call after st.set_page_config().",
+    "Inject CSS into pages/6_Report_Generator.py: Add the import and inject_global_css() call after st.set_page_config().",
+    "Inject CSS into pages/7_Expert_Analyst.py: Add the import and inject_global_css() call after st.set_page_config()."
+  ],
+  "acceptance_criteria": [
+    "utils/styles.py exists with GLOBAL_CSS, inject_global_css(), render_insight_card(), render_empty_state()",
+    ".streamlit/config.toml has the new DataPrism colors and server/browser settings",
+    "Every page file (app.py, pages/1-7) has 'from utils.styles import inject_global_css' and calls inject_global_css() after set_page_config",
+    "All files pass py_compile"
+  ],
+  "verification": [
+    "python -m py_compile utils/styles.py",
+    "python -m py_compile app.py",
+    "for f in pages/*.py; do python -m py_compile \"$f\"; done",
+    "python -c \"from utils.styles import inject_global_css, render_insight_card, render_empty_state\""
+  ],
+  "blocked_reason": null,
+  "findings": "Python needed pyenv global 3.11.15 to be set. All py_compile checks pass. Import verification successful."
+}

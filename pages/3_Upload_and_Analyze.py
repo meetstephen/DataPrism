@@ -4,6 +4,8 @@ Upload and Analyze - Universal dataset analysis tool.
 
 import streamlit as st
 st.set_page_config(page_title="Upload & Analyze", page_icon="\U0001F4C1", layout="wide")
+from utils.styles import inject_global_css
+inject_global_css()
 
 import pandas as pd
 import numpy as np
@@ -60,6 +62,8 @@ if uploaded_file is not None:
 
             # Store in session state for use in other pages
             st.session_state.uploaded_df = df
+            from utils.persistence import save_session_state
+            save_session_state()
 
             st.success(f"File loaded successfully: {uploaded_file.name}")
 
@@ -190,6 +194,19 @@ if uploaded_file is not None:
                             f"Null: {info['null_count']} ({info['null_percentage']}%) | "
                             f"Unique: {info['unique_count']} ({info['unique_percentage']}%)"
                         )
+
+            # Cross-module navigation
+            st.markdown("---")
+            st.markdown("### \U0001F517 Continue Analysis")
+            nav_col1, nav_col2, nav_col3, nav_col4 = st.columns(4)
+            with nav_col1:
+                st.page_link("pages/9_Data_Cleaning.py", label="\U0001f9f9 Clean This Data", icon="\U0001f9f9")
+            with nav_col2:
+                st.page_link("pages/4_AI_Insights_Engine.py", label="\U0001F916 AI Insights", icon="\U0001F916")
+            with nav_col3:
+                st.page_link("pages/10_Chat_With_Data.py", label="\U0001F4AC Chat With Data", icon="\U0001F4AC")
+            with nav_col4:
+                st.page_link("pages/7_Report_Generator.py", label="\U0001F4CB Generate Report", icon="\U0001F4CB")
 
         except Exception as e:
             st.error(f"Error loading file: {str(e)}")

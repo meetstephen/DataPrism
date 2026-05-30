@@ -1,0 +1,7 @@
+{
+  "task_id": "task-dataprism-overhaul",
+  "task_description": "Complete DataPrism enterprise overhaul of the Streamlit data analysis app: premium theme with global CSS injection, data cleaning engine with undo/redo, natural language chat with data, app rebranding, report generator theme update, requirements update, and README rewrite.",
+  "status": "in_progress",
+  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003", "FEAT-004"],
+  "blocked_reason": null
+}

@@ -1,7 +1,7 @@
 """
-Community College Data Analyzer - Main Application Entry Point.
+DataPrism - Enterprise Data Intelligence Platform.
 
-A comprehensive Streamlit web application for analyzing community college data
+A comprehensive Streamlit web application for analyzing, cleaning, and exploring data
 with interactive dashboards, AI-powered insights, and advanced analytics tools.
 """
 
@@ -10,14 +10,18 @@ import pandas as pd
 import os
 
 from utils.data_generator import generate_dataset, save_dataset
+from utils.styles import inject_global_css
+from utils.data_engine import init_cleaning_state
+from utils.persistence import restore_session_state, save_session_state, get_last_saved_time, clear_persisted_session
 
 # Page configuration
 st.set_page_config(
-    page_title="Community College Data Analyzer",
-    page_icon="\U0001F393",
+    page_title="DataPrism",
+    page_icon="\U0001f4a0",
     layout="wide",
     initial_sidebar_state="expanded"
 )
+inject_global_css()
 
 # Load dataset into session state
 if "df" not in st.session_state:
@@ -34,37 +38,75 @@ if "uploaded_df" not in st.session_state:
     st.session_state.uploaded_df = None
 if "generated_report" not in st.session_state:
     st.session_state.generated_report = None
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+if "doc_chat_history" not in st.session_state:
+    st.session_state.doc_chat_history = []
+if "doc_content" not in st.session_state:
+    st.session_state.doc_content = None
+if "doc_name" not in st.session_state:
+    st.session_state.doc_name = None
+if "gemini_api_key" not in st.session_state:
+    st.session_state.gemini_api_key = None
+
+# Initialize cleaning state
+init_cleaning_state()
+
+# Restore persisted session on first load
+if "session_restored" not in st.session_state:
+    restored = restore_session_state()
+    st.session_state.session_restored = True
+    if restored:
+        st.toast("\u2705 Previous session restored!", icon="\U0001F4BE")
 
 # Sidebar
 with st.sidebar:
-    st.title("\U0001F393 Data Analyzer")
+    st.title("\U0001f4a0 DataPrism")
     st.markdown("---")
     st.markdown(
         """
-        **Community College Data Analysis Platform**
+        **Enterprise Data Intelligence Platform**
 
-        Navigate using the pages in the sidebar to explore:
+        Navigate using the pages in the sidebar:
 
-        - **Dashboard** - Pre-built visualizations
-        - **Upload & Analyze** - Your own datasets
-        - **AI Insights** - Automated analysis
-        - **Advanced Analytics** - Custom tools
-        - **Online Explorer** - Web data fetching
-        - **Report Generator** - Export reports
-        - **Expert Analyst** - Deep file analysis
+        - \U0001F680 **Getting Started** - Quick start guide
+        - \U0001F4CA **Dashboard** - Pre-built visualizations
+        - \U0001F4C1 **Upload & Analyze** - Your own datasets
+        - \U0001F916 **AI Insights** - Automated analysis
+        - \U0001F527 **Advanced Analytics** - Custom tools
+        - \U0001F310 **Online Explorer** - Web data fetching
+        - \U0001F4CB **Report Generator** - Export reports
+        - \U0001F393 **Expert Analyst** - Deep file analysis
+        - \U0001f9f9 **Data Cleaning** - Transform & prepare
+        - \U0001F4AC **Chat With Data** - Natural language queries
+        - \U0001F4C4 **Document Chat** - Chat with any document
         """
     )
     st.markdown("---")
-    st.caption("Built with Streamlit & Plotly | Enterprise Edition")
+    st.caption("DataPrism | Enterprise Data Intelligence")
+    st.markdown("---")
+    st.markdown("##### \U0001F4BE Session")
+    last_saved = get_last_saved_time()
+    if last_saved:
+        st.caption(f"Last saved: {last_saved[:19]}")
+    save_col, clear_col = st.columns(2)
+    with save_col:
+        if st.button("\U0001F4BE Save", use_container_width=True, help="Save current work"):
+            save_session_state()
+            st.toast("\u2705 Session saved!", icon="\U0001F4BE")
+    with clear_col:
+        if st.button("\U0001F5D1\uFE0F Clear", use_container_width=True, help="Clear saved session"):
+            clear_persisted_session()
+            st.toast("\U0001F5D1\uFE0F Session cleared!", icon="\U0001F5D1\uFE0F")
 
 # Main content - Welcome page
-st.title("\U0001F393 Community College Data Analyzer")
-st.markdown("### Welcome to the Data Analysis Platform")
+st.title("\U0001f4a0 DataPrism")
+st.markdown("### Raw Data. Refined Intelligence.")
 st.markdown(
     """
-    This application provides comprehensive data analysis tools for community college data.
-    Explore pre-built dashboards, upload your own datasets, generate AI-powered insights,
-    and perform advanced analytics with interactive tools.
+    DataPrism is an enterprise-grade data intelligence platform that transforms raw data
+    into actionable insights. Explore interactive dashboards, clean and transform datasets,
+    generate AI-powered analysis, and have natural conversations with your data.
     """
 )
 
@@ -158,6 +200,47 @@ with col5:
         """
     )
 
+with col6:
+    st.markdown(
+        """
+        #### \U0001f9f9 Data Cleaning Engine
+        Transform and prepare your data for analysis:
+        - Handle missing values with multiple strategies
+        - Remove duplicates and outliers (IQR method)
+        - Drop or rename columns interactively
+        - Full undo support and audit logging
+        - Export cleaned data as CSV
+        """
+    )
+
+# Chat feature card
+col7, col8 = st.columns(2)
+with col7:
+    st.markdown(
+        """
+        #### \U0001f4ac Chat With Your Data
+        Natural language data analysis:
+        - Ask questions in plain English
+        - Get AI-powered answers with data citations
+        - Auto-generated Plotly visualizations
+        - Contextual follow-up questions
+        - Powered by Gemini 2.5 Flash
+        """
+    )
+
+with col8:
+    st.markdown(
+        """
+        #### \U0001F4C4 Document Chat
+        Chat with any uploaded document:
+        - Upload PDF, Word, Excel, CSV, JSON, or text files
+        - Get AI-powered summaries and key insights
+        - Ask questions in natural language
+        - Extract data and patterns from documents
+        - Export conversation history
+        """
+    )
+
 st.markdown("---")
 
 # Dataset overview
@@ -179,3 +262,4 @@ with col4:
 
 st.markdown("---")
 st.markdown("*Select a page from the sidebar to get started.*")
+st.caption("DataPrism | Enterprise Data Intelligence")

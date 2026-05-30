@@ -1,6 +1,8 @@
 import streamlit as st
 
 st.set_page_config(page_title="Online Data Explorer", page_icon="\U0001F310", layout="wide")
+from utils.styles import inject_global_css
+inject_global_css()
 
 import pandas as pd
 from utils.online_data import (
@@ -10,6 +12,7 @@ from utils.online_data import (
     validate_dataframe,
     detect_file_type,
 )
+from utils.persistence import save_session_state
 
 st.title("\U0001F310 Online Data Explorer")
 st.markdown("Fetch and analyze datasets from the internet. Load CSV, JSON, or Excel files from any URL, browse curated public datasets, or scrape tables from web pages.")
@@ -69,6 +72,7 @@ with tab1:
 
                 st.session_state.online_df = df
                 st.session_state.online_data_source = url_input
+                save_session_state()
                 st.success("Data loaded successfully!")
 
     elif fetch_button and not url_input:
@@ -108,6 +112,7 @@ with tab2:
                             else:
                                 st.session_state.online_df = df
                                 st.session_state.online_data_source = dataset["name"]
+                                save_session_state()
                                 st.success(f"Loaded {dataset['name']}!")
                 st.markdown("---")
 
@@ -152,6 +157,7 @@ with tab3:
         if st.button("Use this table", key="use_scraped_table"):
             st.session_state.online_df = selected_table
             st.session_state.online_data_source = f"Scraped table from {st.session_state.get('scrape_url_input', 'web page')}"
+            save_session_state()
             st.success("Table loaded as active dataset!")
 
 # --- Display loaded data ---

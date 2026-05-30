@@ -1,0 +1,29 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Create the Data Cleaning Engine (utils/data_engine.py) and the Data Cleaning page (pages/8_Data_Cleaning.py) with undo/redo support, plus the Natural Language Chat page (pages/9_Chat_With_Data.py). Also update app.py to rebrand as DataPrism, initialize new session state keys, and update the home page content.",
+  "status": "completed",
+  "steps": [
+    "Create utils/data_engine.py with: init_cleaning_state(), apply_cleaning_step(), drop_missing_rows(), fill_missing() (supporting mean/median/mode/zero/forward/backward), remove_duplicates(), remove_outliers_iqr(), drop_columns(), rename_columns(). Each operation returns (result_df, rows_affected). The cleaning_history list stores DataFrame snapshots for undo. The cleaning_log list stores audit entries with step number, action name, rows_affected, and UTC timestamp.",
+    "Create pages/8_Data_Cleaning.py: set_page_config with title 'Data Cleaning', icon broom, wide layout. Import and call inject_global_css(). Build a comprehensive cleaning page with: (1) Data source selector (uploaded_df or df from session_state, loaded into working_df), (2) Undo/Reset bar at top using st.columns with Undo button (pops from cleaning_history) and Reset button (restores raw_df), (3) Tabs for: Missing Values (show missing counts, let user select columns and fill strategy), Duplicates (show count, remove with keep=first/last/none), Outliers (select column, show IQR bounds, remove button), Column Operations (drop columns multiselect, rename columns with text inputs), (4) Cleaning log displayed as a dataframe at the bottom, (5) Download cleaned data button.",
+    "Create pages/9_Chat_With_Data.py: set_page_config with title 'Chat With Data', icon speech bubble, wide layout. Import and call inject_global_css(). Build a chat interface: (1) Data source selector same pattern as other pages, (2) API key from st.secrets['GEMINI_API_KEY'] with sidebar fallback, (3) Initialize st.session_state.chat_history as list if not present, (4) Display existing chat history using st.chat_message for each message, (5) st.chat_input for user questions, (6) On user input: append user message to history, build Gemini prompt with dataset schema (columns, dtypes, shape) and 10-row sample, ask Gemini to answer in business English and optionally include Python code for a Plotly chart wrapped in ```python``` fences, (7) Parse response - if chart code found, exec() it safely in a try/except and display the figure with st.plotly_chart, (8) Display text answer with st.chat_message, (9) Clear Chat button in sidebar. All Gemini calls wrapped in try/except with graceful fallback message.",
+    "Update app.py: (1) Add 'from utils.data_engine import init_cleaning_state' import, (2) Add 'from utils.styles import inject_global_css' import, (3) Call inject_global_css() after set_page_config, (4) Call init_cleaning_state() after existing session state initializations, (5) Add st.session_state.chat_history = [] initialization (with 'if not in' guard), (6) Rebrand: change page_title to 'DataPrism', change page_icon to diamond or prism emoji, (7) Update sidebar title to 'DataPrism', (8) Update sidebar description to mention all 9 pages including Data Cleaning and Chat With Data, (9) Update main title to 'DataPrism' with tagline 'Raw Data. Refined Intelligence.', (10) Update feature cards to include Data Cleaning and Chat With Data, (11) Update footer caption to mention DataPrism."
+  ],
+  "acceptance_criteria": [
+    "utils/data_engine.py exists with all specified functions",
+    "pages/8_Data_Cleaning.py exists with tabs for Missing Values, Duplicates, Outliers, Column Operations, and undo/reset bar",
+    "pages/9_Chat_With_Data.py exists with st.chat_message/st.chat_input interface and Gemini integration",
+    "app.py is rebranded to DataPrism throughout, initializes cleaning_state and chat_history",
+    "All files pass py_compile",
+    "inject_global_css() is called in all new page files"
+  ],
+  "verification": [
+    "python -m py_compile utils/data_engine.py",
+    "python -m py_compile pages/8_Data_Cleaning.py",
+    "python -m py_compile pages/9_Chat_With_Data.py",
+    "python -m py_compile app.py",
+    "python -c \"from utils.data_engine import init_cleaning_state, apply_cleaning_step, drop_missing_rows, fill_missing, remove_duplicates, remove_outliers_iqr, drop_columns, rename_columns\""
+  ],
+  "blocked_reason": null,
+  "findings": "All py_compile checks pass. Import verification successful. Dependencies installed via pip install -r requirements.txt. The app is rebranded to DataPrism with all 9 pages listed. Chat page supports Gemini-powered conversations with auto Plotly chart generation. Data cleaning engine includes full undo/redo and audit logging."
+}

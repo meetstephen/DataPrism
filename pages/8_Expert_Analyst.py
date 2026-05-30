@@ -1,5 +1,7 @@
 import streamlit as st
 st.set_page_config(page_title="Expert Data Analyst", page_icon="\U0001F393", layout="wide")
+from utils.styles import inject_global_css
+inject_global_css()
 
 import pandas as pd
 import numpy as np
@@ -304,7 +306,7 @@ if uploaded_file:
                 with box_cols[i % 2]:
                     try:
                         fig = px.box(df, y=col, title=f"Box Plot: {col}",
-                                     color_discrete_sequence=["#6C63FF"])
+                                     color_discrete_sequence=["#00D4FF"])
                         fig.update_layout(template="plotly_dark", height=350)
                         st.plotly_chart(fig, use_container_width=True)
                     except Exception:

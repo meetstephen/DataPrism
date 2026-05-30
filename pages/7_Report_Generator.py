@@ -1,5 +1,7 @@
 import streamlit as st
 st.set_page_config(page_title="Report Generator", page_icon="\U0001F4CB", layout="wide")
+from utils.styles import inject_global_css
+inject_global_css()
 
 import pandas as pd
 from utils.report_generator import generate_html_report, generate_executive_summary
