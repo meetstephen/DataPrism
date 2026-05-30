@@ -13,10 +13,10 @@ from datetime import datetime
 
 def get_report_css():
     """Return CSS stylesheet string for the HTML report. Uses a premium enterprise dark theme
-    (background #0E1117, text #FAFAFA, accent #6C63FF, cards with #1A1F2E)."""
+    (background #0F1C2E, text #FAFAFA, accent #00D4FF, cards with #1A2740)."""
     return """
     body {
-        background-color: #0E1117;
+        background-color: #0F1C2E;
         color: #FAFAFA;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         margin: 0;
@@ -24,29 +24,29 @@ def get_report_css():
         line-height: 1.6;
     }
     h1 {
-        color: #6C63FF;
-        border-bottom: 2px solid #6C63FF;
+        color: #00D4FF;
+        border-bottom: 2px solid #00D4FF;
         padding-bottom: 10px;
         margin-top: 30px;
     }
     h2 {
-        color: #9D97FF;
+        color: #4DD8FF;
         margin-top: 30px;
         border-bottom: 1px solid #2A3040;
         padding-bottom: 8px;
     }
     h3 {
-        color: #B8B3FF;
+        color: #80E5FF;
         margin-top: 20px;
     }
     h4 {
-        color: #D4D1FF;
+        color: #B3F0FF;
         margin-top: 15px;
     }
     .report-header {
         text-align: center;
         padding: 30px;
-        background-color: #1A1F2E;
+        background-color: #1A2740;
         border-radius: 10px;
         margin-bottom: 30px;
     }
@@ -60,7 +60,7 @@ def get_report_css():
         margin: 5px 0;
     }
     .card {
-        background-color: #1A1F2E;
+        background-color: #1A2740;
         border-radius: 8px;
         padding: 20px;
         margin: 15px 0;
@@ -70,13 +70,13 @@ def get_report_css():
         width: 100%;
         border-collapse: collapse;
         margin: 15px 0;
-        background-color: #1A1F2E;
+        background-color: #1A2740;
         border-radius: 8px;
         overflow: hidden;
     }
     th {
         background-color: #2A3040;
-        color: #6C63FF;
+        color: #00D4FF;
         padding: 12px 15px;
         text-align: left;
         font-weight: 600;
@@ -90,7 +90,7 @@ def get_report_css():
         background-color: #2A3040;
     }
     .chart-container {
-        background-color: #1A1F2E;
+        background-color: #1A2740;
         border-radius: 8px;
         padding: 15px;
         margin: 20px 0;
@@ -102,16 +102,16 @@ def get_report_css():
         margin: 20px 0;
     }
     .metric-card {
-        background-color: #1A1F2E;
+        background-color: #1A2740;
         border-radius: 8px;
         padding: 20px;
         text-align: center;
-        border-left: 4px solid #6C63FF;
+        border-left: 4px solid #00D4FF;
     }
     .metric-card .value {
         font-size: 1.8em;
         font-weight: bold;
-        color: #6C63FF;
+        color: #00D4FF;
     }
     .metric-card .label {
         color: #B0B0B0;
@@ -139,11 +139,11 @@ def get_report_css():
         font-size: 0.85em;
     }
     .summary-text {
-        background-color: #1A1F2E;
+        background-color: #1A2740;
         border-radius: 8px;
         padding: 20px 25px;
         margin: 15px 0;
-        border-left: 4px solid #6C63FF;
+        border-left: 4px solid #00D4FF;
         line-height: 1.8;
     }
     """
@@ -372,11 +372,11 @@ def generate_html_report(df, title="Data Analysis Report", include_ai_summary=Fa
                 fig = px.histogram(
                     df, x=col, title=f"Distribution of {col}",
                     template="plotly_dark",
-                    color_discrete_sequence=["#6C63FF"]
+                    color_discrete_sequence=["#00D4FF"]
                 )
                 fig.update_layout(
-                    paper_bgcolor="#1A1F2E",
-                    plot_bgcolor="#0E1117",
+                    paper_bgcolor="#1A2740",
+                    plot_bgcolor="#0F1C2E",
                     font_color="#FAFAFA",
                     height=350
                 )
@@ -404,8 +404,8 @@ def generate_html_report(df, title="Data Analysis Report", include_ai_summary=Fa
             fig.update_layout(
                 title="Correlation Matrix",
                 template="plotly_dark",
-                paper_bgcolor="#1A1F2E",
-                plot_bgcolor="#0E1117",
+                paper_bgcolor="#1A2740",
+                plot_bgcolor="#0F1C2E",
                 font_color="#FAFAFA",
                 height=500
             )
@@ -421,7 +421,7 @@ def generate_html_report(df, title="Data Analysis Report", include_ai_summary=Fa
 
     # Footer
     html_parts.append(f"<div class='footer'>")
-    html_parts.append(f"<p>Report generated on {now} | Community College Data Analyzer</p>")
+    html_parts.append(f"<p>Report generated on {now} | DataPrism</p>")
     html_parts.append("</div>")
 
     html_parts.append("</body>")
@@ -451,7 +451,7 @@ def _generate_empty_report(title):
 <p>No data available. The provided dataset is empty.</p>
 </div>
 <div class='footer'>
-<p>Report generated on {now} | Community College Data Analyzer</p>
+<p>Report generated on {now} | DataPrism</p>
 </div>
 </body>
 </html>"""
@@ -517,7 +517,7 @@ def _generate_quality_section(df):
 
     # Color based on completeness
     if completeness >= 95:
-        bar_color = "#6C63FF"
+        bar_color = "#00D4FF"
     elif completeness >= 80:
         bar_color = "#FFC107"
     else:
