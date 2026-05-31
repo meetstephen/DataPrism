@@ -2,7 +2,7 @@
   "id": "FEAT-001",
   "type": "feat",
   "description": "Data Joining/Merging page and SQL Query Interface - the two critical analyst features. Create utils/data_join.py, pages/13_Data_Join.py, utils/sql_engine.py, pages/14_SQL_Query.py, and add pandasql to requirements.txt.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Add 'pandasql==0.7.3' to requirements.txt (after the supabase line, in a new '# SQL query engine' section)",
     "Create utils/data_join.py with functions: join_datasets(left_df, right_df, left_key, right_key, join_type) supporting inner/left/right/outer joins, and concat_datasets(df_list, axis=0) for vertical stacking. Return the resulting DataFrame. Include a get_available_datasets() helper that reads session state keys (uploaded_df, online_df, df, working_df, merged_df) and returns a dict of {name: df}.",
@@ -25,5 +25,5 @@
     "python -m py_compile pages/13_Data_Join.py && python -m py_compile pages/14_SQL_Query.py"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "pandasql 0.7.3 installs and works correctly but does not expose __version__ attribute. Verification adjusted to test functional SQL execution instead. All py_compile and import checks pass."
 }
