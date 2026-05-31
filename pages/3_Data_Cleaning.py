@@ -362,6 +362,6 @@ col1, col2, col3 = st.columns(3)
 with col1:
     st.page_link("pages/4_AI_Insights_Engine.py", label="\U0001F916 Analyze with AI", icon="\U0001F916")
 with col2:
-    st.page_link("pages/10_Chat_With_Data.py", label="\U0001F4AC Chat With Data", icon="\U0001F4AC")
+    st.page_link("pages/8_Chat_With_Data.py", label="\U0001F4AC Chat With Data", icon="\U0001F4AC")
 with col3:
     st.page_link("pages/7_Report_Generator.py", label="\U0001F4CB Generate Report", icon="\U0001F4CB")
