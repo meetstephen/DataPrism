@@ -8,6 +8,8 @@ from utils.data_loader import ensure_builtin_data
 from utils.ai_client import get_api_key, generate_content, GEMINI_MODEL
 from utils.report_generator import generate_html_report, generate_executive_summary
 from utils.exporters import render_export_buttons
+from utils.supabase_client import is_configured
+from utils import database as db
 
 st.title("\U0001F4CB Report Generator")
 st.markdown("Generate comprehensive, downloadable HTML analysis reports.")
@@ -138,3 +140,14 @@ if "generated_report" in st.session_state:
     # Multi-format export of the underlying data
     st.markdown("**Export underlying data:**")
     render_export_buttons(df, base_filename="report_data", key_prefix="report_export")
+
+    # Optional: save report to cloud (Supabase)
+    if is_configured():
+        st.markdown("**Save to cloud:**")
+        if st.button("\u2601\uFE0F Save report to cloud", key="report_cloud_save"):
+            ok, msg = db.save_report(report_title, st.session_state.generated_report, str(data_source))
+            st.success(msg) if ok else st.error(msg)
+    else:
+        st.caption(
+            "\u2601\uFE0F Tip: connect a database (see SUPABASE_SETUP.md) to save reports to the cloud."
+        )

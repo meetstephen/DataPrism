@@ -17,6 +17,8 @@ from utils.visualizations import (
 )
 from utils.ai_insights import generate_data_quality_report
 from utils.exporters import render_export_buttons
+from utils.supabase_client import is_configured
+from utils import database as db
 
 st.title("\U0001F4C1 Upload & Analyze Your Data")
 st.markdown(
@@ -74,6 +76,19 @@ if uploaded_file is not None:
             # Multi-format export for the loaded data
             st.markdown("**Download data:**")
             render_export_buttons(df, base_filename="analyzed_data", key_prefix="upload_export")
+
+            # Optional: save to cloud (Supabase)
+            if is_configured():
+                with st.expander("\u2601\uFE0F Save this dataset to the cloud"):
+                    default_name = uploaded_file.name.rsplit(".", 1)[0]
+                    cloud_name = st.text_input("Save as name", value=default_name, key="upload_cloud_name")
+                    if st.button("Save to cloud", key="upload_cloud_save"):
+                        ok, msg = db.save_dataset((cloud_name or default_name).strip(), df)
+                        st.success(msg) if ok else st.error(msg)
+            else:
+                st.caption(
+                    "\u2601\uFE0F Tip: connect a database (see SUPABASE_SETUP.md) to save datasets to the cloud."
+                )
 
             # Data Preview
             st.markdown("### Data Preview")

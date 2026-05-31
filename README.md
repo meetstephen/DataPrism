@@ -17,6 +17,7 @@ This release adds a set of analyst-grade capabilities across the platform:
 - **Data Validation Rules** — Declare expectations (no missing values, uniqueness, numeric range, allowed values, regex match) and run them for a pass/fail report with drill-down into violating rows.
 - **AI Confidence Badges** — AI Insights now disclose whether output is *AI-generated* or *rule-based*, with a transparency confidence level (High/Medium/Low) derived from sample size and completeness, plus the factors behind the score.
 - **"View as Table" toggle** — Charts across Advanced Analytics (Custom Chart Builder, Time Intelligence, Pivot Table, and Group By) include an accessible expander to inspect the underlying data as a table.
+- **☁️ Cloud Workspace (Supabase)** — Optional cloud persistence for datasets, reports, validation rule sets, and saved insights. The app works fully without it; when configured, "Save to cloud" buttons appear across the relevant pages and a dedicated **Cloud Workspace** page lets you browse, reload, and delete saved items. See **[SUPABASE_SETUP.md](SUPABASE_SETUP.md)** for the complete setup guide and SQL schema.
 
 ---
 
@@ -47,6 +48,7 @@ The platform has been hardened for reliable, enterprise-grade operation:
 | 6 | **Online Data Explorer** | Fetch datasets from any URL (CSV, JSON, Excel), browse curated public catalogs, scrape web tables |
 | 7 | **Report Generator** | Generate comprehensive HTML analysis reports with embedded charts and AI summaries |
 | 8 | **Chat With Your Data** | One assistant for **both** structured data **and** documents — ask questions about CSV/Excel (with auto-generated charts) or upload a PDF, Word, Excel, CSV, or **Power BI export** and chat with it |
+| 9 | **Cloud Workspace** | Optional Supabase-backed storage — save/reload datasets, reports, validation rule sets, and insights across sessions (see [SUPABASE_SETUP.md](SUPABASE_SETUP.md)) |
 
 ---
 
@@ -147,7 +149,8 @@ community-college-data-analysis/
 │   ├── 5_Advanced_Analytics.py               # Pivot tables, charts, statistics
 │   ├── 6_Online_Data_Explorer.py             # Web data fetching & scraping
 │   ├── 7_Report_Generator.py                 # Professional report generation
-│   └── 8_Chat_With_Data.py                   # Chat with structured data AND documents
+│   ├── 8_Chat_With_Data.py                   # Chat with structured data AND documents
+│   └── 9_Cloud_Workspace.py                  # Optional Supabase cloud persistence UI
 │       #                                       (Guided Analysis page is wired up separately)
 ├── utils/
 │   ├── __init__.py                           # Module init
@@ -163,9 +166,12 @@ community-college-data-analysis/
 │   ├── visualizations.py                     # Reusable Plotly charts & view-as-table helper
 │   ├── ai_insights.py                        # AI and rule-based analysis engine
 │   ├── online_data.py                        # Web data fetching utilities
-│   └── report_generator.py                   # Report generation utilities
-└── data/
-    └── community_college_data.csv            # Built-in synthetic dataset
+│   ├── report_generator.py                   # Report generation utilities
+│   ├── supabase_client.py                    # Optional Supabase client (graceful fallback)
+│   └── database.py                           # Cloud persistence data-access layer
+├── data/
+│   └── community_college_data.csv            # Built-in synthetic dataset
+└── SUPABASE_SETUP.md                         # Cloud Workspace setup guide + SQL schema
 ```
 
 ---

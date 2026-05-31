@@ -20,6 +20,8 @@ from utils.data_engine import (
 )
 from utils.validation import run_validation, get_violation_mask, RULE_TYPES, describe_rule
 from utils.exporters import render_export_buttons
+from utils.supabase_client import is_configured
+from utils import database as db
 from utils.persistence import save_session_state
 
 # Validation rules persist for the session
@@ -514,6 +516,23 @@ with tab_validate:
                 st.session_state.validation_rules = []
                 st.rerun()
 
+        # Optional: persist this rule set to the cloud
+        if is_configured():
+            rs_name = st.text_input(
+                "Save rule set as", key="val_cloud_rs_name",
+                placeholder="e.g. Enrollment expectations",
+            )
+            if st.button("\u2601\uFE0F Save rules to cloud", key="val_cloud_save"):
+                if not rs_name.strip():
+                    st.error("Please enter a name for the rule set.")
+                else:
+                    ok, msg = db.save_rule_set(rs_name.strip(), st.session_state.validation_rules)
+                    st.success(msg) if ok else st.error(msg)
+        else:
+            st.caption(
+                "\u2601\uFE0F Tip: connect a database (see SUPABASE_SETUP.md) to save rule sets to the cloud."
+            )
+
         if run_now:
             report = run_validation(df, st.session_state.validation_rules)
             m1, m2, m3 = st.columns(3)
@@ -565,6 +584,21 @@ render_export_buttons(
     base_filename="cleaned_data",
     key_prefix="cleaning_export",
 )
+
+# Optional: save the cleaned dataset to the cloud
+if is_configured():
+    with st.expander("\u2601\uFE0F Save cleaned dataset to the cloud"):
+        clean_name = st.text_input("Save as name", key="clean_cloud_name", placeholder="e.g. cleaned_enrollment")
+        if st.button("Save to cloud", key="clean_cloud_save"):
+            if not clean_name.strip():
+                st.error("Please enter a name.")
+            else:
+                ok, msg = db.save_dataset(clean_name.strip(), st.session_state.working_df, "Cleaned in DataPrism")
+                st.success(msg) if ok else st.error(msg)
+else:
+    st.caption(
+        "\u2601\uFE0F Tip: connect a database (see SUPABASE_SETUP.md) to save cleaned datasets to the cloud."
+    )
 
 # Cross-module navigation
 st.markdown("---")
