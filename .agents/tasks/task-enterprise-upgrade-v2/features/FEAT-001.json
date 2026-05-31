@@ -2,7 +2,7 @@
   "id": "FEAT-001",
   "type": "feat",
   "description": "Core utilities layer: data profiling, statistical analysis, clustering, regression, time series forecasting, AI intelligence helpers, and enhanced data cleaning operations. This creates all the business-logic modules that the UI pages will consume.",
-  "status": "in_progress",
+  "status": "completed",
   "steps": [
     "Step 1 - Update requirements.txt: Add fpdf2 to the existing requirements (scipy, scikit-learn, statsmodels, python-docx are already present).",
     "Step 2 - Create utils/profiling.py: (a) compute_quality_score(df) returns a 0-100 score computed from null_rate, duplicate_rate, type_consistency, and outlier_rate. (b) generate_column_profiles(df) returns a list of dicts with dtype, null_pct, unique_count, top_values (top 5 value_counts), and a mini-distribution (histogram bin edges/counts for numeric, value_counts for categorical). (c) generate_correlation_heatmap_data(df) returns the correlation matrix plus a list of pairs with abs(r)>0.85 flagged as redundant. (d) ai_profiler_commentary(df, api_key) calls Gemini via utils/ai_client.generate_content with a prompt that includes the quality score and column profiles, asks for a 2-3 sentence assessment plus top 3 cleaning recommendations. Wrap in try/except, return (text, error).",
@@ -31,5 +31,5 @@
     "python -c \"from utils.profiling import compute_quality_score, generate_column_profiles, generate_correlation_heatmap_data; from utils.statistics import run_ttest, run_chi_square, run_anova, run_linear_regression, run_logistic_regression, run_kmeans_clustering; from utils.forecasting import run_time_series_forecast, build_forecast_chart; from utils.ai_intelligence import generate_insight_cards, explain_this_number, generate_executive_summary_brief; from utils.dashboard_builder import auto_build_dashboard, detect_kpi_columns, CHART_REGISTRY; from utils.sensitivity import detect_sensitive_columns, mask_column; from utils.data_engine import flag_missing, cap_outliers, split_column, merge_columns, standardize_text, convert_column_type; print('All new utils import OK')\""
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "All modules compile and import cleanly under Python 3.11.15. Functional tests pass for all core logic. Note: sensitivity detection can have false positives on numeric columns that match phone regex patterns (expected behavior). scikit-learn shows warnings about precision for small random datasets but works correctly on real data. pandas 3.0.3 installed (latest) with no compatibility issues."
 }
