@@ -111,6 +111,7 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+st.page_link("pages/0_Guided_Analysis.py", label="\U0001F9ED Launch Guided Analysis", icon="\U0001F9ED")
 
 st.markdown("---")
 
