@@ -78,6 +78,58 @@ else:
 st.info(f"Working with: {len(df)} rows, {len(df.columns)} columns")
 st.markdown("---")
 
+# --- Templates Section ---
+from utils.templates import save_template, load_template, list_templates
+
+with st.expander("\U0001F4BE Templates - Save & Load Analysis Configurations"):
+    tmpl_col1, tmpl_col2 = st.columns(2)
+
+    with tmpl_col1:
+        st.markdown("**Load Template**")
+        ok, templates = list_templates()
+        if ok and templates:
+            template_names = {t.get("name", t.get("id", "?")): t for t in templates}
+            selected_template = st.selectbox(
+                "Select a template:",
+                ["-- Select --"] + list(template_names.keys()),
+                key="load_template_select",
+            )
+            if selected_template != "-- Select --" and st.button("Load", key="load_template_btn"):
+                tmpl_info = template_names[selected_template]
+                tmpl_id = tmpl_info.get("id", selected_template)
+                ok_load, config = load_template(tmpl_id)
+                if ok_load:
+                    st.session_state["_loaded_template"] = config
+                    st.success(f"Loaded template: {selected_template}")
+                else:
+                    st.error(config)
+        else:
+            st.caption("No saved templates yet.")
+
+    with tmpl_col2:
+        st.markdown("**Save as Template**")
+        tmpl_name = st.text_input("Template name:", key="save_template_name", placeholder="e.g. Enrollment Analysis")
+        tmpl_desc = st.text_input("Description (optional):", key="save_template_desc", placeholder="Brief description")
+        if st.button("Save Template", key="save_template_btn"):
+            if not tmpl_name.strip():
+                st.error("Please enter a template name.")
+            else:
+                config_dict = {
+                    "name": tmpl_name.strip(),
+                    "description": tmpl_desc.strip(),
+                    "columns": df.columns.tolist(),
+                    "chart_type": "",
+                    "filters": {},
+                    "aggregations": {},
+                }
+                ok_save, msg = save_template(tmpl_name.strip(), config_dict)
+                if ok_save:
+                    st.success(msg)
+                else:
+                    st.error(msg)
+
+st.markdown("---")
+
 # Tab layout for different tools
 tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs([
     "Pivot Table Builder",

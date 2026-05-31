@@ -1,0 +1,29 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Data Joining/Merging page and SQL Query Interface - the two critical analyst features. Create utils/data_join.py, pages/13_Data_Join.py, utils/sql_engine.py, pages/14_SQL_Query.py, and add pandasql to requirements.txt.",
+  "status": "completed",
+  "steps": [
+    "Add 'pandasql==0.7.3' to requirements.txt (after the supabase line, in a new '# SQL query engine' section)",
+    "Create utils/data_join.py with functions: join_datasets(left_df, right_df, left_key, right_key, join_type) supporting inner/left/right/outer joins, and concat_datasets(df_list, axis=0) for vertical stacking. Return the resulting DataFrame. Include a get_available_datasets() helper that reads session state keys (uploaded_df, online_df, df, working_df, merged_df) and returns a dict of {name: df}.",
+    "Create pages/13_Data_Join.py following the existing page pattern (set_page_config with diamond favicon, inject_global_css). Title: 'Data Join & Merge'. Let users: (a) select two datasets from session state via get_available_datasets(), (b) choose join type from selectbox (inner/left/right/outer), (c) select join key column from each dataset, (d) preview result with st.dataframe (first 100 rows), (e) apply/save result to session_state as merged_df, (f) include a 'Concatenate' tab for vertical stacking (select multiple datasets, stack them, preview, save). Include a direct file upload option following the pattern in pages/5_Advanced_Analytics.py.",
+    "Create utils/sql_engine.py with functions: run_sql_query(query, tables_dict) that uses pandasql.sqldf to execute SQL. tables_dict maps table names to DataFrames. Return (result_df, execution_time_seconds, error_string_or_none). Include get_sql_tables() that builds the tables dict from session state (uploaded as 'uploaded', df as 'builtin', online_df as 'online', working_df as 'cleaned', merged_df as 'merged'). Include EXAMPLE_QUERIES list of 4-5 example SQL strings as hints.",
+    "Create pages/14_SQL_Query.py following existing page pattern. Title: 'SQL Query Interface'. Features: (a) show available tables with their column names and row counts, (b) SQL text area for query input, (c) 'Run Query' button that calls run_sql_query, (d) display results as dataframe, (e) show execution time, (f) example queries in an expander, (g) 'Save Result' button that stores result as a new session state key (sql_result_df) and optionally to merged_df. Include a direct file upload option.",
+    "Run pip install pandasql==0.7.3 to verify it installs correctly"
+  ],
+  "acceptance_criteria": [
+    "pandasql is in requirements.txt with pinned version",
+    "utils/data_join.py imports cleanly: python -c 'import utils.data_join'",
+    "utils/sql_engine.py imports cleanly: python -c 'import utils.sql_engine'",
+    "pages/13_Data_Join.py compiles: python -m py_compile pages/13_Data_Join.py",
+    "pages/14_SQL_Query.py compiles: python -m py_compile pages/14_SQL_Query.py",
+    "pandasql installs without errors"
+  ],
+  "verification": [
+    "pip install pandasql==0.7.3 && python -c 'import pandasql; print(pandasql.__version__)'",
+    "python -m py_compile utils/data_join.py && python -m py_compile utils/sql_engine.py",
+    "python -m py_compile pages/13_Data_Join.py && python -m py_compile pages/14_SQL_Query.py"
+  ],
+  "blocked_reason": null,
+  "findings": "pandasql 0.7.3 installs and works correctly but does not expose __version__ attribute. Verification adjusted to test functional SQL execution instead. All py_compile and import checks pass."
+}

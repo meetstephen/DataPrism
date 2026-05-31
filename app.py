@@ -84,6 +84,9 @@ with st.sidebar:
         - \u2601\uFE0F **Cloud Workspace** - Save & restore
         - \U0001F50D **Data Profiling** - Quality assessment
         - \U0001F4CA **Dashboard Builder** - KPI & charts
+        - \U0001F517 **Data Join** - Merge & combine datasets
+        - \U0001F4DD **SQL Query** - Query with SQL
+        - \U0001F4D6 **Data Dictionary** - Column documentation
         """
     )
     st.markdown("---")
@@ -118,7 +121,8 @@ with st.sidebar:
             ["Home", "Guided Analysis", "Getting Started", "Upload & Analyze",
              "Data Cleaning", "AI Insights", "Advanced Analytics",
              "Online Explorer", "Report Generator", "Chat With Data",
-             "Cloud Workspace", "Data Profiling", "Dashboard", "Other"],
+             "Cloud Workspace", "Data Profiling", "Dashboard",
+             "Data Join", "SQL Query", "Data Dictionary", "Other"],
             key="sidebar_fb_page",
         )
         fb_text = st.text_area(

@@ -30,3 +30,6 @@ fpdf2==2.8.7
 
 # Cloud persistence (optional - app works without it)
 supabase==2.30.1
+
+# SQL query engine
+pandasql==0.7.3

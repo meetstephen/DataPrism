@@ -1,0 +1,26 @@
+{
+  "id": "FEAT-003",
+  "type": "feat",
+  "description": "Update README, app.py sidebar navigation, and SUPABASE_SETUP.md to reflect all new pages and features. Final integration and documentation pass.",
+  "status": "completed",
+  "steps": [
+    "Update app.py sidebar navigation to list the new pages: Data Join & Merge, SQL Query Interface, Data Dictionary",
+    "Update README.md features table to include pages 13 (Data Join), 14 (SQL Query), 15 (Data Dictionary) and mention column transformations, templates, annotations",
+    "Update README.md project structure section to include new files (utils/data_join.py, utils/sql_engine.py, utils/column_transforms.py, utils/templates.py, utils/annotations.py, pages/13-15)",
+    "Ensure SUPABASE_SETUP.md 'What gets stored' table includes dp_templates",
+    "Update init_all_session_state() in utils/data_loader.py to include new session state keys: merged_df, sql_result_df, dp_annotations, dp_data_dictionary, dp_templates_cache"
+  ],
+  "acceptance_criteria": [
+    "app.py compiles cleanly with new sidebar entries",
+    "README.md lists all new pages and features",
+    "utils/data_loader.py includes new session state defaults",
+    "All new pages are reachable from app.py sidebar"
+  ],
+  "verification": [
+    "python -m py_compile app.py",
+    "python -m py_compile utils/data_loader.py",
+    "grep -c 'Data_Join\\|SQL_Query\\|Data_Dictionary' app.py"
+  ],
+  "blocked_reason": null,
+  "findings": "All changes compile cleanly. Sidebar navigation now lists all 15 pages. README features table, What's New section, Tech Stack, and Project Structure all updated. Session state includes merged_df, sql_result_df, dp_annotations, dp_data_dictionary, and dp_templates_cache. Feedback page dropdown also updated to include new pages."
+}

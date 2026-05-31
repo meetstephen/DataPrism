@@ -1,0 +1,34 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Column Transformations (extends Data Cleaning page), Saved Analysis Templates, Chart Annotations, and Data Dictionary page. These fill gaps in the cleaning workflow and add professional-grade features.",
+  "status": "completed",
+  "steps": [
+    "Create utils/column_transforms.py with functions: (a) extract_date_parts(df, column) - returns df with new columns for year, month, day, weekday from a datetime column; (b) bin_numeric(df, column, n_bins=5, labels=None) - creates a new column with category labels from numeric ranges using pd.cut; (c) one_hot_encode(df, column) - performs one-hot encoding using pd.get_dummies, returns new df; (d) string_operations(df, column, operation, pattern=None) - supports 'lowercase', 'uppercase', 'trim', 'extract_regex' operations. Each returns (df, rows_affected) tuple matching data_engine.py pattern.",
+    "Add a new tab 'Column Transforms' to pages/3_Data_Cleaning.py (add it to the existing tab list after 'Text & Type Operations'). In this tab: (a) Date Part Extraction section - select a datetime column, click to extract year/month/day/weekday; (b) Binning section - select numeric column, set number of bins, preview bin ranges, apply; (c) One-Hot Encoding section - select categorical column, preview result, apply; (d) String Regex Extract section - select text column, enter regex pattern, extract matches to new column. Use apply_cleaning_step() for undo support.",
+    "Create utils/templates.py with functions: (a) save_template(name, config_dict) - saves analysis configuration (columns, chart_types, filters as JSON) to Supabase dp_templates table if configured, otherwise to .dataprism/templates/{name}.json locally; (b) load_template(name_or_id) - loads a template from cloud or local; (c) list_templates() - returns list of available templates; (d) delete_template(name_or_id). Each returns (ok, payload) tuple. Config dict structure: {name, description, columns, chart_type, filters, aggregations, created_at}.",
+    "Add 'Save as Template' and 'Load Template' UI to pages/5_Advanced_Analytics.py - add a section at the top or in the sidebar with: (a) 'Load Template' selectbox/dropdown that lists available templates and applies the config; (b) 'Save as Template' button (in an expander) that captures current analysis settings and saves them.",
+    "Create utils/annotations.py with functions: (a) add_annotation(chart_id, x, y, text) - stores annotation in session state under 'dp_annotations' key; (b) get_annotations(chart_id) - returns list of annotations for a chart; (c) apply_annotations_to_figure(fig, annotations) - adds plotly annotations to a figure object. Session state key: dp_annotations (dict of chart_id -> list of {x, y, text}).",
+    "Modify utils/visualizations.py - add a helper function render_chart_with_annotations(fig, chart_id) that wraps the existing render_chart_with_table to also show annotation controls (add/remove annotations) and applies them to the figure before display.",
+    "Create pages/15_Data_Dictionary.py following existing page pattern. Title: 'Data Dictionary'. Features: (a) select dataset from session state; (b) auto-generate column descriptions from dtype, unique count, null count, sample values; (c) editable text inputs for user descriptions; (d) store descriptions in session state (dp_data_dictionary key); (e) export as markdown or CSV download buttons.",
+    "Add dp_templates table SQL to SUPABASE_SETUP.md in the appropriate section"
+  ],
+  "acceptance_criteria": [
+    "utils/column_transforms.py compiles and imports cleanly",
+    "utils/templates.py compiles and imports cleanly",
+    "utils/annotations.py compiles and imports cleanly",
+    "pages/3_Data_Cleaning.py compiles with the new tab added",
+    "pages/15_Data_Dictionary.py compiles cleanly",
+    "SUPABASE_SETUP.md contains dp_templates table CREATE SQL",
+    "pages/5_Advanced_Analytics.py compiles with template UI added"
+  ],
+  "verification": [
+    "python -m py_compile utils/column_transforms.py && python -m py_compile utils/templates.py && python -m py_compile utils/annotations.py",
+    "python -m py_compile pages/3_Data_Cleaning.py && python -m py_compile pages/5_Advanced_Analytics.py && python -m py_compile pages/15_Data_Dictionary.py",
+    "python -c \"from utils.column_transforms import extract_date_parts, bin_numeric, one_hot_encode, string_operations; print('OK')\"",
+    "python -c \"from utils.templates import save_template, load_template, list_templates; print('OK')\"",
+    "python -c \"from utils.annotations import add_annotation, get_annotations, apply_annotations_to_figure; print('OK')\""
+  ],
+  "blocked_reason": null,
+  "findings": "All modules compile and import cleanly. Functional tests for column_transforms pass. Templates module supports both Supabase cloud and local file fallback. The Column Transforms tab in Data Cleaning page auto-detects datetime columns from object types."
+}

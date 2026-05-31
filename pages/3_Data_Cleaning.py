@@ -149,7 +149,7 @@ with met_col4:
 st.markdown("---")
 
 # --- Cleaning Tabs ---
-tab_missing, tab_duplicates, tab_outliers, tab_columns, tab_calc, tab_validate, tab_ai_clean, tab_text_ops = st.tabs(
+tab_missing, tab_duplicates, tab_outliers, tab_columns, tab_calc, tab_validate, tab_ai_clean, tab_text_ops, tab_transforms = st.tabs(
     [
         "\U0001F50D Missing Values",
         "\U0001F503 Duplicates",
@@ -159,6 +159,7 @@ tab_missing, tab_duplicates, tab_outliers, tab_columns, tab_calc, tab_validate, 
         "\u2705 Validation Rules",
         "\U0001F916 AI Cleaning Assistant",
         "\U0001F524 Text & Type Operations",
+        "\U0001F504 Column Transforms",
     ]
 )
 
@@ -718,6 +719,125 @@ with tab_text_ops:
             save_session_state()
             st.success(f"Merged {len(merge_cols_select)} columns into '{merge_new_name}'.")
             st.rerun()
+
+# --- Column Transforms Tab ---
+with tab_transforms:
+    st.markdown("#### Column Transformations")
+    st.markdown("Advanced column transformations to prepare data for modeling or analysis.")
+
+    from utils.column_transforms import extract_date_parts, bin_numeric, one_hot_encode, string_operations
+
+    transform_section = st.radio(
+        "Transformation type:",
+        ["Date Part Extraction", "Numeric Binning", "One-Hot Encoding", "String Regex Extract"],
+        horizontal=True,
+        key="transform_section_radio",
+    )
+
+    if transform_section == "Date Part Extraction":
+        st.markdown("##### Extract Date Parts")
+        st.markdown("Extract year, month, day, and weekday from a datetime column.")
+        # Find datetime-like columns
+        date_cols = df.select_dtypes(include=["datetime", "datetime64", "datetimetz"]).columns.tolist()
+        # Also consider object columns that may contain dates
+        for col in df.select_dtypes(include=["object"]).columns:
+            try:
+                sample = df[col].dropna().head(20)
+                if len(sample) > 0:
+                    parsed = pd.to_datetime(sample, errors="coerce")
+                    if parsed.notna().sum() > len(sample) * 0.5:
+                        date_cols.append(col)
+            except Exception:
+                pass
+
+        if not date_cols:
+            st.info("No datetime columns detected. Convert a column to datetime in the 'Text & Type Operations' tab first.")
+        else:
+            date_col = st.selectbox("Select datetime column:", date_cols, key="transform_date_col")
+            if st.button("Extract Date Parts", type="primary", key="transform_extract_dates"):
+                rows_affected = apply_cleaning_step(
+                    f"Extract date parts from '{date_col}'",
+                    extract_date_parts,
+                    date_col,
+                )
+                save_session_state()
+                st.success(f"Extracted year, month, day, weekday from '{date_col}' ({rows_affected:,} rows).")
+                st.rerun()
+
+    elif transform_section == "Numeric Binning":
+        st.markdown("##### Bin Numeric Column")
+        st.markdown("Create categorical bins from a numeric column.")
+        numeric_cols_bin = df.select_dtypes(include=[np.number]).columns.tolist()
+        if not numeric_cols_bin:
+            st.info("No numeric columns available for binning.")
+        else:
+            bin_col = st.selectbox("Select numeric column:", numeric_cols_bin, key="transform_bin_col")
+            n_bins = st.slider("Number of bins:", min_value=2, max_value=20, value=5, key="transform_n_bins")
+            if bin_col:
+                st.caption(f"Preview: will create '{bin_col}_binned' with {n_bins} equal-width intervals.")
+            if st.button("Apply Binning", type="primary", key="transform_apply_bin"):
+                rows_affected = apply_cleaning_step(
+                    f"Bin '{bin_col}' into {n_bins} bins",
+                    bin_numeric,
+                    bin_col,
+                    n_bins,
+                )
+                save_session_state()
+                st.success(f"Created '{bin_col}_binned' column ({rows_affected:,} rows binned).")
+                st.rerun()
+
+    elif transform_section == "One-Hot Encoding":
+        st.markdown("##### One-Hot Encode")
+        st.markdown("Convert a categorical column into binary indicator columns.")
+        cat_cols_ohe = df.select_dtypes(include=["object", "category"]).columns.tolist()
+        if not cat_cols_ohe:
+            st.info("No categorical columns available for encoding.")
+        else:
+            ohe_col = st.selectbox("Select categorical column:", cat_cols_ohe, key="transform_ohe_col")
+            drop_original = st.checkbox("Drop original column after encoding", value=False, key="transform_ohe_drop")
+            if ohe_col:
+                unique_vals = df[ohe_col].nunique()
+                st.caption(f"Will create {unique_vals} new binary columns (one per unique value).")
+            if st.button("Apply One-Hot Encoding", type="primary", key="transform_apply_ohe"):
+                rows_affected = apply_cleaning_step(
+                    f"One-hot encode '{ohe_col}' (drop_original={drop_original})",
+                    one_hot_encode,
+                    ohe_col,
+                    drop_original,
+                )
+                save_session_state()
+                st.success(f"One-hot encoded '{ohe_col}' ({rows_affected:,} rows).")
+                st.rerun()
+
+    elif transform_section == "String Regex Extract":
+        st.markdown("##### Regex Extract")
+        st.markdown("Extract text matching a regex pattern into a new column.")
+        text_cols_re = df.select_dtypes(include=["object"]).columns.tolist()
+        if not text_cols_re:
+            st.info("No text columns available for regex extraction.")
+        else:
+            re_col = st.selectbox("Select text column:", text_cols_re, key="transform_re_col")
+            re_pattern = st.text_input(
+                "Regex pattern:",
+                key="transform_re_pattern",
+                placeholder=r"e.g. \d{4}-\d{2}-\d{2} or [A-Z]+",
+            )
+            if re_col and re_pattern:
+                st.caption(f"Matches will be saved to '{re_col}_extracted'.")
+            if st.button("Apply Regex Extract", type="primary", key="transform_apply_regex"):
+                if not re_pattern.strip():
+                    st.error("Please enter a regex pattern.")
+                else:
+                    rows_affected = apply_cleaning_step(
+                        f"Regex extract '{re_pattern}' from '{re_col}'",
+                        string_operations,
+                        re_col,
+                        "extract_regex",
+                        re_pattern.strip(),
+                    )
+                    save_session_state()
+                    st.success(f"Extracted matches to '{re_col}_extracted' ({rows_affected:,} matches found).")
+                    st.rerun()
 
 # --- Cleaning Log ---
 st.markdown("---")

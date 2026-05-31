@@ -1,0 +1,30 @@
+{
+  "project_type": "Python Streamlit multi-page data analysis app",
+  "language": "Python",
+  "build_system": "pip with requirements.txt (pinned versions)",
+  "test_framework": "No formal test framework - validation is via Streamlit import/syntax checks",
+  "build_command": "pip install -r requirements.txt",
+  "test_command": "python -c \"import app; import pages; print('OK')\" is not usable due to st.set_page_config. Use: python -c \"import utils.data_engine; import utils.visualizations; import utils.supabase_client; import utils.database; print('OK')\"",
+  "verification_instructions": "1. pip install -r requirements.txt (ensure no errors). 2. python -c to import all new utils modules. 3. Check python -m py_compile on all new files.",
+  "snapshot_or_generated_files": null,
+  "setup_instructions": "pip install -r requirements.txt",
+  "environment_constraints": "OPEN_INTERNET - full network access. Python 3.11.14 default. No test suite exists - validation via py_compile and import checks.",
+  "contribution_requirements": "Follow existing patterns: utils/ for pure logic, pages/ for Streamlit UI. Pinned versions in requirements.txt. Supabase features must degrade gracefully. All pages use inject_global_css() and set_page_config with diamond favicon.",
+  "key_patterns": "Pages follow pattern: set_page_config, inject_global_css, data source selection (built-in/uploaded/online), then feature tabs. Utils are pure logic functions returning tuples or DataFrames. Database functions return (ok, payload) tuples. Session state keys: df (built-in), uploaded_df, online_df, working_df. Supabase graceful degradation via is_configured() checks.",
+  "relevant_files": [
+    "requirements.txt",
+    "SUPABASE_SETUP.md",
+    "app.py",
+    "utils/data_engine.py",
+    "utils/data_loader.py",
+    "utils/database.py",
+    "utils/supabase_client.py",
+    "utils/visualizations.py",
+    "utils/styles.py",
+    "pages/3_Data_Cleaning.py",
+    "pages/5_Advanced_Analytics.py",
+    "pages/10_Data_Profiling.py",
+    "pages/11_Dashboard.py"
+  ],
+  "directory_structure": "app.py (main entry), pages/ (numbered Streamlit pages 0-12), utils/ (logic modules), data/ (built-in CSV), .streamlit/ (config + secrets template), SUPABASE_SETUP.md (SQL schema guide)"
+}
