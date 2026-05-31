@@ -51,9 +51,53 @@ elif data_source == "Cleaned Data":
 elif data_source == "Online Data":
     df = st.session_state.get("online_df")
 
+# Direct upload option — so users can bring their own data without visiting another page
+with st.expander("\U0001F4C1 Upload your own file directly", expanded=(df is None)):
+    dash_upload_col1, dash_upload_col2 = st.columns([3, 2])
+    with dash_upload_col1:
+        dash_file = st.file_uploader(
+            "Upload CSV, Excel, JSON, TSV, or Parquet",
+            type=["csv", "xlsx", "xls", "json", "tsv", "parquet"],
+            key="dash_file_upload",
+            help="File will also be saved to your session for use on other pages.",
+        )
+    with dash_upload_col2:
+        st.markdown("")
+        st.markdown("")
+        st.caption("Or paste CSV/TSV text below:")
+        dash_paste = st.text_area(
+            "Paste data",
+            height=100,
+            key="dash_paste",
+            placeholder="col1,col2,col3\n1,a,100\n2,b,200",
+            label_visibility="collapsed",
+        )
+
+    if dash_file is not None:
+        from utils.data_loader import load_file_flexible
+        loaded, err = load_file_flexible(dash_file)
+        if err:
+            st.error(err)
+        elif loaded is not None:
+            df = loaded
+            st.session_state.uploaded_df = df.copy()
+            st.success(f"Loaded: {dash_file.name} ({len(df):,} rows)")
+    elif dash_paste and dash_paste.strip():
+        from utils.data_loader import parse_pasted_csv
+        loaded, err = parse_pasted_csv(dash_paste)
+        if err:
+            st.error(err)
+        elif loaded is not None:
+            df = loaded
+            st.session_state.uploaded_df = df.copy()
+            st.success(f"Loaded pasted data ({len(df):,} rows)")
+
 if df is None or df.empty:
-    st.warning("No data available. Upload or load data first.")
-    st.page_link("pages/2_Upload_and_Analyze.py", label="\U0001F4C1 Go to Upload & Analyze", icon="\U0001F4C1")
+    st.warning("No data available. Upload a file above, or load data from another page.")
+    try:
+        st.page_link("pages/2_Upload_and_Analyze.py", label="\U0001F4C1 Go to Upload & Analyze", icon="\U0001F4C1")
+    except Exception:
+        pass
     st.stop()
 
 # Global Filters

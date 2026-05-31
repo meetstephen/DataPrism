@@ -43,9 +43,53 @@ elif data_source == "Cleaned Data":
 elif data_source == "Online Data":
     df = st.session_state.get("online_df")
 
+# Direct upload option — so users can bring their own data without visiting another page
+with st.expander("\U0001F4C1 Upload your own file directly", expanded=(df is None)):
+    upload_col1, upload_col2 = st.columns([3, 2])
+    with upload_col1:
+        prof_file = st.file_uploader(
+            "Upload CSV, Excel, JSON, TSV, or Parquet",
+            type=["csv", "xlsx", "xls", "json", "tsv", "parquet"],
+            key="profiling_file_upload",
+            help="File will also be saved to your session for use on other pages.",
+        )
+    with upload_col2:
+        st.markdown("")
+        st.markdown("")
+        st.caption("Or paste CSV/TSV text below:")
+        prof_paste = st.text_area(
+            "Paste data",
+            height=100,
+            key="profiling_paste",
+            placeholder="col1,col2,col3\n1,a,100\n2,b,200",
+            label_visibility="collapsed",
+        )
+
+    if prof_file is not None:
+        from utils.data_loader import load_file_flexible
+        loaded, err = load_file_flexible(prof_file)
+        if err:
+            st.error(err)
+        elif loaded is not None:
+            df = loaded
+            st.session_state.uploaded_df = df.copy()
+            st.success(f"Loaded: {prof_file.name} ({len(df):,} rows)")
+    elif prof_paste and prof_paste.strip():
+        from utils.data_loader import parse_pasted_csv
+        loaded, err = parse_pasted_csv(prof_paste)
+        if err:
+            st.error(err)
+        elif loaded is not None:
+            df = loaded
+            st.session_state.uploaded_df = df.copy()
+            st.success(f"Loaded pasted data ({len(df):,} rows)")
+
 if df is None or df.empty:
-    st.warning("No data available. Upload or load data first.")
-    st.page_link("pages/2_Upload_and_Analyze.py", label="\U0001F4C1 Go to Upload & Analyze", icon="\U0001F4C1")
+    st.warning("No data available. Upload a file above, or load data from another page.")
+    try:
+        st.page_link("pages/2_Upload_and_Analyze.py", label="\U0001F4C1 Go to Upload & Analyze", icon="\U0001F4C1")
+    except Exception:
+        pass
     st.stop()
 
 st.info(f"Profiling: {len(df):,} rows x {len(df.columns)} columns")
@@ -170,9 +214,12 @@ else:
 st.markdown("---")
 st.markdown("### Next Steps")
 nav_col1, nav_col2, nav_col3 = st.columns(3)
-with nav_col1:
-    st.page_link("pages/3_Data_Cleaning.py", label="\U0001f9f9 Clean Data", icon="\U0001f9f9")
-with nav_col2:
-    st.page_link("pages/4_AI_Insights_Engine.py", label="\U0001F916 AI Insights", icon="\U0001F916")
-with nav_col3:
-    st.page_link("pages/11_Dashboard.py", label="\U0001F4CA Dashboard", icon="\U0001F4CA")
+try:
+    with nav_col1:
+        st.page_link("pages/3_Data_Cleaning.py", label="\U0001f9f9 Clean Data", icon="\U0001f9f9")
+    with nav_col2:
+        st.page_link("pages/4_AI_Insights_Engine.py", label="\U0001F916 AI Insights", icon="\U0001F916")
+    with nav_col3:
+        st.page_link("pages/11_Dashboard.py", label="\U0001F4CA Dashboard", icon="\U0001F4CA")
+except Exception:
+    pass  # page_link requires multipage app context; graceful in standalone
