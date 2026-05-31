@@ -1,0 +1,14 @@
+{
+  "task_id": "task-auth-and-admin",
+  "task_description": "Add authentication, user separation, and admin controls to DataPrism. Users must log in before accessing the app. Each user has their own data space. Admin (meetstephen) can see all users, their activity, add/remove users, and manage roles. All SQL documented in SUPABASE_SETUP.md. Graceful degradation when auth is not configured.",
+  "status": "completed",
+  "feature_order": ["FEAT-001"],
+  "blocked_reason": null,
+  "verification": {
+    "build": "pass",
+    "tests": "pass",
+    "test_quality": "pass",
+    "docker_build": "skipped",
+    "summary": "All Python files compile cleanly. Auth module imports work correctly. SQL documented in SUPABASE_SETUP.md. Semantic review identified 6 issues; 4 critical ones fixed in follow-up commit."
+  }
+}

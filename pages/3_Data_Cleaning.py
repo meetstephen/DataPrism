@@ -748,6 +748,12 @@ if is_configured():
             else:
                 ok, msg = db.save_dataset(clean_name.strip(), st.session_state.working_df, "Cleaned in DataPrism")
                 st.success(msg) if ok else st.error(msg)
+                if ok:
+                    try:
+                        from utils.auth import log_user_activity
+                        log_user_activity("cleaning_saved", details=clean_name.strip(), page="data_cleaning")
+                    except Exception:
+                        pass
 else:
     st.caption(
         "\u2601\uFE0F Tip: connect a database (see SUPABASE_SETUP.md) to save cleaned datasets to the cloud."

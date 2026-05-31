@@ -14,8 +14,19 @@ Tables (created via SUPABASE_SETUP.md):
 import io
 
 import pandas as pd
+import streamlit as st
 
 from utils.supabase_client import get_client
+
+
+def _get_user_id():
+    """Return the current user_id from session state, or None."""
+    return st.session_state.get("dp_user_id")
+
+
+def _is_admin():
+    """Return True if the current user has admin role."""
+    return st.session_state.get("dp_user_role") == "admin"
 
 # Table names
 T_DATASETS = "dp_datasets"
@@ -39,6 +50,9 @@ def save_dataset(name, df, description=""):
             "columns": [str(c) for c in df.columns],
             "data_csv": df.to_csv(index=False),
         }
+        user_id = _get_user_id()
+        if user_id and user_id != "local-dev-user":
+            payload["user_id"] = user_id
         client.table(T_DATASETS).insert(payload).execute()
         return True, f"Saved dataset '{name}' ({len(df):,} rows)."
     except Exception as e:
@@ -50,12 +64,15 @@ def list_datasets():
     if client is None:
         return False, err
     try:
-        res = (
+        query = (
             client.table(T_DATASETS)
             .select("id,name,description,row_count,column_count,created_at")
             .order("created_at", desc=True)
-            .execute()
         )
+        user_id = _get_user_id()
+        if user_id and user_id != "local-dev-user" and not _is_admin():
+            query = query.eq("user_id", user_id)
+        res = query.execute()
         return True, res.data or []
     except Exception as e:
         return False, f"Could not list datasets: {e}"
@@ -90,9 +107,11 @@ def save_report(title, html, dataset_name=""):
     if client is None:
         return False, err
     try:
-        client.table(T_REPORTS).insert(
-            {"title": title, "html": html, "dataset_name": dataset_name or ""}
-        ).execute()
+        payload = {"title": title, "html": html, "dataset_name": dataset_name or ""}
+        user_id = _get_user_id()
+        if user_id and user_id != "local-dev-user":
+            payload["user_id"] = user_id
+        client.table(T_REPORTS).insert(payload).execute()
         return True, f"Saved report '{title}'."
     except Exception as e:
         return False, f"Could not save report: {e}"
@@ -103,12 +122,15 @@ def list_reports():
     if client is None:
         return False, err
     try:
-        res = (
+        query = (
             client.table(T_REPORTS)
             .select("id,title,dataset_name,created_at")
             .order("created_at", desc=True)
-            .execute()
         )
+        user_id = _get_user_id()
+        if user_id and user_id != "local-dev-user" and not _is_admin():
+            query = query.eq("user_id", user_id)
+        res = query.execute()
         return True, res.data or []
     except Exception as e:
         return False, f"Could not list reports: {e}"
@@ -142,7 +164,11 @@ def save_rule_set(name, rules):
     if client is None:
         return False, err
     try:
-        client.table(T_RULE_SETS).insert({"name": name, "rules": rules}).execute()
+        payload = {"name": name, "rules": rules}
+        user_id = _get_user_id()
+        if user_id and user_id != "local-dev-user":
+            payload["user_id"] = user_id
+        client.table(T_RULE_SETS).insert(payload).execute()
         return True, f"Saved rule set '{name}' ({len(rules)} rules)."
     except Exception as e:
         return False, f"Could not save rule set: {e}"
@@ -153,12 +179,15 @@ def list_rule_sets():
     if client is None:
         return False, err
     try:
-        res = (
+        query = (
             client.table(T_RULE_SETS)
             .select("id,name,rules,created_at")
             .order("created_at", desc=True)
-            .execute()
         )
+        user_id = _get_user_id()
+        if user_id and user_id != "local-dev-user" and not _is_admin():
+            query = query.eq("user_id", user_id)
+        res = query.execute()
         return True, res.data or []
     except Exception as e:
         return False, f"Could not list rule sets: {e}"
@@ -175,15 +204,17 @@ def save_insight(content, dataset_name="", source="ai", confidence_level="", con
     if client is None:
         return False, err
     try:
-        client.table(T_INSIGHTS).insert(
-            {
-                "content": content,
-                "dataset_name": dataset_name or "",
-                "source": source or "ai",
-                "confidence_level": confidence_level or "",
-                "confidence_score": int(confidence_score or 0),
-            }
-        ).execute()
+        payload = {
+            "content": content,
+            "dataset_name": dataset_name or "",
+            "source": source or "ai",
+            "confidence_level": confidence_level or "",
+            "confidence_score": int(confidence_score or 0),
+        }
+        user_id = _get_user_id()
+        if user_id and user_id != "local-dev-user":
+            payload["user_id"] = user_id
+        client.table(T_INSIGHTS).insert(payload).execute()
         return True, "Saved insight."
     except Exception as e:
         return False, f"Could not save insight: {e}"
@@ -194,12 +225,15 @@ def list_insights():
     if client is None:
         return False, err
     try:
-        res = (
+        query = (
             client.table(T_INSIGHTS)
             .select("id,dataset_name,source,confidence_level,confidence_score,content,created_at")
             .order("created_at", desc=True)
-            .execute()
         )
+        user_id = _get_user_id()
+        if user_id and user_id != "local-dev-user" and not _is_admin():
+            query = query.eq("user_id", user_id)
+        res = query.execute()
         return True, res.data or []
     except Exception as e:
         return False, f"Could not list insights: {e}"
