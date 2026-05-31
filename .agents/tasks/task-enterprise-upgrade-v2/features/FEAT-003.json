@@ -1,0 +1,26 @@
+{
+  "id": "FEAT-003",
+  "type": "feat",
+  "description": "Advanced Analytics expansion (statistical tests, regression, clustering, forecasting, EDA), AI Intelligence features (insight cards, explain number, executive summary), and new Dashboard page with KPI cards, full chart library, auto-build, and global filters.",
+  "status": "pending",
+  "steps": [
+    "Step 1 - Update pages/5_Advanced_Analytics.py: Add 4 new tabs after the existing 5 (Pivot Table, Custom Chart, Statistical Summary, Group By, Time Intelligence): (a) 'EDA Auto-Charts' tab: Auto-generate one appropriate chart per column (histogram for numeric, bar for low-cardinality categorical, skip high-cardinality). Add X/Y selectors for bivariate analysis with auto-chart-type selection. (b) 'Statistical Tests' tab: UI for t-test (select numeric col, group col, two group values), chi-square (select two categorical cols), ANOVA (select numeric col, group col). Each test shows p-value, test statistic, and plain-English verdict. Call functions from utils/statistics.py. (c) 'Regression' tab: Linear regression (multi-select X cols, select Y col) showing coefficients table, R-squared, and scatter with regression line (plotly). Logistic regression with same UI pattern but shows accuracy and classification report. (d) 'Clustering' tab: Select numeric columns for K-Means. Show elbow chart. Show per-cluster stats table. AI describes each cluster (via ai_describe_clusters). (e) 'Forecasting' tab: Select date col, value col, forecast periods slider (1-36), frequency selector. Call run_time_series_forecast and display the combined chart with actuals + forecast + confidence band.",
+    "Step 2 - Update pages/4_AI_Insights_Engine.py: (a) After generating insights, call generate_insight_cards() and display them using render_insight_card() from utils/styles.py in colored cards: blue for findings, red for risks, green for opportunities, amber for recommendations. (b) Add an 'Explain This Number' section: text input for value, selectbox for column context, button that calls explain_this_number() and displays the result. (c) Add an 'Executive Summary' section: one button that calls generate_executive_summary_brief() and displays the formal 400-word brief (Situation, Key Metrics, Findings, Risks, Recommendations).",
+    "Step 3 - Create pages/11_Dashboard.py: A dedicated dashboard page with: (a) Sidebar global filters section: date range picker (start/end date inputs), categorical filter dropdown (auto-populated from detected categorical columns). These filters apply to all dashboard charts. Store filter values in session_state['dashboard_filters']. (b) KPI Cards row at the top: use detect_kpi_columns() to find top 3-5 numeric columns. For each, show st.metric with value, delta (if date column available), and a sparkline (small plotly line chart). (c) Chart Library section: selectbox of all chart types from CHART_REGISTRY (Bar, Line, Area, Scatter, Pie, Donut, Box, Histogram, Waterfall, Gauge, Treemap). X/Y/color selectors. 'Add to Dashboard' button that appends chart spec to a session_state list. (d) Auto-Build Dashboard button: calls auto_build_dashboard(), renders the returned chart specs as a grid of 2-column Plotly charts. (e) All charts respect global filters (filtered df before plotting)."
+  ],
+  "acceptance_criteria": [
+    "python -m py_compile pages/5_Advanced_Analytics.py passes",
+    "python -m py_compile pages/4_AI_Insights_Engine.py passes",
+    "python -m py_compile pages/11_Dashboard.py passes",
+    "The Advanced Analytics page has 9+ tabs total",
+    "The Dashboard page renders KPI cards, has a chart library selector with 11 chart types, and has an Auto-Build button",
+    "AI Insights page has Explain This Number and Executive Summary sections"
+  ],
+  "verification": [
+    "python -m py_compile pages/5_Advanced_Analytics.py && python -m py_compile pages/4_AI_Insights_Engine.py && python -m py_compile pages/11_Dashboard.py",
+    "python -c \"import ast; tree=ast.parse(open('pages/11_Dashboard.py').read()); print('Dashboard page parses OK')\"",
+    "python -c \"import ast; tree=ast.parse(open('pages/5_Advanced_Analytics.py').read()); print('Advanced Analytics page parses OK')\""
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

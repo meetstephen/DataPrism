@@ -1,0 +1,27 @@
+{
+  "id": "FEAT-002",
+  "type": "feat",
+  "description": "Enhanced Data Ingestion, Data Profiling page, and expanded Data Cleaning page with AI Cleaning Assistant, new operations, and sample datasets. Plus update app.py session state initialization.",
+  "status": "pending",
+  "steps": [
+    "Step 1 - Update utils/data_loader.py: (a) Add SAMPLE_DATASETS dict with 5 built-in datasets: Sales (synthetic), HR (synthetic), Finance (synthetic), Survey (synthetic), Marketing (synthetic). Each entry has name, description, and a generator function that produces a DataFrame with 200-500 rows of realistic fake data using numpy/pandas random. (b) Add load_sample_dataset(name) that returns the DataFrame. (c) Add parse_pasted_csv(text, delimiter=None) that auto-detects delimiter (csv.Sniffer) and encoding, parses text into a DataFrame. (d) Add load_file_flexible(file_obj) that handles CSV, Excel, JSON, TSV with auto-detection of delimiter (using csv.Sniffer for CSV/TSV) and encoding (using chardet). (e) Update init_all_session_state() to add new session state keys needed across the app: 'onboarding_complete', 'projects', 'active_project_id', 'dataset_versions', 'action_audit_log', 'report_branding', 'dashboard_filters', 'global_date_range', 'global_category_filter'.",
+    "Step 2 - Update pages/2_Upload_and_Analyze.py: (a) Replace the file_uploader to accept types=['csv','xlsx','xls','json','tsv']. (b) Add a 'Paste Data' tab alongside Upload that shows a text_area for pasting raw CSV/TSV text, with a 'Load Pasted Data' button that calls parse_pasted_csv. (c) Add a 'Sample Datasets' tab that lists the 5 built-in sample datasets with descriptions and a Load button for each. (d) Add a 'Cleaned Data Export' section at the bottom of the analysis section that offers CSV and Excel download of the current working dataset. Keep all existing functionality intact.",
+    "Step 3 - Create pages/10_Data_Profiling.py: A new page focused entirely on data profiling. Layout: (a) Data source selector (same pattern as other pages: built-in, uploaded, online, cleaned). (b) Data Quality Score section using compute_quality_score() displayed as a Plotly gauge chart (using go.Indicator). (c) AI Profiler Commentary section that calls ai_profiler_commentary() and displays the result. (d) Column Profile Cards: for each column, show an expander with dtype, null%, unique count, top values, and a mini Plotly histogram/bar chart. (e) Correlation Heatmap: auto-generated for numeric columns using create_heatmap from utils/visualizations.py, with flagged pairs >0.85 shown below as warnings.",
+    "Step 4 - Update pages/3_Data_Cleaning.py: (a) Add a new tab 'AI Cleaning Assistant' after the existing tabs. In this tab: text_area for user to describe what they want done, a button 'Ask AI', which calls Gemini (via generate_content) with the user's request + a schema summary of working_df. Parse the AI response for a Python-like cleaning action description, show a preview (before/after sample), and a 'Confirm & Apply' button that applies it. Log as an AI step. (b) Add a new tab 'Text & Type Operations' with the new cleaning operations: text standardization (select column, select mode: lowercase/uppercase/title/strip), type conversion (select column, select target type), split column (select column, enter delimiter, enter new column names), merge columns (select columns, enter separator, enter new name). (c) Update the Outliers tab to add a 'Cap Outliers' option (alongside existing Remove). (d) Update Missing Values tab to add a 'Flag missing' option that creates a boolean indicator column instead of dropping/filling."
+  ],
+  "acceptance_criteria": [
+    "python -m py_compile pages/10_Data_Profiling.py passes",
+    "python -m py_compile pages/2_Upload_and_Analyze.py passes",
+    "python -m py_compile pages/3_Data_Cleaning.py passes",
+    "python -m py_compile utils/data_loader.py passes",
+    "python -c 'from utils.data_loader import SAMPLE_DATASETS, load_sample_dataset, parse_pasted_csv, load_file_flexible; print(len(SAMPLE_DATASETS), \"sample datasets\")' prints 5",
+    "The new profiling page exists at pages/10_Data_Profiling.py",
+    "app.py session state includes new keys for onboarding, projects, branding, etc."
+  ],
+  "verification": [
+    "python -m py_compile pages/10_Data_Profiling.py && python -m py_compile pages/2_Upload_and_Analyze.py && python -m py_compile pages/3_Data_Cleaning.py && python -m py_compile utils/data_loader.py && python -m py_compile app.py",
+    "python -c \"from utils.data_loader import SAMPLE_DATASETS, load_sample_dataset, parse_pasted_csv, load_file_flexible; assert len(SAMPLE_DATASETS) >= 5; print('Sample datasets OK')\""
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

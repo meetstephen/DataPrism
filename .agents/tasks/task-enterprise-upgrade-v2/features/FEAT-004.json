@@ -1,0 +1,37 @@
+{
+  "id": "FEAT-004",
+  "type": "feat",
+  "description": "PDF/DOCX report export with branding, Guided Mode enhancements (floating glossary, guardrails, sensitivity detection), Workspace/Collaboration features (projects, audit log, versioning, onboarding), UX polish (empty states, keep-alive workflow), and SUPABASE_SETUP.md update with new tables.",
+  "status": "pending",
+  "steps": [
+    "Step 1 - Update utils/report_generator.py: (a) Add generate_pdf_report(df, title, branding=None, ai_summary=None) using fpdf2. Creates a multi-page PDF with: cover page (logo if branding provided, title, date), executive summary page, data overview table, key charts (rendered as images via plotly .to_image() or as table fallback if kaleido unavailable), and data quality section. Branding dict has keys: logo_bytes, company_name, primary_color, secondary_color. (b) Add generate_docx_report(df, title, branding=None, ai_summary=None) using python-docx. Creates a Word doc with: title page, executive summary, statistics tables, and section headers. Apply branding colors to headings if provided. (c) Both functions return bytes suitable for st.download_button.",
+    "Step 2 - Update pages/7_Report_Generator.py: (a) Add format selector: HTML (existing), PDF, DOCX. (b) Wire PDF/DOCX buttons to the new generator functions. (c) Add a 'Report Branding' expander in the sidebar or config section: file_uploader for logo (PNG/JPG), text inputs for company name, color pickers for primary/secondary colors. Store in session_state['report_branding']. Pass branding to report generators.",
+    "Step 3 - Update pages/0_Guided_Analysis.py: (a) Add a floating glossary: a persistent expander or popover button (use st.popover if available, otherwise st.expander in sidebar) labeled '?' containing searchable definitions of key analytics terms (correlation, p-value, outlier, IQR, regression, R-squared, etc. - at least 15 terms). Display throughout all stages. (b) Add responsible analysis guardrails that trigger contextually: if correlation > 0.85 is shown, display a 'Correlation does not equal Causation' warning. If cleaning would remove >30% of rows, show a warning before proceeding. If dataset has <30 rows, show a small sample warning. In Stage 2, add a 'data authorization checkbox' (already exists - verify it works). (c) Add sensitivity detection: at the start of Stage 3, call detect_sensitive_columns(). If any are found, show a persistent st.warning banner listing the columns and reasons. Offer a 'Mask these columns' button that calls mask_column() for each.",
+    "Step 4 - Create utils/workspace.py: Database-backed workspace features (all with graceful fallback when DB not configured): (a) save_project(name, description) inserts into dp_projects table. (b) list_projects() returns all projects. (c) get_project(project_id) returns project details. (d) delete_project(project_id). (e) log_action(project_id, action_type, description, details=None) inserts into dp_audit_log. (f) list_audit_log(project_id=None) returns audit entries. (g) save_dataset_version(project_id, dataset_name, df, version_note) inserts into dp_dataset_versions. (h) list_dataset_versions(project_id=None) returns version history. (i) restore_dataset_version(version_id) loads a specific version. All use the same (ok, payload) pattern as utils/database.py.",
+    "Step 5 - Update pages/9_Cloud_Workspace.py: Add new tabs: (a) 'Projects' tab: create project form (name, description), list existing projects as cards, set active project. (b) 'Audit Log' tab: display audit log entries filtered by project, with timestamp, action type, description. (c) 'Dataset Versions' tab: list versions for active project, show version number/timestamp/note, 'Restore' button for each. (d) 'Onboarding' tab: 5-step checklist (Upload data, Run profiling, Clean data, Generate insights, Create a report). Track completion in session_state['onboarding_complete']. Hide/collapse when all 5 done.",
+    "Step 6 - Update SUPABASE_SETUP.md: Add SQL for new tables: dp_projects (id, name, description, created_at, updated_at), dp_audit_log (id, project_id FK, action_type, description, details jsonb, created_at), dp_dataset_versions (id, project_id FK, dataset_name, version_number, data_csv text, version_note, created_at). Add indexes, RLS policies (same permissive anon pattern as existing tables). Add ALTER TABLE statements at the end for users upgrading from the previous schema (use IF NOT EXISTS pattern).",
+    "Step 7 - Update app.py: (a) Add all new session state keys in init_all_session_state or at the top of app.py: 'onboarding_complete' (dict with 5 bool keys), 'active_project_id', 'report_branding', 'dashboard_filters', 'dashboard_charts'. (b) Add the new pages to the sidebar navigation list. (c) Update the main page feature cards to mention new capabilities (Data Profiling, Dashboard, PDF/DOCX reports).",
+    "Step 8 - Add .github/workflows/keep-alive.yml: A GitHub Actions cron workflow that pings the deployed Streamlit app URL once daily to prevent Streamlit Cloud from spinning it down. Use a simple curl command. Schedule: daily at 6am UTC. Include a comment explaining purpose.",
+    "Step 9 - Add empty states using render_empty_state() from utils/styles.py: Go through pages/10_Data_Profiling.py and pages/11_Dashboard.py and ensure that when no data is loaded, they show a designed empty state (icon, headline, explanation, CTA button to upload page) instead of just st.info or st.warning."
+  ],
+  "acceptance_criteria": [
+    "python -m py_compile utils/report_generator.py passes",
+    "python -m py_compile utils/workspace.py passes",
+    "python -m py_compile pages/7_Report_Generator.py passes",
+    "python -m py_compile pages/0_Guided_Analysis.py passes",
+    "python -m py_compile pages/9_Cloud_Workspace.py passes",
+    "python -m py_compile app.py passes",
+    "SUPABASE_SETUP.md contains CREATE TABLE for dp_projects, dp_audit_log, dp_dataset_versions",
+    ".github/workflows/keep-alive.yml exists and is valid YAML",
+    "python -c 'from utils.workspace import save_project, list_projects, log_action, save_dataset_version, list_dataset_versions, restore_dataset_version; print(\"OK\")' passes",
+    "python -c 'from utils.report_generator import generate_pdf_report, generate_docx_report; print(\"OK\")' passes"
+  ],
+  "verification": [
+    "python -m py_compile utils/report_generator.py && python -m py_compile utils/workspace.py && python -m py_compile pages/7_Report_Generator.py && python -m py_compile pages/0_Guided_Analysis.py && python -m py_compile pages/9_Cloud_Workspace.py && python -m py_compile app.py",
+    "python -c \"from utils.workspace import save_project, list_projects, log_action, save_dataset_version; from utils.report_generator import generate_pdf_report, generate_docx_report; print('All new features importable')\"",
+    "python -c \"import yaml; yaml.safe_load(open('.github/workflows/keep-alive.yml')); print('Workflow YAML valid')\"",
+    "grep -q 'dp_projects' SUPABASE_SETUP.md && grep -q 'dp_audit_log' SUPABASE_SETUP.md && grep -q 'dp_dataset_versions' SUPABASE_SETUP.md && echo 'SQL tables present'"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

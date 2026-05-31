@@ -80,3 +80,100 @@ def drop_columns(df, columns):
 def rename_columns(df, rename_map):
     result = df.rename(columns=rename_map)
     return result, 0
+
+
+# --- Additional Cleaning Operations ---
+
+def flag_missing(df, column):
+    """Add a boolean '{column}_is_missing' column indicating missing values.
+    Returns (df, count_flagged).
+    """
+    df = df.copy()
+    flag_col = f"{column}_is_missing"
+    df[flag_col] = df[column].isna()
+    count_flagged = int(df[flag_col].sum())
+    return df, count_flagged
+
+
+def cap_outliers(df, column, multiplier=1.5):
+    """Clip values to IQR bounds instead of removing rows.
+    Returns (df, count_capped).
+    """
+    df = df.copy()
+    q1 = df[column].quantile(0.25)
+    q3 = df[column].quantile(0.75)
+    iqr = q3 - q1
+    lower = q1 - multiplier * iqr
+    upper = q3 + multiplier * iqr
+
+    before = df[column].copy()
+    df[column] = df[column].clip(lower=lower, upper=upper)
+    count_capped = int((before != df[column]).sum())
+    return df, count_capped
+
+
+def split_column(df, column, delimiter, new_col_names):
+    """Split a text column into multiple new columns by delimiter.
+    Returns (df, 0) since no rows are affected - only structure changes.
+    """
+    df = df.copy()
+    split_data = df[column].astype(str).str.split(delimiter, expand=True)
+
+    # Assign new column names (use as many as provided)
+    for i, name in enumerate(new_col_names):
+        if i < split_data.shape[1]:
+            df[name] = split_data[i].str.strip()
+        else:
+            df[name] = None
+
+    return df, 0
+
+
+def merge_columns(df, columns, separator, new_col_name):
+    """Concatenate multiple text columns into one new column.
+    Returns (df, 0) since no rows are affected - only structure changes.
+    """
+    df = df.copy()
+    df[new_col_name] = df[columns].astype(str).agg(separator.join, axis=1)
+    return df, 0
+
+
+def standardize_text(df, column, mode='lowercase'):
+    """Apply text transformations to a column.
+    Modes: lowercase, uppercase, title, strip.
+    Returns (df, rows_affected).
+    """
+    df = df.copy()
+    non_null_count = int(df[column].notna().sum())
+
+    if mode == 'lowercase':
+        df[column] = df[column].astype(str).str.lower()
+    elif mode == 'uppercase':
+        df[column] = df[column].astype(str).str.upper()
+    elif mode == 'title':
+        df[column] = df[column].astype(str).str.title()
+    elif mode == 'strip':
+        df[column] = df[column].astype(str).str.strip()
+
+    return df, non_null_count
+
+
+def convert_column_type(df, column, target_type):
+    """Convert a column to a different dtype.
+    target_type: 'numeric', 'datetime', 'string', 'category'.
+    Returns (df, rows_affected) where rows_affected is the count of successfully converted values.
+    """
+    df = df.copy()
+    original_non_null = int(df[column].notna().sum())
+
+    if target_type == 'numeric':
+        df[column] = pd.to_numeric(df[column], errors='coerce')
+    elif target_type == 'datetime':
+        df[column] = pd.to_datetime(df[column], errors='coerce')
+    elif target_type == 'string':
+        df[column] = df[column].astype(str)
+    elif target_type == 'category':
+        df[column] = df[column].astype('category')
+
+    new_non_null = int(df[column].notna().sum())
+    return df, new_non_null
