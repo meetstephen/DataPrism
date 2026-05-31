@@ -74,24 +74,39 @@ def _build_css(theme):
 html, body, [class*="css"] {{ font-family: 'DM Sans', 'Segoe UI', sans-serif; }}
 h1, h2, h3 {{ letter-spacing: -0.02em; }}
 
-/* Sidebar - distinctly darker than main, scrollable for many pages */
+/* Sidebar - distinctly darker than main, fully scrollable */
 [data-testid="stSidebar"] {{
     background: {theme['sidebar_bg']} !important;
     border-right: 1px solid {theme['sidebar_border']};
 }}
-[data-testid="stSidebar"] > div:first-child {{
+/* Make the ENTIRE sidebar scrollable on all pages (not just home) */
+[data-testid="stSidebar"] > div,
+[data-testid="stSidebar"] > div:first-child,
+[data-testid="stSidebar"] [data-testid="stSidebarContent"],
+section[data-testid="stSidebar"] > div {{
     overflow-y: auto !important;
     max-height: 100vh !important;
-    padding-bottom: 3rem !important;
+    padding-bottom: 4rem !important;
 }}
-/* Ensure the auto-generated page nav scrolls properly */
-[data-testid="stSidebarNav"] ul {{
+/* Remove any max-height clipping on the page navigation list */
+[data-testid="stSidebarNav"],
+[data-testid="stSidebarNav"] ul,
+[data-testid="stSidebarNav"] > ul {{
     max-height: none !important;
     overflow: visible !important;
 }}
-[data-testid="stSidebarNav"] {{
-    max-height: none !important;
-    overflow: visible !important;
+/* Bigger, more readable sidebar nav links */
+[data-testid="stSidebarNav"] a,
+[data-testid="stSidebarNav"] a span {{
+    font-size: 0.95rem !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.01em !important;
+}}
+/* Also increase the custom sidebar text */
+[data-testid="stSidebar"] .stMarkdown p,
+[data-testid="stSidebar"] .stMarkdown li {{
+    font-size: 0.92rem !important;
+    line-height: 1.6 !important;
 }}
 
 /* Main content area */
