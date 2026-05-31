@@ -177,22 +177,22 @@ def sign_in(email, password):
 
 
 def sign_out():
-    """Clear authentication session state."""
+    """Clear authentication session state and force re-authentication on next run."""
+    # Clear all auth keys first (this is what actually "logs out" the user)
     keys_to_clear = [
         "dp_authenticated", "dp_user_email", "dp_user_id",
         "dp_user_role", "dp_user_name", "dp_login_time",
     ]
     for key in keys_to_clear:
-        if key in st.session_state:
-            del st.session_state[key]
+        st.session_state.pop(key, None)
 
-    # Try to sign out from Supabase Auth too
+    # Try to sign out from Supabase Auth too (best-effort, never blocks logout)
     try:
         client, _ = get_client()
         if client:
             client.auth.sign_out()
     except Exception:
-        pass
+        pass  # Network/auth errors must never prevent local logout
 
 
 # ---------------------------------------------------------------------------
