@@ -74,10 +74,24 @@ def _build_css(theme):
 html, body, [class*="css"] {{ font-family: 'DM Sans', 'Segoe UI', sans-serif; }}
 h1, h2, h3 {{ letter-spacing: -0.02em; }}
 
-/* Sidebar - distinctly darker than main */
+/* Sidebar - distinctly darker than main, scrollable for many pages */
 [data-testid="stSidebar"] {{
     background: {theme['sidebar_bg']} !important;
     border-right: 1px solid {theme['sidebar_border']};
+}}
+[data-testid="stSidebar"] > div:first-child {{
+    overflow-y: auto !important;
+    max-height: 100vh !important;
+    padding-bottom: 3rem !important;
+}}
+/* Ensure the auto-generated page nav scrolls properly */
+[data-testid="stSidebarNav"] ul {{
+    max-height: none !important;
+    overflow: visible !important;
+}}
+[data-testid="stSidebarNav"] {{
+    max-height: none !important;
+    overflow: visible !important;
 }}
 
 /* Main content area */

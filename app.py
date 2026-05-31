@@ -58,7 +58,10 @@ with st.sidebar:
         )
         if st.button("\U0001F6AA Sign Out", key="sidebar_signout", use_container_width=True):
             sign_out()
-            st.rerun()
+            st.rerun()  # Force page reload to hit require_auth() again
+        st.markdown("---")
+    elif current_user and current_user.get("is_mock"):
+        st.caption("\U0001F464 Local Dev Mode (no login required)")
         st.markdown("---")
 
     # Theme Switcher
