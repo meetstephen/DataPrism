@@ -3,9 +3,11 @@ Community College Dashboard - Pre-built interactive visualizations.
 """
 
 import streamlit as st
-st.set_page_config(page_title="Community College Dashboard", page_icon="\U0001F4CA", layout="wide")
+st.set_page_config(page_title="Community College Dashboard", page_icon="\U0001f4a0", layout="wide")
 from utils.styles import inject_global_css
 inject_global_css()
+from utils.data_loader import ensure_builtin_data
+ensure_builtin_data()
 
 import pandas as pd
 from utils.visualizations import (

@@ -33,6 +33,99 @@ h1, h2, h3 { letter-spacing: -0.02em; }
     border-radius: 12px !important;
     background: rgba(0, 212, 255, 0.03) !important;
 }
+
+/* ===== Premium enterprise enhancements ===== */
+
+/* Smooth fade-in for the main content area */
+@keyframes dpFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+[data-testid="stAppViewContainer"] .main .block-container {
+    animation: dpFadeIn 0.5s ease-out;
+    padding-top: 3rem;
+}
+
+/* Gradient text option for hero titles: add class "dp-gradient-title" */
+.dp-gradient-title {
+    background: linear-gradient(135deg, #00D4FF 0%, #0066FF 60%, #7B61FF 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+}
+
+/* Styled expanders: rounded with subtle border */
+[data-testid="stExpander"] {
+    border: 1px solid rgba(0, 212, 255, 0.15);
+    border-radius: 12px;
+    background: rgba(26, 39, 64, 0.45);
+    overflow: hidden;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+[data-testid="stExpander"]:hover {
+    border-color: rgba(0, 212, 255, 0.4);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+}
+[data-testid="stExpander"] summary {
+    font-weight: 600;
+}
+
+/* Hover lift effect on metrics */
+[data-testid="stMetric"] {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+[data-testid="stMetric"]:hover {
+    transform: translateY(-2px);
+    transition: transform 0.2s;
+    border-color: rgba(0, 212, 255, 0.35);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
+}
+
+/* Better dataframe styling: rounded corners */
+[data-testid="stDataFrame"], [data-testid="stTable"] {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Subtle styling for st.page_link */
+[data-testid="stPageLink"] a {
+    border: 1px solid rgba(0, 212, 255, 0.18);
+    border-radius: 10px;
+    padding: 0.55rem 0.9rem !important;
+    background: rgba(0, 212, 255, 0.04);
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+[data-testid="stPageLink"] a:hover {
+    background: rgba(0, 212, 255, 0.12);
+    border-color: rgba(0, 212, 255, 0.45);
+    transform: translateY(-1px);
+}
+
+/* Subtle styling for chat messages */
+[data-testid="stChatMessage"] {
+    background: rgba(26, 39, 64, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 14px;
+    padding: 0.4rem 0.6rem;
+    margin: 0.35rem 0;
+    transition: border-color 0.2s ease;
+}
+[data-testid="stChatMessage"]:hover {
+    border-color: rgba(0, 212, 255, 0.22);
+}
+
+/* Primary download buttons share the gradient treatment */
+.stDownloadButton > button[kind="primary"] {
+    background: linear-gradient(135deg, #00D4FF, #0066FF);
+    color: #0F1C2E;
+    font-weight: 700;
+    border: none;
+    border-radius: 8px;
+}
 </style>
 """
 

@@ -1,11 +1,12 @@
 """Chat With Your Data - Natural language data analysis powered by Gemini."""
 import streamlit as st
-st.set_page_config(page_title="Chat With Data", page_icon="\U0001f4ac", layout="wide")
+st.set_page_config(page_title="Chat With Data", page_icon="\U0001f4a0", layout="wide")
 from utils.styles import inject_global_css
 inject_global_css()
 
 import pandas as pd
 import numpy as np
+from utils.ai_client import get_api_key, GEMINI_MODEL
 from utils.persistence import save_session_state
 
 st.title("\U0001f4ac Chat With Your Data")
@@ -93,23 +94,22 @@ with st.expander("Preview Data", expanded=False):
     st.caption(f"Shape: {chat_df.shape[0]:,} rows x {chat_df.shape[1]} columns")
 
 # --- API Key ---
-api_key = None
-try:
-    api_key = st.secrets["GEMINI_API_KEY"]
-except Exception:
-    pass
+api_key = get_api_key()
 
 with st.sidebar:
     st.markdown("### Configuration")
     if not api_key:
-        api_key = st.text_input(
+        key_input = st.text_input(
             "Gemini API Key",
             type="password",
             help="Required for AI chat. Get one free at https://aistudio.google.com/apikey",
             key="chat_gemini_key"
         )
+        if key_input and key_input.strip():
+            st.session_state.gemini_api_key = key_input.strip()
+            api_key = get_api_key()
     else:
-        st.success("API key loaded from secrets")
+        st.success("API key loaded")
 
     st.markdown("---")
     if st.button("\U0001F5D1\uFE0F Clear Chat", use_container_width=True):
@@ -184,7 +184,7 @@ if user_input:
                 import google.generativeai as genai
                 genai.configure(api_key=api_key)
                 model = genai.GenerativeModel(
-                    "gemini-2.5-flash-preview-04-17",
+                    GEMINI_MODEL,
                     system_instruction=system_instruction
                 )
                 response = model.generate_content(prompt)

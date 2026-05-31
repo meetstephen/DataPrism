@@ -1,5 +1,5 @@
 import streamlit as st
-st.set_page_config(page_title="Expert Data Analyst", page_icon="\U0001F393", layout="wide")
+st.set_page_config(page_title="Expert Data Analyst", page_icon="\U0001f4a0", layout="wide")
 from utils.styles import inject_global_css
 inject_global_css()
 
@@ -7,6 +7,7 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 from utils.visualizations import create_histogram, create_bar_chart, create_heatmap, create_scatter_plot
+from utils.ai_client import get_api_key, generate_content, GEMINI_MODEL
 from utils.ai_insights import (
     generate_insights_gemini, generate_insights_fallback,
     generate_summary_stats, format_summary_as_markdown,
@@ -205,12 +206,15 @@ if uploaded_file:
 
     # AI-powered analysis (optional)
     st.markdown("### \U0001F916 AI-Powered Analysis")
-    api_key = None
-    try:
-        api_key = st.secrets["GEMINI_API_KEY"]
-    except Exception:
-        api_key = st.sidebar.text_input("Gemini API Key (for AI features)", type="password",
-                                        key="expert_analyst_api_key")
+    api_key = get_api_key()
+    if not api_key:
+        key_input = st.sidebar.text_input("Gemini API Key (for AI features)", type="password",
+                                          key="expert_analyst_api_key")
+        if key_input and key_input.strip():
+            st.session_state.gemini_api_key = key_input.strip()
+            api_key = get_api_key()
+    else:
+        st.sidebar.success("API key loaded")
 
     if api_key:
         stats = generate_summary_stats(df)
@@ -234,30 +238,31 @@ if uploaded_file:
         if st.button("Get Answer", key="ask_answer_btn"):
             if api_key:
                 with st.spinner("Thinking..."):
-                    try:
-                        import google.generativeai as genai
-                        genai.configure(api_key=api_key)
-                        model = genai.GenerativeModel("gemini-2.5-flash-preview-04-17")
+                    stats = generate_summary_stats(df)
+                    summary_text = format_summary_as_markdown(df, stats)
+                    sample_data = df.head(10).to_string()
 
-                        stats = generate_summary_stats(df)
-                        summary_text = format_summary_as_markdown(df, stats)
-                        sample_data = df.head(10).to_string()
-
-                        prompt = (
-                            f"Based on this dataset summary:\n\n{summary_text}\n\n"
-                            f"Sample data:\n{sample_data}\n\n"
-                            f"User question: {question}\n\n"
-                            "Provide a clear, data-driven answer. Cite specific numbers where possible."
-                        )
-                        response = model.generate_content(prompt)
-                        if response and response.text:
-                            st.markdown(response.text)
-                        else:
-                            st.warning("Could not generate an answer. Try rephrasing your question.")
-                    except Exception as e:
-                        import logging
-                        logging.warning(f"Gemini Q&A failed: {str(e)}")
-                        st.warning("AI Q&A unavailable. Please check your API key.")
+                    qa_system_instruction = (
+                        "You are a senior expert data analyst advising an executive stakeholder. "
+                        "Answer the user's question strictly using evidence from the provided dataset. "
+                        "Be specific and quantified: cite exact figures, percentages, and column names. "
+                        "Surface relevant trends, comparisons, and caveats. If the data cannot answer the "
+                        "question, say so clearly. Format the response in clean, well-structured markdown "
+                        "with short paragraphs and bullet points where helpful."
+                    )
+                    prompt = (
+                        f"Dataset summary:\n\n{summary_text}\n\n"
+                        f"Sample data (first 10 rows):\n{sample_data}\n\n"
+                        f"User question: {question}\n\n"
+                        "Provide a clear, data-driven answer. Cite specific numbers where possible."
+                    )
+                    answer_text, error = generate_content(
+                        prompt, api_key=api_key, system_instruction=qa_system_instruction
+                    )
+                    if answer_text:
+                        st.markdown(answer_text)
+                    else:
+                        st.warning(f"Could not generate an answer. {error}")
             else:
                 # Rule-based answer attempt
                 st.info("AI Q&A requires a Gemini API key. Showing basic data summary instead:")

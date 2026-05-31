@@ -3,12 +3,13 @@ AI Insights Engine - Generate automated insights with Google Gemini or rule-base
 """
 
 import streamlit as st
-st.set_page_config(page_title="AI Insights Engine", page_icon="\U0001F916", layout="wide")
+st.set_page_config(page_title="AI Insights Engine", page_icon="\U0001f4a0", layout="wide")
 from utils.styles import inject_global_css
 inject_global_css()
 
 import pandas as pd
-from utils.data_generator import generate_dataset
+from utils.data_loader import ensure_builtin_data
+from utils.ai_client import get_api_key, generate_content, GEMINI_MODEL
 from utils.ai_insights import (
     generate_insights_gemini,
     generate_insights_fallback,
@@ -27,18 +28,20 @@ st.markdown("Generate automated insights from your data using **Google Gemini 2.
 with st.sidebar:
     st.header("Configuration")
 
-    api_key = ""
-    try:
-        api_key = st.secrets["GEMINI_API_KEY"]
-        st.sidebar.success("API key loaded from secrets")
-    except Exception:
-        api_key = st.text_input(
+    api_key = get_api_key()
+    if api_key:
+        st.success("API key loaded")
+    else:
+        key_input = st.text_input(
             "Google Gemini API Key (optional)",
             type="password",
             help="Enter your Google Gemini API key for AI-powered insights. "
                  "Get one free at https://aistudio.google.com/apikey. "
                  "Leave empty to use rule-based analysis."
         )
+        if key_input and key_input.strip():
+            st.session_state.gemini_api_key = key_input.strip()
+            api_key = get_api_key()
 
     st.markdown("---")
     st.markdown(
@@ -88,9 +91,7 @@ data_source = st.radio(
 # Load appropriate dataset
 df = None
 if data_source == "Built-in Community College Data":
-    if "df" not in st.session_state:
-        st.session_state.df = generate_dataset()
-    df = st.session_state.df.copy()
+    df = ensure_builtin_data().copy()
     st.info(f"Using built-in dataset: {len(df)} rows, {len(df.columns)} columns")
 elif data_source == "Online Data":
     if "online_df" in st.session_state and st.session_state.online_df is not None:

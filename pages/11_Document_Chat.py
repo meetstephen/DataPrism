@@ -1,11 +1,12 @@
 """Document Chat - Upload any document and chat with it using AI."""
 import streamlit as st
-st.set_page_config(page_title="Document Chat", page_icon="📄", layout="wide")
+st.set_page_config(page_title="Document Chat", page_icon="\U0001f4a0", layout="wide")
 from utils.styles import inject_global_css
 inject_global_css()
 
 import pandas as pd
 from io import StringIO, BytesIO
+from utils.ai_client import get_api_key, GEMINI_MODEL
 from utils.persistence import save_session_state
 
 st.title("📄 Document Chat")
@@ -203,27 +204,24 @@ if st.session_state.doc_content:
         with st.chat_message("assistant"):
             with st.spinner("Analyzing document..."):
                 # Try Gemini API
-                api_key = None
-                try:
-                    api_key = st.secrets["GEMINI_API_KEY"]
-                except Exception:
-                    api_key = st.session_state.get("gemini_api_key")
-                
+                api_key = get_api_key()
+
                 if api_key:
                     try:
                         import google.generativeai as genai
                         genai.configure(api_key=api_key)
-                        model = genai.GenerativeModel("gemini-2.5-flash-preview-04-17")
-                        
+
                         # Build context
                         system_context = (
-                            "You are DataPrism's document analysis assistant. "
-                            "You have been given the contents of a document to analyze. "
-                            "Answer the user's questions based on the document content. "
-                            "Be specific, cite relevant parts of the document, and provide actionable insights. "
-                            "If the document contains data, provide quantitative analysis. "
-                            "Format your responses with clear markdown headings and bullet points."
+                            "You are DataPrism's senior document analysis assistant, acting as an "
+                            "expert analyst. You have been given the contents of a document to analyze. "
+                            "Answer the user's questions strictly based on the document content. "
+                            "Be specific and quantified: cite exact figures and reference relevant "
+                            "parts of the document, and provide actionable insights. "
+                            "If the document contains data, provide quantitative analysis with concrete numbers. "
+                            "Format every response in clean markdown with clear headings and bullet points."
                         )
+                        model = genai.GenerativeModel(GEMINI_MODEL, system_instruction=system_context)
                         
                         # Include last few messages for context
                         history_context = ""
@@ -234,7 +232,6 @@ if st.session_state.doc_content:
                                 history_context += f"{msg['role'].upper()}: {msg['content']}\n"
                         
                         full_prompt = (
-                            f"{system_context}\n\n"
                             f"DOCUMENT CONTENT:\n{st.session_state.doc_content}\n\n"
                             f"{history_context}\n"
                             f"USER QUESTION: {prompt}\n\n"

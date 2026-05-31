@@ -1,6 +1,6 @@
 """Data Cleaning Engine - Interactive data cleaning with undo/redo support."""
 import streamlit as st
-st.set_page_config(page_title="Data Cleaning", page_icon="\U0001f9f9", layout="wide")
+st.set_page_config(page_title="Data Cleaning", page_icon="\U0001f4a0", layout="wide")
 from utils.styles import inject_global_css
 inject_global_css()
 

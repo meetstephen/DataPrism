@@ -23,7 +23,7 @@ def generate_insights_gemini(df_summary, api_key):
 
         genai.configure(api_key=api_key)
 
-        model = genai.GenerativeModel("gemini-2.5-flash-preview-04-17")
+        model = genai.GenerativeModel("gemini-2.5-flash")
 
         system_instruction = (
             "You are a senior data analyst preparing a briefing for stakeholders. "
