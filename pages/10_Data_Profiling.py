@@ -21,6 +21,16 @@ init_all_session_state()
 st.title("\U0001F50D Data Profiling")
 st.markdown("Comprehensive data quality assessment, column statistics, and AI-powered commentary.")
 
+with st.expander("❓ How to use this page", expanded=False):
+    st.markdown("""
+    1. **Select or upload** a dataset using the options above
+    2. The **Quality Score** gauge shows an overall 0-100 health rating
+    3. **Column profiles** show type, null %, unique values, and distributions
+    4. **AI Commentary** (requires Gemini API key) provides plain-English assessment
+    5. **Correlation Heatmap** flags highly correlated column pairs (>0.85)
+    6. Use the **Next Steps** links at the bottom to continue your workflow
+    """)
+
 # Data source selection
 st.markdown("### Select Data Source")
 sources = ["Built-in Community College Data"]

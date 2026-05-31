@@ -12,6 +12,14 @@ from utils.data_generator import generate_dataset
 st.title("\U0001F4D6 Data Dictionary")
 st.markdown("Auto-generate column documentation and add your own descriptions for each column.")
 
+with st.expander("❓ How to use this page", expanded=False):
+    st.markdown("""
+    1. Select a dataset to document
+    2. **Column Information** is auto-generated (type, nulls, uniques, samples)
+    3. **Add descriptions** for each column in the text fields below
+    4. **Export** as Markdown or CSV to share with your team
+    """)
+
 # --- Data Source Selection ---
 if "df" not in st.session_state:
     st.session_state.df = generate_dataset()
