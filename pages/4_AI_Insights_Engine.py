@@ -117,6 +117,7 @@ elif data_source == "Online Data":
         st.info(f"Using online dataset: {len(df)} rows, {len(df.columns)} columns")
     else:
         st.warning("No online data available. Go to 'Online Data Explorer' to fetch data.")
+        st.page_link("pages/6_Online_Data_Explorer.py", label="\U0001F310 Go to Online Data Explorer", icon="\U0001F310")
         st.stop()
 elif data_source == "Cleaned Data":
     if st.session_state.get("working_df") is not None:
@@ -124,6 +125,7 @@ elif data_source == "Cleaned Data":
         st.info(f"Using cleaned dataset: {len(df)} rows, {len(df.columns)} columns")
     else:
         st.warning("No cleaned data available. Go to 'Data Cleaning' to clean a dataset.")
+        st.page_link("pages/3_Data_Cleaning.py", label="\U0001f9f9 Go to Data Cleaning", icon="\U0001f9f9")
         st.stop()
 else:
     if st.session_state.get("uploaded_df") is not None:
@@ -131,6 +133,7 @@ else:
         st.info(f"Using uploaded dataset: {len(df)} rows, {len(df.columns)} columns")
     else:
         st.warning("No data has been uploaded yet. Upload a file above or go to 'Upload & Analyze'.")
+        st.page_link("pages/2_Upload_and_Analyze.py", label="\U0001F4C1 Go to Upload & Analyze", icon="\U0001F4C1")
         st.stop()
 
 if df is not None:
