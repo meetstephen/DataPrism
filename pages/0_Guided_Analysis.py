@@ -95,20 +95,24 @@ def _render_progress_bar():
     st.markdown("---")
 
 
-def _nav_buttons(can_next=True):
-    """Render Back / Next navigation buttons. Returns True if Next was clicked."""
+def _nav_buttons(can_next=True, next_label="Next \u2192", show_skip=False):
+    """Render prominent Back / Next navigation buttons at the bottom of a stage."""
     stage = st.session_state.guide_stage
-    left, _, right = st.columns([1, 5, 1])
+    st.markdown("")  # spacing
+    st.markdown("---")
+    left, center, right = st.columns([2, 4, 2])
     with left:
         if stage > 1:
-            if st.button("\u2190 Back", key=f"back_{stage}"):
+            if st.button("\u2190 Back", key=f"back_{stage}", use_container_width=True):
                 st.session_state.guide_stage -= 1
                 st.rerun()
     with right:
         if can_next:
-            if st.button("Next \u2192", key=f"next_{stage}", type="primary"):
+            if st.button(next_label, key=f"next_{stage}", type="primary", use_container_width=True):
                 st.session_state.guide_stage += 1
                 st.rerun()
+        elif not can_next and stage < 7:
+            st.button(next_label, key=f"next_{stage}_disabled", disabled=True, use_container_width=True)
     return False
 
 
@@ -166,9 +170,7 @@ def render_stage_1():
 
     ready = len(goal.strip()) >= 20
     if not ready:
-        st.caption("Please write at least 20 characters describing your goal to proceed.")
-
-    _nav_buttons(can_next=ready)
+        st.info("\u270F\uFE0F Please write at least 20 characters describing your goal to unlock the Next button.")
 
     if ready:
         _ai_coach(
@@ -176,6 +178,8 @@ def render_stage_1():
             "Give a quick tip on how to sharpen this question.",
             "s1",
         )
+
+    _nav_buttons(can_next=ready)
 
 
 # ---------------------------------------------------------------------------
@@ -434,8 +438,18 @@ def render_stage_4():
         st.rerun()
 
     st.markdown("---")
-    if st.button("I'm Done Cleaning - Skip Remaining Issues", key="guide_done_clean"):
+    st.info(
+        "\u2139\uFE0F Address each issue above, or click below to skip "
+        "remaining issues and move on to the next stage."
+    )
+    if st.button(
+        "\u23ED\uFE0F Done Cleaning \u2014 Proceed to Explore \u2192",
+        key="guide_done_clean",
+        type="primary",
+        use_container_width=True,
+    ):
         st.session_state.guide_issue_idx = len(all_issues)
+        st.session_state.guide_stage += 1
         st.rerun()
 
     _nav_buttons(can_next=False)
@@ -515,6 +529,9 @@ def render_stage_5():
     )
     st.session_state.guide_data["explored_reviewed"] = reviewed
 
+    if not reviewed:
+        st.info("\u2705 Check the box above to confirm you've reviewed the charts, then click Next.")
+
     _nav_buttons(can_next=reviewed)
 
 
@@ -588,6 +605,9 @@ def render_stage_6():
         key="guide_insights_check",
     )
     st.session_state.guide_data["insights_reviewed"] = reviewed
+
+    if not reviewed:
+        st.info("\u2705 Check the box above to confirm you've reviewed the insights, then click Next.")
 
     _nav_buttons(can_next=reviewed)
 

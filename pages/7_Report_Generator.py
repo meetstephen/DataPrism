@@ -57,16 +57,19 @@ elif data_source == "Uploaded Data":
     df = st.session_state.get("uploaded_df")
     if df is None:
         st.error("No uploaded data found. Please upload data first.")
+        st.page_link("pages/2_Upload_and_Analyze.py", label="\U0001F4C1 Go to Upload & Analyze", icon="\U0001F4C1")
         st.stop()
 elif data_source == "Online Data":
     df = st.session_state.get("online_df")
     if df is None:
         st.error("No online data found. Please fetch data from the Online Data Explorer first.")
+        st.page_link("pages/6_Online_Data_Explorer.py", label="\U0001F310 Go to Online Data Explorer", icon="\U0001F310")
         st.stop()
 elif data_source == "Cleaned Data":
     df = st.session_state.get("working_df")
     if df is None:
         st.error("No cleaned data found. Please clean a dataset in the Data Cleaning page first.")
+        st.page_link("pages/3_Data_Cleaning.py", label="\U0001f9f9 Go to Data Cleaning", icon="\U0001f9f9")
         st.stop()
 
 st.markdown(f"**Selected dataset:** {len(df):,} rows x {len(df.columns)} columns")
