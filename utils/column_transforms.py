@@ -100,7 +100,19 @@ def string_operations(df, column, operation, pattern=None):
     elif operation == "extract_regex":
         if not pattern:
             return df, 0
-        extracted = df[column].astype(str).str.extract(f"({pattern})", expand=False)
+        # Guard: limit pattern length to prevent catastrophic backtracking
+        MAX_PATTERN_LENGTH = 200
+        if len(pattern) > MAX_PATTERN_LENGTH:
+            return df, 0
+        # Validate pattern with re.compile before applying to the DataFrame
+        try:
+            re.compile(pattern)
+        except re.error:
+            return df, 0
+        try:
+            extracted = df[column].astype(str).str.extract(f"({pattern})", expand=False)
+        except Exception:
+            return df, 0
         df[f"{column}_extracted"] = extracted
         rows_affected = int(extracted.notna().sum())
     else:

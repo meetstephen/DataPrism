@@ -2,6 +2,10 @@
 
 Annotations are stored in Streamlit session state under the key 'dp_annotations'
 as a dict mapping chart_id -> list of {x, y, text} dicts.
+
+NOTE: Annotations are session-only and do not persist across page refreshes.
+This is a known limitation. For durable storage, users should export their
+annotated charts or use the cloud workspace to save analysis state.
 """
 
 import streamlit as st

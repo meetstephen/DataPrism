@@ -163,7 +163,10 @@ def delete_template(template_id_or_name):
         if client is None:
             return False, err
         try:
-            client.table(T_TEMPLATES).delete().eq("id", template_id_or_name).execute()
+            resp = client.table(T_TEMPLATES).delete().eq("id", template_id_or_name).execute()
+            # Verify that the delete actually matched a row
+            if not resp.data or len(resp.data) == 0:
+                return False, "Template not found or already deleted."
             return True, "Template deleted."
         except Exception as e:
             return False, f"Could not delete template: {e}"

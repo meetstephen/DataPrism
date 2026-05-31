@@ -106,8 +106,9 @@ with tab_join:
             col_save1, col_save2 = st.columns([1, 3])
             with col_save1:
                 if st.button("\U0001F4BE Save to Session", key="save_join_result"):
+                    st.session_state.join_result_df = preview_df.copy()
                     st.session_state.merged_df = preview_df.copy()
-                    st.success("Saved as 'Merged Data' - available across all pages!")
+                    st.success("Saved as 'Join Result' and 'Merged Data' - available across all pages!")
 
 # =================== CONCATENATE TAB ===================
 with tab_concat:
@@ -161,5 +162,6 @@ with tab_concat:
             col_save1, col_save2 = st.columns([1, 3])
             with col_save1:
                 if st.button("\U0001F4BE Save to Session", key="save_concat_result"):
+                    st.session_state.concat_result_df = preview_df.copy()
                     st.session_state.merged_df = preview_df.copy()
-                    st.success("Saved as 'Merged Data' - available across all pages!")
+                    st.success("Saved as 'Concat Result' and 'Merged Data' - available across all pages!")

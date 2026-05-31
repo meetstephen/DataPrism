@@ -14,6 +14,8 @@ def get_available_datasets():
         "Online Data": "online_df",
         "Cleaned Data": "working_df",
         "Merged Data": "merged_df",
+        "Join Result": "join_result_df",
+        "Concat Result": "concat_result_df",
         "SQL Result": "sql_result_df",
     }
     datasets = {}
