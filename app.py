@@ -162,6 +162,39 @@ st.markdown(
 
 st.markdown("---")
 
+# --- First-Time Onboarding Wizard ---
+# Shows a step-by-step checklist for new users. Dismissed permanently when they click "Got it".
+if "dp_onboarding_dismissed" not in st.session_state:
+    st.session_state.dp_onboarding_dismissed = False
+
+if not st.session_state.dp_onboarding_dismissed:
+    st.markdown(
+        """
+        <div style="border:2px solid rgba(0,212,255,0.4); border-radius:16px;
+                    padding:1.5rem 1.8rem; margin-bottom:1.5rem;
+                    background:linear-gradient(135deg, rgba(0,212,255,0.12), rgba(123,97,255,0.08));">
+            <h3 style="margin:0 0 0.5rem 0; color:#E2E8F0;">
+                \U0001F44B Welcome to DataPrism! Here's how to get started:
+            </h3>
+            <ol style="margin:0; padding-left:1.4rem; color:#CBD5E1; line-height:2.0; font-size:0.95rem;">
+                <li><strong>Load your data</strong> \u2014 Click <em>"I have my own data"</em> below to upload a file, or pick <em>"Show me how it works"</em> to use a sample dataset</li>
+                <li><strong>Profile it</strong> \u2014 Go to <em>Data Profiling</em> to see a quality score and column breakdown</li>
+                <li><strong>Clean it</strong> \u2014 Go to <em>Data Cleaning</em> to fix missing values, duplicates, and outliers</li>
+                <li><strong>Analyze it</strong> \u2014 Use <em>Advanced Analytics</em>, <em>SQL Query</em>, or <em>AI Insights</em> to explore patterns</li>
+                <li><strong>Visualize it</strong> \u2014 Build charts and KPIs on the <em>Dashboard</em> page</li>
+                <li><strong>Report it</strong> \u2014 Generate a professional PDF/DOCX/HTML report in <em>Report Generator</em></li>
+            </ol>
+            <p style="margin:0.8rem 0 0 0; color:#94A3B8; font-size:0.85rem;">
+                \U0001F4A1 <strong>Tip:</strong> If you're brand new to data analysis, start with <em>\U0001F9ED Guided Analysis</em> \u2014 it walks you through every step automatically.
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    if st.button("\u2705 Got it! Don't show this again", key="dismiss_onboarding"):
+        st.session_state.dp_onboarding_dismissed = True
+        st.rerun()
+
 # --- Start Here: 3-button decision tree ---
 st.markdown(
     "<h2 style='margin-bottom:0.2rem;'>\U0001F9ED Start Here</h2>",
