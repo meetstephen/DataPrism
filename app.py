@@ -40,11 +40,6 @@ if "session_restored" not in st.session_state:
     st.session_state.session_restored = True
     if restored:
         st.toast("\u2705 Previous session restored!", icon="\U0001F4BE")
-    # Log login activity (best-effort)
-    try:
-        log_user_activity("login", page="home")
-    except Exception:
-        pass
 
 # Sidebar
 with st.sidebar:

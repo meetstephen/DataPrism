@@ -2,7 +2,7 @@
   "id": "FEAT-001",
   "type": "feat",
   "description": "Implement authentication system with login/signup UI, session management, role-based access control, admin panel, and all required Supabase SQL in SUPABASE_SETUP.md. The app must degrade gracefully when auth is not configured.",
-  "status": "completed",
+  "status": "in_progress",
   "steps": [
     "Step 1 - Create utils/auth.py with the following functions: (a) check_auth_configured() - returns True if SUPABASE_URL + SUPABASE_KEY are set AND a dp_users table is expected. (b) sign_up(email, password, display_name) - uses Supabase Auth to create a user, then inserts a row in dp_users with role='viewer' (unless email matches ADMIN_EMAIL secret, then role='admin'). (c) sign_in(email, password) - authenticates via Supabase Auth, fetches user role from dp_users, stores session in st.session_state (keys: dp_authenticated=True, dp_user_email, dp_user_id, dp_user_role, dp_user_name, dp_login_time). (d) sign_out() - clears auth session state keys. (e) get_current_user() - returns dict with user info from session_state or None. (f) require_auth() - checks if user is authenticated; if not, renders the login page and calls st.stop(). Returns user dict if authenticated. (g) require_role(min_role) - checks user has sufficient role (admin > analyst > viewer); shows error and stops if not. (h) log_user_activity(action, details='') - logs to dp_activity_log table with user_id, timestamp. (i) is_admin() - shortcut returning True if current user role is 'admin'. The module should import from utils/supabase_client.py and follow the (ok, payload) pattern. When Supabase is not configured, require_auth() should return a mock admin user and NOT block access (local dev mode).",
 

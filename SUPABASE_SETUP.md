@@ -431,3 +431,113 @@ The first user who registers with that email gets admin privileges.
 When a user is logged in, `save_*` functions in `utils/database.py` automatically
 attach their `user_id`. The `list_*` functions filter by `user_id` for non-admin
 users, so each user sees only their own data. Admins see all data across users.
+
+---
+
+## Security Note: RLS Policies and the Anon Key
+
+> **Important:** The RLS policies above are intentionally permissive. Read this
+> section before deploying to production.
+
+### Why the policies are permissive
+
+The Supabase Python client authenticates users with `sign_in_with_password`, but
+all subsequent database requests are still sent using the **anon key** (not the
+user's access token). This is the default behavior of the `supabase-py` client.
+As a result, Postgres sees the `anon` role for every request regardless of which
+user is signed in.
+
+To make the app functional with this architecture, the `dp_users` and
+`dp_activity_log` policies grant broad access to the `anon` role. Data isolation
+between users is enforced at the **application layer** in `utils/database.py`
+(filtering by `user_id`), not at the database layer.
+
+### For production multi-tenant deployments
+
+If you are deploying DataPrism in a multi-tenant environment where users should
+not be able to access each other's data even via direct API calls, you have two
+options:
+
+**Option A: Use the `service_role` key server-side**
+
+Replace the `anon` key with the `service_role` key in your secrets. The
+service-role key bypasses RLS entirely, so your application code is solely
+responsible for access control. This is appropriate for server-rendered apps
+(like Streamlit) where the key is never exposed to the browser.
+
+```toml
+# .streamlit/secrets.toml
+SUPABASE_URL = "https://your-project-ref.supabase.co"
+SUPABASE_KEY = "your-service-role-key"  # NOT the anon key
+```
+
+**Option B: Configure the client to use access tokens**
+
+After `sign_in_with_password`, extract the user's JWT access token and configure
+the client to send it as the `Authorization` header. This makes Postgres see the
+`authenticated` role and enables proper per-user RLS.
+
+### Sample tighter RLS policies
+
+When you are ready to enforce database-level isolation (using Option B above or
+a custom setup), drop the permissive anon policies and apply these instead:
+
+```sql
+-- Drop permissive anon policies
+drop policy if exists "dp_users_anon_insert" on public.dp_users;
+drop policy if exists "dp_users_anon_select" on public.dp_users;
+drop policy if exists "dp_users_anon_update" on public.dp_users;
+drop policy if exists "dp_activity_log_anon_insert" on public.dp_activity_log;
+drop policy if exists "dp_activity_log_anon_select" on public.dp_activity_log;
+
+-- Users: each user can only read/update their own profile
+create policy "dp_users_self_select" on public.dp_users
+    for select to authenticated
+    using (auth.uid() = auth_id);
+
+create policy "dp_users_self_update" on public.dp_users
+    for update to authenticated
+    using (auth.uid() = auth_id)
+    with check (auth.uid() = auth_id);
+
+-- Users: admin can manage all users
+create policy "dp_users_admin_all" on public.dp_users
+    for all to authenticated
+    using (
+        exists (select 1 from public.dp_users u where u.auth_id = auth.uid() and u.role = 'admin')
+    )
+    with check (
+        exists (select 1 from public.dp_users u where u.auth_id = auth.uid() and u.role = 'admin')
+    );
+
+-- Activity log: users can insert their own entries, only admins can read all
+create policy "dp_activity_log_insert_own" on public.dp_activity_log
+    for insert to authenticated
+    with check (
+        user_id = (select id from public.dp_users where auth_id = auth.uid())
+    );
+
+create policy "dp_activity_log_admin_read" on public.dp_activity_log
+    for select to authenticated
+    using (
+        exists (select 1 from public.dp_users u where u.auth_id = auth.uid() and u.role = 'admin')
+    );
+
+-- Data tables: users see only their own rows, admins see all
+-- (Repeat this pattern for dp_datasets, dp_reports, dp_insights, dp_validation_rule_sets)
+drop policy if exists "dp_datasets anon all" on public.dp_datasets;
+create policy "dp_datasets_owner" on public.dp_datasets
+    for all to authenticated
+    using (
+        user_id = (select id from public.dp_users where auth_id = auth.uid())
+        or exists (select 1 from public.dp_users u where u.auth_id = auth.uid() and u.role = 'admin')
+    )
+    with check (
+        user_id = (select id from public.dp_users where auth_id = auth.uid())
+        or exists (select 1 from public.dp_users u where u.auth_id = auth.uid() and u.role = 'admin')
+    );
+```
+
+> **Note:** After switching to tighter policies, the `handle_new_user` trigger
+> (which runs as `security definer`) still handles the initial `dp_users` insert
+> on sign-up, so no anon insert policy is needed for that table.

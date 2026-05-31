@@ -79,27 +79,31 @@ with tab_users:
 
                     # Role change
                     current_role = u.get("role", "viewer")
-                    new_role = cols[4].selectbox(
+                    role_col, save_col = cols[4].columns([2, 1])
+                    new_role = role_col.selectbox(
                         "Role",
                         ["admin", "analyst", "viewer"],
                         index=["admin", "analyst", "viewer"].index(current_role),
                         key=f"role_{u['id']}",
                         label_visibility="collapsed",
                     )
-                    if new_role != current_role:
-                        try:
-                            client.table("dp_users").update(
-                                {"role": new_role}
-                            ).eq("id", u["id"]).execute()
-                            st.success(f"Updated {u.get('email')} to {new_role}.")
-                            log_user_activity(
-                                "change_user_role",
-                                details=f"{u.get('email')} -> {new_role}",
-                                page="admin",
-                            )
-                            st.rerun()
-                        except Exception as e:
-                            st.error(f"Could not update role: {e}")
+                    if save_col.button("\U0001F4BE", key=f"save_role_{u['id']}", help="Save role change"):
+                        if new_role != current_role:
+                            try:
+                                client.table("dp_users").update(
+                                    {"role": new_role}
+                                ).eq("id", u["id"]).execute()
+                                st.success(f"Updated {u.get('email')} to {new_role}.")
+                                log_user_activity(
+                                    "change_user_role",
+                                    details=f"{u.get('email')} -> {new_role}",
+                                    page="admin",
+                                )
+                                st.rerun()
+                            except Exception as e:
+                                st.error(f"Could not update role: {e}")
+                        else:
+                            st.info("Role unchanged.")
 
             st.markdown("---")
         else:

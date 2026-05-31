@@ -227,6 +227,17 @@ def require_auth():
     - Returns the current user dict when authenticated.
     """
     if not check_auth_configured():
+        # Warn if partially configured (one credential set but not the other)
+        from utils.supabase_client import get_credentials
+        url, key = get_credentials()
+        if bool(url) != bool(key):
+            missing = "SUPABASE_KEY" if url else "SUPABASE_URL"
+            st.warning(
+                f"Partial Supabase configuration detected: `{missing}` is missing. "
+                f"Authentication is disabled (local dev mode). Add both SUPABASE_URL "
+                f"and SUPABASE_KEY to enable auth."
+            )
+
         # Local dev mode - return mock admin, no login required
         st.session_state["dp_authenticated"] = True
         st.session_state["dp_user_id"] = MOCK_USER["user_id"]
