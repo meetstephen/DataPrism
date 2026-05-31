@@ -1,0 +1,7 @@
+{
+  "task_id": "task-complete-analysis-toolkit",
+  "task_description": "Add all 6 missing features to make DataPrism a complete A-to-Z data analysis app: Data Joining/Merging, SQL Query Interface, Column Transformations, Saved Analysis Templates, Chart Annotations, and Data Dictionary. All features include Supabase integration with graceful fallback.",
+  "status": "in_progress",
+  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003"],
+  "blocked_reason": null
+}
