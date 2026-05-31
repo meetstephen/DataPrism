@@ -1,0 +1,29 @@
+{
+  "project_type": "Streamlit multi-page data intelligence web application",
+  "language": "Python",
+  "build_system": "pip with requirements.txt",
+  "test_framework": "No formal test framework configured; verification is via streamlit run and syntax checks",
+  "build_command": "pip install -r requirements.txt",
+  "test_command": "python -c \"import app; print('OK')\" is not feasible due to streamlit; use python -m py_compile on key files",
+  "verification_instructions": "1. Run py_compile on all modified Python files to ensure no syntax errors. 2. Verify imports resolve correctly with a targeted import test script. 3. Check that streamlit pages have set_page_config as the first st call.",
+  "snapshot_or_generated_files": null,
+  "setup_instructions": "pip install -r requirements.txt (supabase==2.30.1 is already listed)",
+  "environment_constraints": "OPEN_INTERNET network mode. No Docker daemon available but packages can be installed. Python 3.11 is default. Streamlit apps cannot be fully run headlessly for testing but syntax and import validation works.",
+  "contribution_requirements": "Branch from qa/production-hardening. Keep the app working without auth configured (graceful degradation). All SQL goes in SUPABASE_SETUP.md.",
+  "key_patterns": "1. Every page starts with st.set_page_config() then inject_global_css(). 2. Supabase functions return (ok, payload) tuples. 3. Session state used extensively (init_all_session_state in data_loader.py). 4. utils/supabase_client.py provides get_client() and is_configured(). 5. utils/database.py has save/list/get/delete functions for each entity. 6. utils/workspace.py has project/audit/version functions. 7. Feedback widget is in the sidebar of app.py.",
+  "relevant_files": [
+    "app.py",
+    "utils/supabase_client.py",
+    "utils/database.py",
+    "utils/workspace.py",
+    "utils/feedback.py",
+    "utils/data_loader.py",
+    "utils/persistence.py",
+    "utils/styles.py",
+    "SUPABASE_SETUP.md",
+    ".streamlit/secrets.toml.example",
+    "requirements.txt",
+    "pages/9_Cloud_Workspace.py"
+  ],
+  "directory_structure": "Root: app.py (home page), requirements.txt, SUPABASE_SETUP.md. pages/: 12 numbered pages (0_ through 11_). utils/: ~20 modules (supabase_client, database, workspace, styles, data_loader, persistence, feedback, ai_client, etc). .streamlit/: config.toml + secrets.toml.example. data/: built-in CSV."
+}

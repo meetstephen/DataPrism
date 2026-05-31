@@ -302,6 +302,12 @@ if df is not None:
                     last.get("level", ""), last.get("score", 0),
                 )
                 st.success(msg) if ok else st.error(msg)
+                if ok:
+                    try:
+                        from utils.auth import log_user_activity
+                        log_user_activity("insight_saved", page="ai_insights")
+                    except Exception:
+                        pass
         else:
             st.caption(
                 "\u2601\uFE0F Tip: connect a database (see SUPABASE_SETUP.md) to save insights to the cloud."

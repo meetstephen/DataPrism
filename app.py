@@ -28,17 +28,43 @@ ensure_builtin_data()
 # Initialize cleaning state
 init_cleaning_state()
 
+# --- Authentication Gate ---
+from utils.auth import require_auth, get_current_user, sign_out, log_user_activity
+
+user = require_auth()
+# If require_auth() returned, the user is authenticated (or local dev mode)
+
 # Restore persisted session on first load
 if "session_restored" not in st.session_state:
     restored = restore_session_state()
     st.session_state.session_restored = True
     if restored:
         st.toast("\u2705 Previous session restored!", icon="\U0001F4BE")
+    # Log login activity (best-effort)
+    try:
+        log_user_activity("login", page="home")
+    except Exception:
+        pass
 
 # Sidebar
 with st.sidebar:
     st.title("\U0001f4a0 DataPrism")
     st.markdown("---")
+
+    # --- User Info ---
+    current_user = get_current_user()
+    if current_user and not current_user.get("is_mock"):
+        st.markdown(
+            f"**\U0001F464 {current_user.get('display_name', 'User')}**"
+        )
+        st.caption(
+            f"{current_user.get('email', '')} | "
+            f"Role: {current_user.get('role', 'viewer').title()}"
+        )
+        if st.button("\U0001F6AA Sign Out", key="sidebar_signout", use_container_width=True):
+            sign_out()
+            st.rerun()
+        st.markdown("---")
 
     # Theme Switcher
     from utils.styles import render_theme_switcher

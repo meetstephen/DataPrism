@@ -197,6 +197,12 @@ if st.session_state.get("_generated_docx"):
         if st.button("\u2601\uFE0F Save report to cloud", key="report_cloud_save"):
             ok, msg = db.save_report(report_title, st.session_state.generated_report, str(data_source))
             st.success(msg) if ok else st.error(msg)
+            if ok:
+                try:
+                    from utils.auth import log_user_activity
+                    log_user_activity("report_saved", details=report_title, page="report_generator")
+                except Exception:
+                    pass
     else:
         st.caption(
             "\u2601\uFE0F Tip: connect a database (see SUPABASE_SETUP.md) to save reports to the cloud."

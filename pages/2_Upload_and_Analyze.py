@@ -121,6 +121,12 @@ if df is not None:
             if st.button("Save to cloud", key="upload_cloud_save"):
                 ok, msg = db.save_dataset(cloud_name.strip(), df)
                 st.success(msg) if ok else st.error(msg)
+                if ok:
+                    try:
+                        from utils.auth import log_user_activity
+                        log_user_activity("dataset_uploaded", details=cloud_name.strip(), page="upload")
+                    except Exception:
+                        pass
     else:
         st.caption(
             "\u2601\uFE0F Tip: connect a database (see SUPABASE_SETUP.md) to save datasets to the cloud."
