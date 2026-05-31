@@ -102,11 +102,12 @@ def _start_card(emoji, title, description):
     st.markdown(
         f"""
         <div style="border:1px solid rgba(0,212,255,0.22); border-radius:14px;
-                    padding:1.1rem 1.2rem; height:170px; margin-bottom:0.6rem;
-                    background:linear-gradient(135deg, rgba(0,212,255,0.07), rgba(123,97,255,0.05));">
-            <div style="font-size:1.9rem; line-height:1;">{emoji}</div>
-            <h4 style="margin:0.5rem 0 0.35rem 0; color:#E2E8F0;">{title}</h4>
-            <p style="margin:0; color:#94A3B8; font-size:0.88rem;">{description}</p>
+                    padding:1.2rem 1.3rem; min-height:160px; margin-bottom:0.6rem;
+                    background:linear-gradient(135deg, rgba(0,212,255,0.07), rgba(123,97,255,0.05));
+                    display:flex; flex-direction:column; justify-content:flex-start;">
+            <div style="font-size:1.9rem; line-height:1; margin-bottom:0.4rem;">{emoji}</div>
+            <h4 style="margin:0 0 0.35rem 0; color:#E2E8F0; font-size:1.05rem;">{title}</h4>
+            <p style="margin:0; color:#94A3B8; font-size:0.85rem; line-height:1.4;">{description}</p>
         </div>
         """,
         unsafe_allow_html=True,
