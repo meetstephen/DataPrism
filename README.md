@@ -6,6 +6,20 @@ DataPrism is an enterprise-grade data intelligence platform built with Streamlit
 
 ---
 
+## Recent Fixes & Improvements
+
+The platform has been hardened for reliable, enterprise-grade operation:
+
+- **Stable AI model** — All AI features now use the stable `gemini-2.5-flash` model. The deprecated preview model that returned `404` errors has been fully removed, so AI generation works reliably with a valid API key.
+- **Centralized AI client** — A single helper (`utils/ai_client.py`) standardizes model selection and API-key resolution (Streamlit secrets → session state → sidebar), so a key entered anywhere works across every AI page.
+- **Robust data loading** — A shared loader (`utils/data_loader.py`) guarantees the built-in dataset is available on any page, eliminating the "Built-in dataset not loaded" error when opening a page directly.
+- **Verified online dataset catalog** — The Online Data Explorer catalog was replaced with curated, verified-working dataset URLs, and requests now send a browser-style User-Agent to avoid 404/rejection errors.
+- **Consistent branding** — Every page now shares the same DataPrism diamond favicon for a unified browser-tab identity.
+- **Direct upload on all pages** — Analysis pages accept direct file uploads, and data loaded anywhere persists across the app via session state.
+- **Premium enterprise theme** — Refined styling with fade-in transitions, gradient hero titles, hover-lift metrics, rounded dataframes/expanders, and polished chat and navigation components.
+
+---
+
 ## Features
 
 | # | Page | Description |
@@ -128,6 +142,8 @@ community-college-data-analysis/
 ├── utils/
 │   ├── __init__.py                           # Module init
 │   ├── styles.py                             # Global CSS & premium theme system
+│   ├── ai_client.py                          # Centralized Gemini client & API-key helper
+│   ├── data_loader.py                        # Shared data loading & session-state init
 │   ├── data_engine.py                        # Data cleaning engine with audit log
 │   ├── persistence.py                        # Session persistence (save/restore to disk)
 │   ├── data_generator.py                     # Synthetic data generation

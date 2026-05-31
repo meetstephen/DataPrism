@@ -35,11 +35,12 @@ def fetch_data_from_url(url, file_type="auto", timeout=30):
     Returns (DataFrame, None) on success or (None, error_message) on failure.
     """
     try:
+        headers = {"User-Agent": "Mozilla/5.0 (compatible; DataPrism/1.0)"}
         if file_type == "auto":
             file_type = detect_file_type(url)
             if file_type == "unknown":
                 # Try to detect from content-type header
-                head_resp = requests.head(url, timeout=10, allow_redirects=True)
+                head_resp = requests.head(url, timeout=10, allow_redirects=True, headers=headers)
                 content_type = head_resp.headers.get("Content-Type", "").lower()
                 if "csv" in content_type or "text/plain" in content_type:
                     file_type = "csv"
@@ -50,7 +51,7 @@ def fetch_data_from_url(url, file_type="auto", timeout=30):
                 else:
                     file_type = "csv"  # Default fallback
 
-        response = requests.get(url, timeout=timeout)
+        response = requests.get(url, timeout=timeout, headers=headers)
         response.raise_for_status()
 
         if not response.content:
@@ -125,130 +126,59 @@ def scrape_tables_from_url(url, timeout=30):
 
 
 def get_dataset_catalog():
-    """
-    Return a dict of categorized public datasets.
-    Format: { "Category Name": [ {"name": "...", "description": "...", "url": "...", "format": "csv|json"}, ... ] }
-    """
+    """Return a dict of categorized public datasets with verified working URLs."""
     catalog = {
-        "Government": [
-            {
-                "name": "US Population by State",
-                "description": "US Census population estimates by state",
-                "url": "https://raw.githubusercontent.com/datasets/population-us/main/data/population.csv",
-                "format": "csv"
-            },
-            {
-                "name": "World Country Codes",
-                "description": "ISO 3166-1 country codes and names",
-                "url": "https://raw.githubusercontent.com/datasets/country-codes/master/data/country-codes.csv",
-                "format": "csv"
-            },
-            {
-                "name": "US Federal Budget",
-                "description": "Historical US federal budget data",
-                "url": "https://raw.githubusercontent.com/datasets/usa-budget-us-budget/main/data/budget.csv",
-                "format": "csv"
-            },
+        "Classic / Machine Learning": [
+            {"name": "Iris Flowers", "description": "Classic iris flower measurements (150 rows)",
+             "url": "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/iris.csv", "format": "csv"},
+            {"name": "Penguins", "description": "Palmer penguins body measurements by species",
+             "url": "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/penguins.csv", "format": "csv"},
+            {"name": "Diamonds", "description": "Diamond prices and attributes (53k rows)",
+             "url": "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/diamonds.csv", "format": "csv"},
+            {"name": "MPG (Cars)", "description": "Fuel efficiency of cars across years",
+             "url": "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/mpg.csv", "format": "csv"},
         ],
-        "Economics": [
-            {
-                "name": "World GDP",
-                "description": "GDP by country from World Bank",
-                "url": "https://raw.githubusercontent.com/datasets/gdp/main/data/gdp.csv",
-                "format": "csv"
-            },
-            {
-                "name": "Consumer Price Index (US)",
-                "description": "US Consumer Price Index historical data",
-                "url": "https://raw.githubusercontent.com/datasets/cpi-us/main/data/cpiai.csv",
-                "format": "csv"
-            },
-            {
-                "name": "S&P 500 Companies",
-                "description": "List of S&P 500 companies with sectors",
-                "url": "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv",
-                "format": "csv"
-            },
+        "Business / Finance": [
+            {"name": "Restaurant Tips", "description": "Restaurant bills and tips dataset",
+             "url": "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/tips.csv", "format": "csv"},
+            {"name": "Apple Stock 2014", "description": "Apple daily stock prices for 2014",
+             "url": "https://raw.githubusercontent.com/plotly/datasets/master/2014_apple_stock.csv", "format": "csv"},
+            {"name": "Tesla Stock Price", "description": "Tesla historical stock prices",
+             "url": "https://raw.githubusercontent.com/plotly/datasets/master/tesla-stock-price.csv", "format": "csv"},
+            {"name": "S&P 500 Companies", "description": "List of S&P 500 companies with sectors",
+             "url": "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/main/data/constituents.csv", "format": "csv"},
+            {"name": "US Agriculture Exports", "description": "2011 US agriculture exports by state",
+             "url": "https://raw.githubusercontent.com/plotly/datasets/master/2011_us_ag_exports.csv", "format": "csv"},
         ],
-        "Education": [
-            {
-                "name": "World University Rankings",
-                "description": "Times Higher Education World University Rankings data",
-                "url": "https://raw.githubusercontent.com/datasets/world-university-rankings/main/data/times.csv",
-                "format": "csv"
-            },
-            {
-                "name": "Iris Dataset",
-                "description": "Classic iris flower measurements dataset",
-                "url": "https://raw.githubusercontent.com/datasets/iris/master/data/iris.csv",
-                "format": "csv"
-            },
-            {
-                "name": "Glacier Mass Balance",
-                "description": "Glacier mass balance measurements for climate studies",
-                "url": "https://raw.githubusercontent.com/datasets/glacier-mass-balance/main/data/glaciers.csv",
-                "format": "csv"
-            },
+        "Economics / Development": [
+            {"name": "World GDP", "description": "GDP by country over time (World Bank)",
+             "url": "https://raw.githubusercontent.com/datasets/gdp/main/data/gdp.csv", "format": "csv"},
+            {"name": "World Population", "description": "Population by country over time",
+             "url": "https://raw.githubusercontent.com/datasets/population/main/data/population.csv", "format": "csv"},
+            {"name": "Gapminder", "description": "Life expectancy, population, GDP per capita by country/year",
+             "url": "https://raw.githubusercontent.com/plotly/datasets/master/gapminderDataFiveYear.csv", "format": "csv"},
         ],
         "Health": [
-            {
-                "name": "COVID-19 Global Data",
-                "description": "Our World in Data COVID-19 dataset (latest)",
-                "url": "https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/latest/owid-covid-latest.csv",
-                "format": "csv"
-            },
-            {
-                "name": "Global Life Expectancy",
-                "description": "Life expectancy by country from World Bank",
-                "url": "https://raw.githubusercontent.com/datasets/life-expectancy/main/data/life-expectancy.csv",
-                "format": "csv"
-            },
-            {
-                "name": "WHO Suicide Statistics",
-                "description": "WHO global suicide statistics by country and year",
-                "url": "https://raw.githubusercontent.com/datasets/suicides/main/data/suicides.csv",
-                "format": "csv"
-            },
+            {"name": "COVID-19 by Country", "description": "Cumulative COVID-19 cases by country over time",
+             "url": "https://raw.githubusercontent.com/datasets/covid-19/main/data/countries-aggregated.csv", "format": "csv"},
+            {"name": "COVID-19 Latest", "description": "Our World in Data latest COVID-19 snapshot",
+             "url": "https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/latest/owid-covid-latest.csv", "format": "csv"},
+            {"name": "Titanic Passengers", "description": "Titanic passenger survival dataset",
+             "url": "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/titanic.csv", "format": "csv"},
         ],
-        "Environment": [
-            {
-                "name": "Global Temperature Anomalies",
-                "description": "NASA GISS global temperature anomaly data",
-                "url": "https://raw.githubusercontent.com/datasets/global-temp/master/data/monthly.csv",
-                "format": "csv"
-            },
-            {
-                "name": "CO2 Emissions by Country",
-                "description": "Carbon dioxide emissions per country from OWID",
-                "url": "https://raw.githubusercontent.com/owid/co2-data/master/owid-co2-data.csv",
-                "format": "csv"
-            },
-            {
-                "name": "Sea Level Rise",
-                "description": "Global mean sea level data from CSIRO",
-                "url": "https://raw.githubusercontent.com/datasets/sea-level-rise/master/data/csiro_recons_gmsl_yr_2015.csv",
-                "format": "csv"
-            },
+        "Environment / Climate": [
+            {"name": "CO2 Emissions", "description": "CO2 emissions per country (Our World in Data)",
+             "url": "https://raw.githubusercontent.com/owid/co2-data/master/owid-co2-data.csv", "format": "csv"},
+            {"name": "Global Temperature", "description": "NASA/NOAA global monthly temperature anomalies",
+             "url": "https://raw.githubusercontent.com/datasets/global-temp/main/data/monthly.csv", "format": "csv"},
+            {"name": "Wind Speed (Nebraska)", "description": "Wind speed measurements time series",
+             "url": "https://raw.githubusercontent.com/plotly/datasets/master/wind_speed_laurel_nebraska.csv", "format": "csv"},
         ],
-        "Technology": [
-            {
-                "name": "GitHub Programming Languages",
-                "description": "Popular programming languages on GitHub",
-                "url": "https://raw.githubusercontent.com/datasets/github-programming-languages/main/data/languages.csv",
-                "format": "csv"
-            },
-            {
-                "name": "World Population",
-                "description": "Global population by country over time",
-                "url": "https://raw.githubusercontent.com/datasets/population/main/data/population.csv",
-                "format": "csv"
-            },
-            {
-                "name": "Airport Codes",
-                "description": "World airport codes and locations",
-                "url": "https://raw.githubusercontent.com/datasets/airport-codes/master/data/airport-codes.csv",
-                "format": "csv"
-            },
+        "Transport / Other": [
+            {"name": "Airline Passengers", "description": "Monthly airline passengers 1949-1960",
+             "url": "https://raw.githubusercontent.com/mwaskom/seaborn-data/master/flights.csv", "format": "csv"},
+            {"name": "Airport Codes", "description": "World airport codes and locations",
+             "url": "https://raw.githubusercontent.com/datasets/airport-codes/main/data/airport-codes.csv", "format": "csv"},
         ],
     }
     return catalog

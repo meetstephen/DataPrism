@@ -6,12 +6,10 @@ with interactive dashboards, AI-powered insights, and advanced analytics tools.
 """
 
 import streamlit as st
-import pandas as pd
-import os
 
-from utils.data_generator import generate_dataset, save_dataset
 from utils.styles import inject_global_css
 from utils.data_engine import init_cleaning_state
+from utils.data_loader import ensure_builtin_data, init_all_session_state
 from utils.persistence import restore_session_state, save_session_state, get_last_saved_time, clear_persisted_session
 
 # Page configuration
@@ -23,31 +21,9 @@ st.set_page_config(
 )
 inject_global_css()
 
-# Load dataset into session state
-if "df" not in st.session_state:
-    data_path = "data/community_college_data.csv"
-    if os.path.exists(data_path):
-        st.session_state.df = pd.read_csv(data_path)
-    else:
-        st.session_state.df = save_dataset(data_path)
-
-# Initialize session state
-if "online_df" not in st.session_state:
-    st.session_state.online_df = None
-if "uploaded_df" not in st.session_state:
-    st.session_state.uploaded_df = None
-if "generated_report" not in st.session_state:
-    st.session_state.generated_report = None
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
-if "doc_chat_history" not in st.session_state:
-    st.session_state.doc_chat_history = []
-if "doc_content" not in st.session_state:
-    st.session_state.doc_content = None
-if "doc_name" not in st.session_state:
-    st.session_state.doc_name = None
-if "gemini_api_key" not in st.session_state:
-    st.session_state.gemini_api_key = None
+# Initialize all common session state keys and ensure built-in data is loaded
+init_all_session_state()
+ensure_builtin_data()
 
 # Initialize cleaning state
 init_cleaning_state()
@@ -100,7 +76,11 @@ with st.sidebar:
             st.toast("\U0001F5D1\uFE0F Session cleared!", icon="\U0001F5D1\uFE0F")
 
 # Main content - Welcome page
-st.title("\U0001f4a0 DataPrism")
+st.markdown(
+    "<h1 class='dp-gradient-title' style='font-size:3rem; margin-bottom:0;'>"
+    "\U0001f4a0 DataPrism</h1>",
+    unsafe_allow_html=True,
+)
 st.markdown("### Raw Data. Refined Intelligence.")
 st.markdown(
     """

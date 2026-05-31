@@ -1,9 +1,11 @@
 import streamlit as st
-st.set_page_config(page_title="Report Generator", page_icon="\U0001F4CB", layout="wide")
+st.set_page_config(page_title="Report Generator", page_icon="\U0001f4a0", layout="wide")
 from utils.styles import inject_global_css
 inject_global_css()
 
 import pandas as pd
+from utils.data_loader import ensure_builtin_data
+from utils.ai_client import get_api_key, generate_content, GEMINI_MODEL
 from utils.report_generator import generate_html_report, generate_executive_summary
 
 st.title("\U0001F4CB Report Generator")
@@ -47,11 +49,7 @@ data_source = st.radio("Choose data:", sources, horizontal=True)
 # Load the selected data into df variable
 df = None
 if data_source == "Built-in Community College Data":
-    if "df" in st.session_state:
-        df = st.session_state.df
-    else:
-        st.error("Built-in dataset not loaded. Please visit the home page first.")
-        st.stop()
+    df = ensure_builtin_data()
 elif data_source == "Uploaded Data":
     df = st.session_state.get("uploaded_df")
     if df is None:
@@ -97,11 +95,15 @@ with sec_col3:
 # API key handling
 api_key = None
 if include_ai:
-    try:
-        api_key = st.secrets["GEMINI_API_KEY"]
-    except Exception:
-        api_key = st.sidebar.text_input("Gemini API Key", type="password")
+    api_key = get_api_key()
     if not api_key:
+        key_input = st.sidebar.text_input("Gemini API Key", type="password")
+        if key_input and key_input.strip():
+            st.session_state.gemini_api_key = key_input.strip()
+            api_key = get_api_key()
+    if api_key:
+        st.sidebar.success("API key loaded")
+    else:
         st.warning("Enter a Gemini API key in the sidebar for AI summary.")
 
 # Generate button with progress

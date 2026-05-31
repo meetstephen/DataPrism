@@ -220,7 +220,7 @@ def generate_executive_summary(df, api_key=None):
             genai.configure(api_key=api_key)
             # NOTE: This duplicates the Gemini pattern from ai_insights.py for isolation.
             # Future refactoring could unify these into a shared Gemini client utility.
-            model = genai.GenerativeModel("gemini-2.5-flash-preview-04-17")
+            model = genai.GenerativeModel("gemini-2.5-flash")
 
             # Build data summary for context
             shape_info = f"{len(df)} rows and {len(df.columns)} columns"
@@ -231,9 +231,12 @@ def generate_executive_summary(df, api_key=None):
                 stats_info = df[numeric_cols].describe().to_string()
 
             prompt = (
-                "Write a concise 3-5 paragraph executive summary of this dataset "
-                "for a business audience. Focus on key findings, notable patterns, "
-                "and actionable recommendations.\n\n"
+                "You are a senior data analyst preparing an executive briefing for "
+                "business stakeholders. Write a concise 3-5 paragraph executive summary "
+                "of the dataset below. Frame your analysis professionally, cite specific "
+                "quantified figures (counts, means, ranges, percentages), highlight notable "
+                "patterns and risks, and close with concrete, actionable recommendations. "
+                "Format the response in clean, well-structured markdown prose.\n\n"
                 f"Dataset: {shape_info}\n"
                 f"Columns: {col_info}\n\n"
                 f"Statistics:\n{stats_info}\n\n"
