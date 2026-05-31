@@ -43,6 +43,23 @@ data_source = st.radio(
     horizontal=True
 )
 
+# Direct upload option
+with st.expander("\U0001F4C1 Upload your own file directly", expanded=False):
+    adv_file = st.file_uploader(
+        "Upload CSV, Excel, JSON, TSV, or Parquet",
+        type=["csv", "xlsx", "xls", "json", "tsv", "parquet"],
+        key="adv_file_upload",
+        help="File will also be saved to your session for use on other pages.",
+    )
+    if adv_file is not None:
+        from utils.data_loader import load_file_flexible
+        loaded, err = load_file_flexible(adv_file)
+        if err:
+            st.error(err)
+        elif loaded is not None:
+            st.session_state.uploaded_df = loaded.copy()
+            st.success(f"Loaded: {adv_file.name} ({len(loaded):,} rows)")
+
 if data_source == "Built-in Community College Data":
     df = st.session_state.df.copy()
 elif data_source == "Online Data":

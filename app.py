@@ -82,6 +82,41 @@ with st.sidebar:
             clear_persisted_session()
             st.toast("\U0001F5D1\uFE0F Session cleared!", icon="\U0001F5D1\uFE0F")
 
+    # --- Feedback Widget ---
+    st.markdown("---")
+    st.markdown("##### \U0001F4AC Feedback")
+    st.caption("Help us improve DataPrism. Report bugs, suggestions, or observations.")
+    with st.expander("\u270F\uFE0F Submit Feedback", expanded=False):
+        fb_type = st.selectbox(
+            "Type",
+            ["\U0001F41B Bug Report", "\U0001F4A1 Suggestion", "\u2753 Confusion / UX Issue", "\U0001F44D Positive Feedback"],
+            key="sidebar_fb_type",
+        )
+        fb_page = st.selectbox(
+            "Which page?",
+            ["Home", "Guided Analysis", "Getting Started", "Upload & Analyze",
+             "Data Cleaning", "AI Insights", "Advanced Analytics",
+             "Online Explorer", "Report Generator", "Chat With Data",
+             "Cloud Workspace", "Data Profiling", "Dashboard", "Other"],
+            key="sidebar_fb_page",
+        )
+        fb_text = st.text_area(
+            "Describe your feedback",
+            key="sidebar_fb_text",
+            placeholder="What happened? What did you expect? How can we improve?",
+            height=100,
+        )
+        if st.button("Submit Feedback", key="sidebar_fb_submit", use_container_width=True):
+            if not fb_text.strip():
+                st.warning("Please describe your feedback.")
+            else:
+                from utils.feedback import save_feedback
+                ok, msg = save_feedback(fb_type, fb_page, fb_text.strip())
+                if ok:
+                    st.success("\u2705 Thank you! Feedback submitted.")
+                else:
+                    st.error(msg)
+
 # Main content - Welcome page
 st.markdown(
     "<h1 class='dp-gradient-title' style='font-size:3rem; margin-bottom:0;'>"

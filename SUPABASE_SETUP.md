@@ -19,6 +19,10 @@ Data Cleaning, AI Insights, and Report Generator pages.
 | `dp_reports` | Generated HTML reports | Report Generator |
 | `dp_validation_rule_sets` | Reusable validation rule sets (JSON) | Data Cleaning |
 | `dp_insights` | Saved AI / rule-based insights + confidence | AI Insights Engine |
+| `dp_projects` | Named projects grouping work items | Cloud Workspace |
+| `dp_audit_log` | Every significant action logged | All pages |
+| `dp_dataset_versions` | Cleaning step snapshots (restorable) | Data Cleaning |
+| `dp_feedback` | Tester/user feedback (bugs, suggestions, UX) | Sidebar feedback widget |
 
 ---
 
@@ -78,17 +82,28 @@ create table if not exists public.dp_insights (
     created_at        timestamptz not null default now()
 );
 
+-- Tester / user feedback
+create table if not exists public.dp_feedback (
+    id            uuid primary key default gen_random_uuid(),
+    type          text not null default '',
+    page          text not null default '',
+    text          text not null default '',
+    timestamp     timestamptz not null default now()
+);
+
 -- Indexes for fast "most recent first" listing
 create index if not exists idx_dp_datasets_created  on public.dp_datasets        (created_at desc);
 create index if not exists idx_dp_reports_created    on public.dp_reports         (created_at desc);
 create index if not exists idx_dp_rule_sets_created  on public.dp_validation_rule_sets (created_at desc);
 create index if not exists idx_dp_insights_created   on public.dp_insights        (created_at desc);
+create index if not exists idx_dp_feedback_created   on public.dp_feedback        (timestamp desc);
 
 -- Row Level Security ---------------------------------------------------------
 alter table public.dp_datasets             enable row level security;
 alter table public.dp_reports              enable row level security;
 alter table public.dp_validation_rule_sets enable row level security;
 alter table public.dp_insights             enable row level security;
+alter table public.dp_feedback             enable row level security;
 
 -- Permissive policies for the anon (public) key — suitable for a personal,
 -- single-tenant app. See "Securing your data" below before going public.
@@ -99,6 +114,8 @@ create policy "dp_reports anon all"   on public.dp_reports
 create policy "dp_rule_sets anon all" on public.dp_validation_rule_sets
     for all to anon using (true) with check (true);
 create policy "dp_insights anon all"  on public.dp_insights
+    for all to anon using (true) with check (true);
+create policy "dp_feedback anon all"  on public.dp_feedback
     for all to anon using (true) with check (true);
 ```
 
