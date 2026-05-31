@@ -249,3 +249,61 @@ def render_chart_with_table(fig, data=None, key=None, table_label="View as table
             if caption:
                 st.caption(caption)
             st.dataframe(data, use_container_width=True)
+
+
+def render_chart_with_annotations(fig, chart_id, key_prefix=""):
+    """Render a Plotly chart with annotation controls.
+
+    Displays the chart with any existing annotations applied, then shows an
+    expander with controls to add new annotations or remove existing ones.
+
+    Args:
+        fig: A Plotly figure to display.
+        chart_id: Unique identifier for annotation storage.
+        key_prefix: Optional prefix for widget keys to avoid conflicts.
+    """
+    import streamlit as st
+    from utils.annotations import get_annotations, add_annotation, remove_annotation, apply_annotations_to_figure
+
+    annotations = get_annotations(chart_id)
+    fig = apply_annotations_to_figure(fig, annotations)
+    st.plotly_chart(fig, use_container_width=True)
+
+    with st.expander(f"\U0001F4CC Annotations ({len(annotations)})"):
+        # Add new annotation
+        st.markdown("**Add annotation:**")
+        ann_col1, ann_col2, ann_col3 = st.columns([2, 2, 4])
+        with ann_col1:
+            ann_x = st.text_input("X value", key=f"{key_prefix}ann_x_{chart_id}")
+        with ann_col2:
+            ann_y = st.text_input("Y value", key=f"{key_prefix}ann_y_{chart_id}")
+        with ann_col3:
+            ann_text = st.text_input("Text", key=f"{key_prefix}ann_text_{chart_id}")
+
+        if st.button("Add Annotation", key=f"{key_prefix}ann_add_{chart_id}"):
+            if ann_x and ann_y and ann_text:
+                # Try to parse numeric values
+                try:
+                    x_val = float(ann_x)
+                except (ValueError, TypeError):
+                    x_val = ann_x
+                try:
+                    y_val = float(ann_y)
+                except (ValueError, TypeError):
+                    y_val = ann_y
+                add_annotation(chart_id, x_val, y_val, ann_text)
+                st.rerun()
+            else:
+                st.warning("Please fill in X, Y, and Text fields.")
+
+        # List existing annotations with remove buttons
+        if annotations:
+            st.markdown("**Existing annotations:**")
+            for i, ann in enumerate(annotations):
+                acol1, acol2 = st.columns([8, 1])
+                with acol1:
+                    st.caption(f"{i+1}. ({ann['x']}, {ann['y']}): {ann['text']}")
+                with acol2:
+                    if st.button("\U0001F5D1\uFE0F", key=f"{key_prefix}ann_rm_{chart_id}_{i}"):
+                        remove_annotation(chart_id, i)
+                        st.rerun()

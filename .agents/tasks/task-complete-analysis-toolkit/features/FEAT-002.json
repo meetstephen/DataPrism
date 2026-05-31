@@ -2,7 +2,7 @@
   "id": "FEAT-002",
   "type": "feat",
   "description": "Column Transformations (extends Data Cleaning page), Saved Analysis Templates, Chart Annotations, and Data Dictionary page. These fill gaps in the cleaning workflow and add professional-grade features.",
-  "status": "pending",
+  "status": "in_progress",
   "steps": [
     "Create utils/column_transforms.py with functions: (a) extract_date_parts(df, column) - returns df with new columns for year, month, day, weekday from a datetime column; (b) bin_numeric(df, column, n_bins=5, labels=None) - creates a new column with category labels from numeric ranges using pd.cut; (c) one_hot_encode(df, column) - performs one-hot encoding using pd.get_dummies, returns new df; (d) string_operations(df, column, operation, pattern=None) - supports 'lowercase', 'uppercase', 'trim', 'extract_regex' operations. Each returns (df, rows_affected) tuple matching data_engine.py pattern.",
     "Add a new tab 'Column Transforms' to pages/3_Data_Cleaning.py (add it to the existing tab list after 'Text & Type Operations'). In this tab: (a) Date Part Extraction section - select a datetime column, click to extract year/month/day/weekday; (b) Binning section - select numeric column, set number of bins, preview bin ranges, apply; (c) One-Hot Encoding section - select categorical column, preview result, apply; (d) String Regex Extract section - select text column, enter regex pattern, extract matches to new column. Use apply_cleaning_step() for undo support.",

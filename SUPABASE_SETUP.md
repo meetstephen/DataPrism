@@ -23,6 +23,7 @@ Data Cleaning, AI Insights, and Report Generator pages.
 | `dp_audit_log` | Every significant action logged | All pages |
 | `dp_dataset_versions` | Cleaning step snapshots (restorable) | Data Cleaning |
 | `dp_feedback` | Tester/user feedback (bugs, suggestions, UX) | Sidebar feedback widget |
+| `dp_templates` | Saved analysis templates (chart configs, filters) | Advanced Analytics |
 
 ---
 
@@ -91,12 +92,22 @@ create table if not exists public.dp_feedback (
     timestamp     timestamptz not null default now()
 );
 
+-- Saved analysis templates
+create table if not exists public.dp_templates (
+    id            uuid primary key default gen_random_uuid(),
+    name          text not null,
+    description   text default '',
+    config        jsonb not null default '{}'::jsonb,
+    created_at    timestamptz not null default now()
+);
+
 -- Indexes for fast "most recent first" listing
 create index if not exists idx_dp_datasets_created  on public.dp_datasets        (created_at desc);
 create index if not exists idx_dp_reports_created    on public.dp_reports         (created_at desc);
 create index if not exists idx_dp_rule_sets_created  on public.dp_validation_rule_sets (created_at desc);
 create index if not exists idx_dp_insights_created   on public.dp_insights        (created_at desc);
 create index if not exists idx_dp_feedback_created   on public.dp_feedback        (timestamp desc);
+create index if not exists idx_dp_templates_created  on public.dp_templates       (created_at desc);
 
 -- Row Level Security ---------------------------------------------------------
 alter table public.dp_datasets             enable row level security;
@@ -104,6 +115,7 @@ alter table public.dp_reports              enable row level security;
 alter table public.dp_validation_rule_sets enable row level security;
 alter table public.dp_insights             enable row level security;
 alter table public.dp_feedback             enable row level security;
+alter table public.dp_templates            enable row level security;
 
 -- Permissive policies for the anon (public) key — suitable for a personal,
 -- single-tenant app. See "Securing your data" below before going public.
@@ -116,6 +128,8 @@ create policy "dp_rule_sets anon all" on public.dp_validation_rule_sets
 create policy "dp_insights anon all"  on public.dp_insights
     for all to anon using (true) with check (true);
 create policy "dp_feedback anon all"  on public.dp_feedback
+    for all to anon using (true) with check (true);
+create policy "dp_templates anon all" on public.dp_templates
     for all to anon using (true) with check (true);
 ```
 
