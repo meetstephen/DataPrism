@@ -324,6 +324,19 @@ def render_stage_3():
     st.session_state.guide_data["quality_score"] = overall_score
     st.session_state.guide_data["quality_report"] = quality
 
+    # Sensitivity detection
+    from utils.sensitivity import detect_sensitive_columns
+    sensitive = detect_sensitive_columns(df)
+    if sensitive:
+        st.markdown("---")
+        st.markdown("#### \U0001F6A8 Sensitivity Detection")
+        st.warning(f"Found {len(sensitive)} column(s) that may contain PII or sensitive data:")
+        for s in sensitive:
+            confidence_icon = "\U0001F534" if s["confidence"] == "high" else "\U0001F7E1"
+            st.markdown(f"{confidence_icon} **{s['column']}** - {s['sensitivity_type']} ({s['confidence']} confidence)")
+            st.caption(f"Reason: {s['reason']}")
+        st.info("Consider masking or removing sensitive columns before sharing analysis results.")
+
     # AI coaching
     _ai_coach(
         f"Dataset has {quality['total_rows']} rows, {quality['total_columns']} cols, "
@@ -401,6 +414,13 @@ def render_stage_4():
     m1.metric("Original Rows", f"{raw_rows:,}")
     m2.metric("Current Rows", f"{len(df):,}")
     m3.metric("Issues Remaining", max(0, len(all_issues) - idx))
+
+    # Guardrail warning
+    if raw_rows > 0 and len(df) < raw_rows * 0.5:
+        st.warning(
+            "\u26A0\uFE0F More than 50% of rows have been removed during cleaning. "
+            "This may introduce bias into your analysis. Consider reviewing your cleaning steps."
+        )
 
     if idx >= len(all_issues) or len(all_issues) == 0:
         st.success("All detected issues have been addressed (or none existed).")
@@ -495,9 +515,11 @@ def render_stage_5():
     # 3. Scatter plot of top-2 correlated columns
     if len(numeric_cols) >= 2:
         corr_matrix = df[numeric_cols].corr().abs()
-        np.fill_diagonal(corr_matrix.values, 0)
-        max_pair = corr_matrix.stack().idxmax()
-        x_col, y_col = max_pair
+        corr_vals = corr_matrix.values.copy()
+        np.fill_diagonal(corr_vals, 0)
+        max_idx = np.unravel_index(corr_vals.argmax(), corr_vals.shape)
+        x_col = corr_matrix.columns[max_idx[0]]
+        y_col = corr_matrix.columns[max_idx[1]]
         st.markdown(f"#### Scatter: `{x_col}` vs `{y_col}`")
         st.markdown(f"These two variables have the strongest correlation in your data.")
         fig = create_scatter_plot(df, x_col, y_col, f"{x_col} vs {y_col}")
@@ -707,6 +729,25 @@ def render_stage_7():
 # ---------------------------------------------------------------------------
 # Main dispatcher
 # ---------------------------------------------------------------------------
+
+# Sidebar: Floating Glossary
+with st.sidebar:
+    with st.expander("\U0001F4DA Glossary"):
+        st.markdown("""
+        **Completeness** - % of non-null cells in the dataset.
+
+        **Outlier** - A value far from the typical range (IQR method).
+
+        **Correlation** - How strongly two variables move together (-1 to +1).
+
+        **IQR** - Interquartile Range (Q3 - Q1), used to detect outliers.
+
+        **Skewness** - How asymmetric a distribution is (0 = symmetric).
+
+        **P-Value** - Probability the result is due to chance (< 0.05 = significant).
+
+        **Quality Score** - Composite metric of completeness, duplicates, and type consistency.
+        """)
 
 _render_progress_bar()
 

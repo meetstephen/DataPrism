@@ -17,6 +17,12 @@ from utils.data_engine import (
     rename_columns,
     add_calculated_column,
     build_arithmetic_expression,
+    flag_missing,
+    cap_outliers,
+    split_column,
+    merge_columns,
+    standardize_text,
+    convert_column_type,
 )
 from utils.validation import run_validation, get_violation_mask, RULE_TYPES, describe_rule
 from utils.exporters import render_export_buttons
@@ -143,7 +149,7 @@ with met_col4:
 st.markdown("---")
 
 # --- Cleaning Tabs ---
-tab_missing, tab_duplicates, tab_outliers, tab_columns, tab_calc, tab_validate = st.tabs(
+tab_missing, tab_duplicates, tab_outliers, tab_columns, tab_calc, tab_validate, tab_ai_clean, tab_text_ops = st.tabs(
     [
         "\U0001F50D Missing Values",
         "\U0001F503 Duplicates",
@@ -151,6 +157,8 @@ tab_missing, tab_duplicates, tab_outliers, tab_columns, tab_calc, tab_validate =
         "\U0001F527 Column Operations",
         "\U0001F9EE Calculated Columns",
         "\u2705 Validation Rules",
+        "\U0001F916 AI Cleaning Assistant",
+        "\U0001F524 Text & Type Operations",
     ]
 )
 
@@ -566,6 +574,150 @@ with tab_validate:
                 st.success("All validation rules passed.")
     else:
         st.info("No rules defined yet. Add a rule above to start validating your data.")
+
+# --- AI Cleaning Assistant Tab ---
+with tab_ai_clean:
+    st.markdown("#### AI Cleaning Assistant")
+    st.markdown("Get AI-powered suggestions for cleaning your dataset.")
+
+    from utils.ai_client import get_api_key, generate_content
+
+    api_key = get_api_key()
+
+    if st.button("Get AI Cleaning Suggestions", type="primary", key="ai_clean_suggest"):
+        if not api_key:
+            st.warning("Add a Gemini API key in the sidebar for AI suggestions.")
+        else:
+            with st.spinner("Analyzing dataset for cleaning suggestions..."):
+                missing_info = df.isnull().sum().to_dict()
+                dtypes_info = df.dtypes.astype(str).to_dict()
+                prompt = (
+                    "You are a data cleaning expert. Analyze this dataset and suggest "
+                    "specific cleaning steps in priority order (most impactful first).\n\n"
+                    f"Shape: {df.shape}\n"
+                    f"Column types: {dtypes_info}\n"
+                    f"Missing values: {missing_info}\n"
+                    f"Duplicates: {int(df.duplicated().sum())}\n"
+                    f"Sample:\n{df.head(3).to_string()}\n\n"
+                    "Give 3-5 specific, actionable suggestions. Format as numbered list."
+                )
+                text, err = generate_content(prompt, api_key=api_key)
+                if text:
+                    st.markdown(text)
+                else:
+                    st.error(err or "Could not generate suggestions.")
+
+    st.markdown("---")
+    st.markdown("#### Quick Actions")
+
+    qa_col1, qa_col2 = st.columns(2)
+    with qa_col1:
+        if st.button("\U0001F6A9 Flag All Missing Values", key="flag_all_missing"):
+            missing_cols = [c for c in df.columns if df[c].isnull().any()]
+            if missing_cols:
+                rows_affected = apply_cleaning_step(
+                    f"Flag missing in {len(missing_cols)} columns",
+                    flag_missing, missing_cols
+                )
+                save_session_state()
+                st.success(f"Flagged {rows_affected} missing values across {len(missing_cols)} columns.")
+                st.rerun()
+            else:
+                st.info("No missing values to flag.")
+    with qa_col2:
+        cap_col_select = st.selectbox(
+            "Cap outliers in:", df.select_dtypes(include=[np.number]).columns.tolist(),
+            key="cap_outlier_col"
+        )
+        if st.button("\U0001F4CF Cap Outliers (Winsorize)", key="cap_outliers_btn"):
+            if cap_col_select:
+                rows_affected = apply_cleaning_step(
+                    f"Cap outliers in '{cap_col_select}'",
+                    cap_outliers, cap_col_select
+                )
+                save_session_state()
+                st.success(f"Capped {rows_affected} outlier values in '{cap_col_select}'.")
+                st.rerun()
+
+
+# --- Text & Type Operations Tab ---
+with tab_text_ops:
+    st.markdown("#### Text Standardization")
+
+    text_cols = df.select_dtypes(include=["object"]).columns.tolist()
+    if not text_cols:
+        st.info("No text columns available.")
+    else:
+        tt_col1, tt_col2 = st.columns(2)
+        with tt_col1:
+            text_col = st.selectbox("Text column:", text_cols, key="text_std_col")
+        with tt_col2:
+            text_method = st.selectbox(
+                "Operation:", ["lowercase", "uppercase", "titlecase", "strip", "strip_all"],
+                key="text_std_method"
+            )
+        if st.button("Apply Text Standardization", type="primary", key="apply_text_std"):
+            rows_affected = apply_cleaning_step(
+                f"Standardize '{text_col}' ({text_method})",
+                standardize_text, text_col, text_method
+            )
+            save_session_state()
+            st.success(f"Standardized {rows_affected} values in '{text_col}'.")
+            st.rerun()
+
+    st.markdown("---")
+    st.markdown("#### Type Conversion")
+    all_cols = df.columns.tolist()
+    tc_col1, tc_col2 = st.columns(2)
+    with tc_col1:
+        type_col = st.selectbox("Column:", all_cols, key="type_conv_col")
+        if type_col:
+            st.caption(f"Current type: {df[type_col].dtype}")
+    with tc_col2:
+        target_type = st.selectbox(
+            "Convert to:", ["numeric", "text", "datetime", "integer", "float"],
+            key="type_conv_target"
+        )
+    if st.button("Convert Type", type="primary", key="apply_type_conv"):
+        rows_affected = apply_cleaning_step(
+            f"Convert '{type_col}' to {target_type}",
+            convert_column_type, type_col, target_type
+        )
+        save_session_state()
+        st.success(f"Converted '{type_col}' to {target_type} ({rows_affected} values).")
+        st.rerun()
+
+    st.markdown("---")
+    st.markdown("#### Split Column")
+    if text_cols:
+        sp_col1, sp_col2 = st.columns(2)
+        with sp_col1:
+            split_col_name = st.selectbox("Column to split:", text_cols, key="split_col_sel")
+        with sp_col2:
+            split_delim = st.text_input("Delimiter:", value=",", key="split_delim")
+        if st.button("Split Column", type="primary", key="apply_split"):
+            rows_affected = apply_cleaning_step(
+                f"Split '{split_col_name}' by '{split_delim}'",
+                split_column, split_col_name, split_delim
+            )
+            save_session_state()
+            st.success(f"Split '{split_col_name}' ({rows_affected} rows processed).")
+            st.rerun()
+
+    st.markdown("---")
+    st.markdown("#### Merge Columns")
+    merge_cols_select = st.multiselect("Columns to merge:", all_cols, key="merge_cols_sel")
+    merge_sep = st.text_input("Separator:", value=" ", key="merge_sep")
+    merge_new_name = st.text_input("New column name:", key="merge_new_name", placeholder="e.g. full_address")
+    if merge_cols_select and merge_new_name:
+        if st.button("Merge Columns", type="primary", key="apply_merge"):
+            rows_affected = apply_cleaning_step(
+                f"Merge {merge_cols_select} into '{merge_new_name}'",
+                merge_columns, merge_cols_select, merge_new_name.strip(), merge_sep
+            )
+            save_session_state()
+            st.success(f"Merged {len(merge_cols_select)} columns into '{merge_new_name}'.")
+            st.rerun()
 
 # --- Cleaning Log ---
 st.markdown("---")

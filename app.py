@@ -39,6 +39,12 @@ if "session_restored" not in st.session_state:
 with st.sidebar:
     st.title("\U0001f4a0 DataPrism")
     st.markdown("---")
+
+    # Theme Switcher
+    from utils.styles import render_theme_switcher
+    render_theme_switcher()
+
+    st.markdown("---")
     st.markdown(
         """
         **Enterprise Data Intelligence Platform**
@@ -54,6 +60,9 @@ with st.sidebar:
         - \U0001F310 **Online Explorer** - Web data fetching
         - \U0001F4CB **Report Generator** - Export reports
         - \U0001F4AC **Chat With Data** - Structured data & documents
+        - \u2601\uFE0F **Cloud Workspace** - Save & restore
+        - \U0001F50D **Data Profiling** - Quality assessment
+        - \U0001F4CA **Dashboard Builder** - KPI & charts
         """
     )
     st.markdown("---")

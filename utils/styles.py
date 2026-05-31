@@ -1,4 +1,260 @@
-"""DataPrism premium enterprise styling system."""
+"""DataPrism premium enterprise styling system with switchable themes."""
+import streamlit as st
+
+# ---------------------------------------------------------------------------
+# Theme system - 3 premium enterprise themes with distinct sidebar/main colors
+# ---------------------------------------------------------------------------
+THEMES = {
+    "Enterprise Dark": {
+        "sidebar_bg": "#0A1628",
+        "main_bg": "#0B1524",
+        "accent": "#00D4FF",
+        "accent_secondary": "#0066FF",
+        "accent_tertiary": "#7B61FF",
+        "card_bg": "#1A2740",
+        "text_primary": "#FAFAFA",
+        "text_secondary": "#94A3B8",
+        "border": "rgba(255,255,255,0.07)",
+        "sidebar_border": "rgba(0,212,255,0.12)",
+    },
+    "Midnight Purple": {
+        "sidebar_bg": "#120B2E",
+        "main_bg": "#1A0F3C",
+        "accent": "#A855F7",
+        "accent_secondary": "#7C3AED",
+        "accent_tertiary": "#EC4899",
+        "card_bg": "#2D1B69",
+        "text_primary": "#F8FAFC",
+        "text_secondary": "#A5B4FC",
+        "border": "rgba(168,85,247,0.12)",
+        "sidebar_border": "rgba(168,85,247,0.2)",
+    },
+    "Ocean Blue": {
+        "sidebar_bg": "#041C2C",
+        "main_bg": "#0C2D48",
+        "accent": "#06B6D4",
+        "accent_secondary": "#0891B2",
+        "accent_tertiary": "#22D3EE",
+        "card_bg": "#164E63",
+        "text_primary": "#F0FDFA",
+        "text_secondary": "#99F6E4",
+        "border": "rgba(6,182,212,0.12)",
+        "sidebar_border": "rgba(6,182,212,0.2)",
+    },
+}
+
+
+def _get_active_theme():
+    """Get the currently active theme dict. Defaults to Enterprise Dark."""
+    theme_name = st.session_state.get("dp_active_theme", "Enterprise Dark")
+    return THEMES.get(theme_name, THEMES["Enterprise Dark"])
+
+
+def render_theme_switcher():
+    """Render a theme switcher widget in the sidebar."""
+    current = st.session_state.get("dp_active_theme", "Enterprise Dark")
+    theme_names = list(THEMES.keys())
+    selected = st.selectbox(
+        "\U0001F3A8 Theme",
+        theme_names,
+        index=theme_names.index(current) if current in theme_names else 0,
+        key="dp_theme_selector",
+    )
+    if selected != current:
+        st.session_state.dp_active_theme = selected
+        st.rerun()
+
+
+def _build_css(theme):
+    """Build the full CSS string for a given theme dict."""
+    return f"""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');
+#MainMenu, footer, .stDeployButton {{ visibility: hidden; display: none; }}
+html, body, [class*="css"] {{ font-family: 'DM Sans', 'Segoe UI', sans-serif; }}
+h1, h2, h3 {{ letter-spacing: -0.02em; }}
+
+/* Sidebar - distinctly darker than main */
+[data-testid="stSidebar"] {{
+    background: {theme['sidebar_bg']} !important;
+    border-right: 1px solid {theme['sidebar_border']};
+}}
+
+/* Main content area */
+[data-testid="stAppViewContainer"] {{
+    background:
+        radial-gradient(1100px 600px at 12% -8%, {theme['accent']}12, transparent 60%),
+        radial-gradient(900px 500px at 100% 0%, {theme['accent_tertiary']}0F, transparent 55%),
+        {theme['main_bg']};
+}}
+
+.stButton > button[kind="primary"] {{
+    background: linear-gradient(135deg, {theme['accent']}, {theme['accent_secondary']});
+    color: {theme['sidebar_bg']};
+    font-weight: 700;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1.5rem;
+    transition: opacity 0.2s;
+    box-shadow: 0 4px 16px {theme['accent_secondary']}48;
+}}
+.stButton > button[kind="primary"]:hover {{
+    opacity: 0.85;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px {theme['accent']}58;
+}}
+.stButton > button[kind="secondary"] {{
+    border: 1px solid {theme['accent']}38;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.02);
+    transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+}}
+.stButton > button[kind="secondary"]:hover {{
+    border-color: {theme['accent']}80;
+    background: {theme['accent']}0F;
+    transform: translateY(-1px);
+}}
+[data-testid="stMetric"] {{
+    background: {theme['card_bg']};
+    border-radius: 10px;
+    padding: 1rem;
+    border: 1px solid {theme['border']};
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}}
+[data-testid="stMetric"]:hover {{
+    transform: translateY(-2px);
+    border-color: {theme['accent']}58;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
+}}
+.stTabs [data-baseweb="tab-list"] {{ gap: 4px; border-bottom: 1px solid {theme['border']}; }}
+.stTabs [aria-selected="true"] {{ background: {theme['accent']}1A !important; color: {theme['accent']} !important; }}
+.stTabs [data-baseweb="tab"] {{
+    transition: color 0.18s ease, background 0.18s ease;
+    border-radius: 8px 8px 0 0;
+}}
+[data-testid="stFileUploadDropzone"] {{
+    border: 2px dashed {theme['accent']}66 !important;
+    border-radius: 12px !important;
+    background: {theme['accent']}08 !important;
+}}
+
+/* Smooth fade-in for the main content area */
+@keyframes dpFadeIn {{
+    from {{ opacity: 0; transform: translateY(8px); }}
+    to   {{ opacity: 1; transform: translateY(0); }}
+}}
+[data-testid="stAppViewContainer"] .main .block-container {{
+    animation: dpFadeIn 0.5s ease-out;
+    padding-top: 3rem;
+}}
+
+/* Gradient text option for hero titles */
+.dp-gradient-title {{
+    background: linear-gradient(135deg, {theme['accent']} 0%, {theme['accent_secondary']} 60%, {theme['accent_tertiary']} 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+}}
+
+/* Styled expanders */
+[data-testid="stExpander"] {{
+    border: 1px solid {theme['accent']}28;
+    border-radius: 12px;
+    background: {theme['card_bg']}73;
+    overflow: hidden;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}}
+[data-testid="stExpander"]:hover {{
+    border-color: {theme['accent']}66;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+}}
+[data-testid="stExpander"] summary {{ font-weight: 600; }}
+
+/* Better dataframe styling */
+[data-testid="stDataFrame"], [data-testid="stTable"] {{
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid {theme['border']};
+}}
+
+/* Page links */
+[data-testid="stPageLink"] a {{
+    border: 1px solid {theme['accent']}2E;
+    border-radius: 10px;
+    padding: 0.55rem 0.9rem !important;
+    background: {theme['accent']}08;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}}
+[data-testid="stPageLink"] a:hover {{
+    background: {theme['accent']}1F;
+    border-color: {theme['accent']}73;
+    transform: translateY(-1px);
+}}
+
+/* Chat messages */
+[data-testid="stChatMessage"] {{
+    background: {theme['card_bg']}8C;
+    border: 1px solid {theme['border']};
+    border-radius: 14px;
+    padding: 0.4rem 0.6rem;
+    margin: 0.35rem 0;
+    transition: border-color 0.2s ease;
+}}
+[data-testid="stChatMessage"]:hover {{
+    border-color: {theme['accent']}38;
+}}
+
+/* Download buttons */
+.stDownloadButton > button[kind="primary"] {{
+    background: linear-gradient(135deg, {theme['accent']}, {theme['accent_secondary']});
+    color: {theme['sidebar_bg']};
+    font-weight: 700;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px {theme['accent_secondary']}48;
+}}
+
+/* Radio groups */
+div[role="radiogroup"] {{ gap: 0.5rem; }}
+div[role="radiogroup"] > label {{
+    background: {theme['card_bg']}8C;
+    border: 1px solid {theme['border']};
+    border-radius: 999px;
+    padding: 0.4rem 1rem;
+    transition: border-color 0.18s ease, background 0.18s ease;
+}}
+div[role="radiogroup"] > label:hover {{
+    border-color: {theme['accent']}73;
+    background: {theme['accent']}14;
+}}
+
+/* Focus rings */
+.stTextInput input:focus,
+.stNumberInput input:focus,
+.stTextArea textarea:focus {{
+    border-color: {theme['accent']} !important;
+    box-shadow: 0 0 0 2px {theme['accent']}40 !important;
+}}
+
+/* Scrollbar */
+::-webkit-scrollbar {{ width: 10px; height: 10px; }}
+::-webkit-scrollbar-track {{ background: {theme['main_bg']}; }}
+::-webkit-scrollbar-thumb {{
+    background: linear-gradient(180deg, {theme['accent']}73, {theme['accent_secondary']}73);
+    border-radius: 8px;
+    border: 2px solid {theme['main_bg']};
+}}
+::-webkit-scrollbar-thumb:hover {{
+    background: linear-gradient(180deg, {theme['accent']}B3, {theme['accent_secondary']}B3);
+}}
+
+h1 {{ font-weight: 700; }}
+</style>
+"""
+
 
 GLOBAL_CSS = """
 <style>
@@ -213,9 +469,11 @@ h1 {
 
 
 def inject_global_css():
-    """Call at top of every page after set_page_config."""
+    """Call at top of every page after set_page_config. Uses the active theme."""
     import streamlit as st
-    st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
+    theme = _get_active_theme()
+    themed_css = _build_css(theme)
+    st.markdown(themed_css, unsafe_allow_html=True)
 
 
 def render_insight_card(insight_type: str, content: str):

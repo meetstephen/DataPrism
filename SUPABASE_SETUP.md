@@ -202,7 +202,71 @@ The integration lives in:
 - `utils/supabase_client.py` — credential loading + cached client (degrades gracefully).
 - `utils/database.py` — `save_*` / `list_*` / `get_*` / `delete_*` functions, each
   returning an `(ok, payload)` tuple.
+- `utils/workspace.py` — projects, audit log, and dataset versioning functions.
 - `pages/9_Cloud_Workspace.py` — the browse/load/delete UI.
 
 No code changes are needed to enable the feature — just add the secrets and run
 the SQL.
+
+---
+
+## Enterprise Tables (Projects, Audit Log, Dataset Versions)
+
+The enterprise upgrade adds three additional tables for workspace management.
+Run the SQL below in the Supabase SQL Editor (same as Step 2):
+
+```sql
+-- Enterprise workspace tables ------------------------------------------------
+
+-- Projects: organize work into named projects
+create table if not exists public.dp_projects (
+    id            uuid primary key default gen_random_uuid(),
+    name          text not null,
+    description   text default '',
+    metadata      jsonb default '{}'::jsonb,
+    created_at    timestamptz not null default now()
+);
+
+-- Audit log: track all user actions
+create table if not exists public.dp_audit_log (
+    id            uuid primary key default gen_random_uuid(),
+    action        text not null,
+    details       text default '',
+    created_at    timestamptz not null default now()
+);
+
+-- Dataset versions: versioned snapshots for reproducibility
+create table if not exists public.dp_dataset_versions (
+    id              uuid primary key default gen_random_uuid(),
+    dataset_name    text not null,
+    version_note    text default '',
+    row_count       integer default 0,
+    column_count    integer default 0,
+    columns         jsonb default '[]'::jsonb,
+    data_csv        text,
+    created_at      timestamptz not null default now()
+);
+
+-- Indexes
+create index if not exists idx_dp_projects_created on public.dp_projects (created_at desc);
+create index if not exists idx_dp_audit_log_created on public.dp_audit_log (created_at desc);
+create index if not exists idx_dp_dataset_versions_created on public.dp_dataset_versions (created_at desc);
+
+-- Row Level Security
+alter table public.dp_projects enable row level security;
+alter table public.dp_audit_log enable row level security;
+alter table public.dp_dataset_versions enable row level security;
+
+-- Permissive policies for single-tenant use
+create policy "dp_projects anon all" on public.dp_projects
+    for all to anon using (true) with check (true);
+create policy "dp_audit_log anon all" on public.dp_audit_log
+    for all to anon using (true) with check (true);
+create policy "dp_dataset_versions anon all" on public.dp_dataset_versions
+    for all to anon using (true) with check (true);
+```
+
+These tables power:
+- **Projects tab** in Cloud Workspace - organize analyses by project
+- **Audit Log tab** - automatic tracking of platform actions
+- **Dataset Versions tab** - save/restore dataset snapshots for reproducibility

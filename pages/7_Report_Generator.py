@@ -6,7 +6,7 @@ inject_global_css()
 import pandas as pd
 from utils.data_loader import ensure_builtin_data
 from utils.ai_client import get_api_key, generate_content, GEMINI_MODEL
-from utils.report_generator import generate_html_report, generate_executive_summary
+from utils.report_generator import generate_html_report, generate_executive_summary, generate_pdf_report, generate_docx_report
 from utils.exporters import render_export_buttons
 from utils.supabase_client import is_configured
 from utils import database as db
@@ -78,12 +78,22 @@ st.markdown(f"**Selected dataset:** {len(df):,} rows x {len(df.columns)} columns
 st.markdown("---")
 st.markdown("### Report Configuration")
 
-col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns(3)
 with col1:
     report_title = st.text_input("Report Title", value="Data Analysis Report")
 with col2:
     include_ai = st.checkbox("Include AI Executive Summary", value=False,
                              help="Requires Gemini API key")
+with col3:
+    report_format = st.selectbox("Output Format:", ["HTML", "PDF", "DOCX"], key="report_format_sel")
+
+# Branding options
+with st.expander("\U0001F3A8 Branding & Customization"):
+    brand_col1, brand_col2 = st.columns(2)
+    with brand_col1:
+        brand_name = st.text_input("Organization Name:", value="DataPrism", key="brand_name")
+    with brand_col2:
+        brand_color = st.color_picker("Accent Color:", value="#00D4FF", key="brand_color")
 
 # Sections to include (all checked by default)
 st.markdown("**Sections to include:**")
@@ -115,28 +125,65 @@ if include_ai:
 # Generate button with progress
 if st.button("Generate Report", type="primary", use_container_width=True):
     with st.spinner("Generating report..."):
-        html_report = generate_html_report(
-            df,
-            title=report_title,
-            include_ai_summary=include_ai,
-            api_key=api_key
-        )
-
-        # Store in session state
-        st.session_state.generated_report = html_report
-        st.success("Report generated successfully!")
+        if report_format == "HTML":
+            html_report = generate_html_report(
+                df,
+                title=report_title,
+                include_ai_summary=include_ai,
+                api_key=api_key
+            )
+            st.session_state.generated_report = html_report
+            st.success("HTML report generated successfully!")
+        elif report_format == "PDF":
+            pdf_bytes = generate_pdf_report(
+                df,
+                title=report_title,
+                include_ai_summary=include_ai,
+                api_key=api_key
+            )
+            if pdf_bytes:
+                st.session_state["_generated_pdf"] = pdf_bytes
+                st.success("PDF report generated successfully!")
+            else:
+                st.error("PDF generation failed. Ensure fpdf2 is installed.")
+        elif report_format == "DOCX":
+            docx_bytes = generate_docx_report(
+                df,
+                title=report_title,
+                include_ai_summary=include_ai,
+                api_key=api_key
+            )
+            if docx_bytes:
+                st.session_state["_generated_docx"] = docx_bytes
+                st.success("DOCX report generated successfully!")
+            else:
+                st.error("DOCX generation failed. Ensure python-docx is installed.")
 
 # Display report preview and download
-if "generated_report" in st.session_state:
+if st.session_state.get("generated_report"):
     st.markdown("---")
     st.markdown("### Report Preview")
     import streamlit.components.v1 as components
     components.html(st.session_state.generated_report, height=600, scrolling=True)
 
-    # Download the report
     st.download_button(
         "Download HTML Report", st.session_state.generated_report,
         file_name="analysis_report.html", mime="text/html",
+        use_container_width=True,
+    )
+
+if st.session_state.get("_generated_pdf"):
+    st.download_button(
+        "Download PDF Report", st.session_state["_generated_pdf"],
+        file_name="analysis_report.pdf", mime="application/pdf",
+        use_container_width=True,
+    )
+
+if st.session_state.get("_generated_docx"):
+    st.download_button(
+        "Download DOCX Report", st.session_state["_generated_docx"],
+        file_name="analysis_report.docx",
+        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         use_container_width=True,
     )
 

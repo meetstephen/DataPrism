@@ -1,0 +1,16 @@
+name: Keep Alive
+
+on:
+  schedule:
+    # Run daily at 06:00 UTC to prevent Streamlit Cloud spindown
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping application
+        run: |
+          echo "Keep-alive ping at $(date -u)"
+          echo "This workflow prevents Streamlit Cloud from spinning down due to inactivity."

@@ -306,3 +306,69 @@ if df is not None:
             st.caption(
                 "\u2601\uFE0F Tip: connect a database (see SUPABASE_SETUP.md) to save insights to the cloud."
             )
+
+    # --- Enterprise: Auto-Insight Cards ---
+    st.markdown("---")
+    st.markdown("### \U0001F4A1 Auto-Insight Cards")
+    st.markdown("AI-powered insight cards highlighting key findings, risks, and opportunities.")
+
+    from utils.ai_intelligence import generate_insight_cards, explain_this_number, generate_executive_summary_brief
+    from utils.styles import render_insight_card
+
+    if st.button("Generate Insight Cards", key="gen_insight_cards"):
+        with st.spinner("Generating insight cards..."):
+            cards = generate_insight_cards(df, api_key=api_key)
+            if cards:
+                for card in cards:
+                    render_insight_card(card.get("type", "finding"), card.get("content", ""))
+                st.session_state["_insight_cards"] = cards
+            else:
+                st.info("No notable insights detected for this dataset.")
+
+    stored_cards = st.session_state.get("_insight_cards")
+    if stored_cards and not st.session_state.get("_cards_just_generated"):
+        for card in stored_cards:
+            render_insight_card(card.get("type", "finding"), card.get("content", ""))
+
+    # --- Enterprise: Explain This Number ---
+    st.markdown("---")
+    st.markdown("### \U0001F50D Explain This Number")
+    st.markdown("Select a value from a numeric column to get a plain-language explanation of its context.")
+
+    numeric_cols_explain = df.select_dtypes(include=["number"]).columns.tolist()
+    if numeric_cols_explain:
+        exp_col1, exp_col2 = st.columns(2)
+        with exp_col1:
+            explain_col = st.selectbox("Column:", numeric_cols_explain, key="explain_col_sel")
+        with exp_col2:
+            if explain_col:
+                col_min = float(df[explain_col].min())
+                col_max = float(df[explain_col].max())
+                explain_val = st.number_input(
+                    "Value to explain:",
+                    min_value=col_min,
+                    max_value=col_max,
+                    value=float(df[explain_col].median()),
+                    key="explain_val_input",
+                )
+        if st.button("Explain", type="primary", key="explain_btn"):
+            explanation = explain_this_number(df, explain_col, explain_val, api_key=api_key)
+            st.info(explanation)
+    else:
+        st.info("No numeric columns available for explanation.")
+
+    # --- Enterprise: Executive Summary Brief ---
+    st.markdown("---")
+    st.markdown("### \U0001F4DD Executive Summary")
+    st.markdown("Generate a concise executive summary for stakeholders.")
+
+    goal_text = st.text_input(
+        "Analysis goal (optional):", placeholder="e.g. Understand enrollment trends",
+        key="exec_summary_goal",
+    )
+    if st.button("Generate Executive Summary", type="primary", key="gen_exec_summary"):
+        with st.spinner("Generating executive summary..."):
+            summary = generate_executive_summary_brief(
+                df, goal=goal_text or "General analysis", api_key=api_key
+            )
+            st.markdown(summary)

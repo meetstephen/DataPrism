@@ -62,12 +62,16 @@ st.info(f"Working with: {len(df)} rows, {len(df.columns)} columns")
 st.markdown("---")
 
 # Tab layout for different tools
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs([
     "Pivot Table Builder",
     "Custom Chart Builder",
     "Statistical Summary",
     "Group By Analysis",
-    "Time Intelligence"
+    "Time Intelligence",
+    "EDA Auto-Charts",
+    "Statistical Tests",
+    "Regression",
+    "Clustering & Forecasting",
 ])
 
 # --- Pivot Table Builder ---
@@ -402,3 +406,269 @@ with tab5:
                         )
             except Exception as e:
                 st.error(f"Error computing time intelligence: {str(e)}")
+
+
+# --- EDA Auto-Charts ---
+with tab6:
+    st.markdown("### EDA Auto-Charts")
+    st.markdown("Automatically generate exploratory data analysis charts based on data types.")
+
+    import plotly.express as px
+
+    if st.button("Generate Auto-Charts", type="primary", key="eda_auto"):
+        numeric_cols_eda = df.select_dtypes(include=[np.number]).columns.tolist()
+        cat_cols_eda = df.select_dtypes(include=["object", "category"]).columns.tolist()
+
+        # Distribution plots for all numeric columns
+        if numeric_cols_eda:
+            st.markdown("#### Numeric Distributions")
+            for i in range(0, len(numeric_cols_eda[:6]), 2):
+                row_cols = st.columns(2)
+                for j, col_widget in enumerate(row_cols):
+                    idx = i + j
+                    if idx < len(numeric_cols_eda[:6]):
+                        with col_widget:
+                            fig = create_histogram(df, numeric_cols_eda[idx], f"Distribution: {numeric_cols_eda[idx]}")
+                            st.plotly_chart(fig, use_container_width=True)
+
+        # Category counts
+        if cat_cols_eda:
+            st.markdown("#### Category Distributions")
+            for col in cat_cols_eda[:4]:
+                if df[col].nunique() <= 15:
+                    counts = df[col].value_counts().head(10).reset_index()
+                    counts.columns = [col, "Count"]
+                    fig = create_bar_chart(counts, col, "Count", f"Top values: {col}")
+                    st.plotly_chart(fig, use_container_width=True)
+
+        # Pairwise scatter for top 3 numeric
+        if len(numeric_cols_eda) >= 2:
+            st.markdown("#### Pairwise Scatter")
+            pairs = []
+            for i in range(min(3, len(numeric_cols_eda))):
+                for j in range(i + 1, min(3, len(numeric_cols_eda))):
+                    pairs.append((numeric_cols_eda[i], numeric_cols_eda[j]))
+            for x_col, y_col in pairs[:4]:
+                fig = create_scatter_plot(df, x_col, y_col, f"{x_col} vs {y_col}")
+                st.plotly_chart(fig, use_container_width=True)
+
+
+# --- Statistical Tests ---
+with tab7:
+    st.markdown("### Statistical Tests")
+    st.markdown("Run parametric and non-parametric statistical tests on your data.")
+
+    from utils.statistics import run_ttest, run_chi_square, run_anova
+
+    test_type = st.selectbox(
+        "Test type:",
+        ["T-Test (Independent)", "Chi-Square Test", "One-Way ANOVA"],
+        key="stat_test_type",
+    )
+
+    if test_type == "T-Test (Independent)":
+        numeric_cols_t = df.select_dtypes(include=[np.number]).columns.tolist()
+        cat_cols_t = df.select_dtypes(include=["object", "category"]).columns.tolist()
+
+        if not numeric_cols_t or not cat_cols_t:
+            st.info("Need at least one numeric and one categorical column for t-test.")
+        else:
+            t_col1, t_col2 = st.columns(2)
+            with t_col1:
+                t_value_col = st.selectbox("Value column:", numeric_cols_t, key="ttest_val")
+                t_group_col = st.selectbox("Group column:", cat_cols_t, key="ttest_group")
+            with t_col2:
+                groups = df[t_group_col].dropna().unique().tolist()[:20]
+                t_group_a = st.selectbox("Group A:", groups, key="ttest_a")
+                t_group_b = st.selectbox("Group B:", [g for g in groups if g != t_group_a], key="ttest_b")
+
+            if st.button("Run T-Test", type="primary", key="run_ttest"):
+                result = run_ttest(df, t_value_col, t_group_col, t_group_a, t_group_b)
+                if "error" in result:
+                    st.error(result["error"])
+                else:
+                    r1, r2, r3 = st.columns(3)
+                    r1.metric("T-Statistic", f"{result['t_statistic']:.4f}")
+                    r2.metric("P-Value", f"{result['p_value']:.6f}")
+                    r3.metric("Significant?", "Yes" if result["significant"] else "No")
+                    st.markdown(f"Mean of {t_group_a}: **{result['mean_a']:.4f}** (n={result['n_a']})")
+                    st.markdown(f"Mean of {t_group_b}: **{result['mean_b']:.4f}** (n={result['n_b']})")
+
+    elif test_type == "Chi-Square Test":
+        cat_cols_chi = df.select_dtypes(include=["object", "category"]).columns.tolist()
+        if len(cat_cols_chi) < 2:
+            st.info("Need at least 2 categorical columns for chi-square test.")
+        else:
+            chi_col1, chi_col2 = st.columns(2)
+            with chi_col1:
+                chi_a = st.selectbox("Column A:", cat_cols_chi, key="chi_a")
+            with chi_col2:
+                chi_b = st.selectbox("Column B:", [c for c in cat_cols_chi if c != chi_a], key="chi_b")
+            if st.button("Run Chi-Square", type="primary", key="run_chi"):
+                result = run_chi_square(df, chi_a, chi_b)
+                if "error" in result:
+                    st.error(result["error"])
+                else:
+                    r1, r2, r3 = st.columns(3)
+                    r1.metric("Chi-Square", f"{result['chi2']:.4f}")
+                    r2.metric("P-Value", f"{result['p_value']:.6f}")
+                    r3.metric("Significant?", "Yes" if result["significant"] else "No")
+                    st.caption(f"Degrees of freedom: {result['dof']}")
+
+    elif test_type == "One-Way ANOVA":
+        numeric_cols_a = df.select_dtypes(include=[np.number]).columns.tolist()
+        cat_cols_a = df.select_dtypes(include=["object", "category"]).columns.tolist()
+        if not numeric_cols_a or not cat_cols_a:
+            st.info("Need numeric and categorical columns for ANOVA.")
+        else:
+            a_col1, a_col2 = st.columns(2)
+            with a_col1:
+                anova_val = st.selectbox("Value column:", numeric_cols_a, key="anova_val")
+            with a_col2:
+                anova_group = st.selectbox("Group column:", cat_cols_a, key="anova_group")
+            if st.button("Run ANOVA", type="primary", key="run_anova"):
+                result = run_anova(df, anova_val, anova_group)
+                if "error" in result:
+                    st.error(result["error"])
+                else:
+                    r1, r2, r3 = st.columns(3)
+                    r1.metric("F-Statistic", f"{result['f_statistic']:.4f}")
+                    r2.metric("P-Value", f"{result['p_value']:.6f}")
+                    r3.metric("Significant?", "Yes" if result["significant"] else "No")
+                    st.markdown(f"Groups: {result['n_groups']}")
+                    st.json(result["group_means"])
+
+
+# --- Regression ---
+with tab8:
+    st.markdown("### Regression Analysis")
+    st.markdown("Run linear or logistic regression on your data.")
+
+    from utils.statistics import run_linear_regression, run_logistic_regression
+
+    reg_type = st.radio("Regression type:", ["Linear", "Logistic"], horizontal=True, key="reg_type")
+    numeric_cols_reg = df.select_dtypes(include=[np.number]).columns.tolist()
+
+    if len(numeric_cols_reg) < 2:
+        st.info("Need at least 2 numeric columns for regression.")
+    else:
+        reg_target = st.selectbox("Target (Y):", numeric_cols_reg, key="reg_target")
+        reg_features = st.multiselect(
+            "Features (X):",
+            [c for c in numeric_cols_reg if c != reg_target],
+            default=[c for c in numeric_cols_reg if c != reg_target][:3],
+            key="reg_features",
+        )
+
+        if reg_features and st.button("Run Regression", type="primary", key="run_reg"):
+            if reg_type == "Linear":
+                result = run_linear_regression(df, reg_target, reg_features)
+            else:
+                result = run_logistic_regression(df, reg_target, reg_features)
+
+            if "error" in result:
+                st.error(result["error"])
+            else:
+                if reg_type == "Linear":
+                    r1, r2, r3 = st.columns(3)
+                    r1.metric("R-Squared", f"{result['r_squared']:.4f}")
+                    r2.metric("Adj. R-Squared", f"{result['adj_r_squared']:.4f}")
+                    r3.metric("Observations", result["n_observations"])
+                else:
+                    r1, r2 = st.columns(2)
+                    r1.metric("Accuracy", f"{result['accuracy']:.4f}")
+                    r2.metric("Observations", result["n_observations"])
+                    st.markdown(f"Classes: {result.get('classes', [])}")
+
+                st.markdown("#### Coefficients")
+                coef_df = pd.DataFrame(
+                    list(result["coefficients"].items()),
+                    columns=["Feature", "Coefficient"]
+                )
+                st.dataframe(coef_df, use_container_width=True, hide_index=True)
+
+
+# --- Clustering & Forecasting ---
+with tab9:
+    st.markdown("### Clustering & Forecasting")
+
+    cluster_tab, forecast_tab = st.tabs(["K-Means Clustering", "Time Series Forecast"])
+
+    with cluster_tab:
+        st.markdown("#### K-Means Clustering")
+        from utils.statistics import run_kmeans_clustering, ai_describe_clusters
+
+        numeric_cols_km = df.select_dtypes(include=[np.number]).columns.tolist()
+        if len(numeric_cols_km) < 2:
+            st.info("Need at least 2 numeric columns for clustering.")
+        else:
+            km_features = st.multiselect(
+                "Features for clustering:",
+                numeric_cols_km,
+                default=numeric_cols_km[:3],
+                key="km_features",
+            )
+            n_clusters = st.slider("Number of clusters:", 2, 10, 3, key="km_n_clusters")
+
+            if km_features and st.button("Run K-Means", type="primary", key="run_kmeans"):
+                result = run_kmeans_clustering(df, km_features, n_clusters)
+                if "error" in result:
+                    st.error(result["error"])
+                else:
+                    st.metric("Inertia", f"{result['inertia']:.2f}")
+                    st.markdown("#### Cluster Centers")
+                    centers_df = pd.DataFrame(result["centers"])
+                    st.dataframe(centers_df, use_container_width=True, hide_index=True)
+
+                    # Scatter plot of first two features colored by cluster
+                    if len(km_features) >= 2:
+                        plot_df = df[km_features].dropna().copy()
+                        plot_df["Cluster"] = [str(l) for l in result["labels"]]
+                        fig = create_scatter_plot(
+                            plot_df, km_features[0], km_features[1],
+                            "Cluster Visualization", color="Cluster"
+                        )
+                        st.plotly_chart(fig, use_container_width=True)
+
+                    # AI description
+                    from utils.ai_client import get_api_key as _get_key
+                    desc = ai_describe_clusters(result, api_key=_get_key())
+                    st.markdown("#### Cluster Descriptions")
+                    st.markdown(desc)
+
+    with forecast_tab:
+        st.markdown("#### Time Series Forecast (Holt-Winters)")
+        from utils.forecasting import run_time_series_forecast, build_forecast_chart
+
+        date_cols_fc = [c for c in df.columns if any(kw in c.lower() for kw in ["date", "year", "month", "time", "period"])]
+        if not date_cols_fc:
+            date_cols_fc = df.columns.tolist()
+        numeric_cols_fc = df.select_dtypes(include=[np.number]).columns.tolist()
+
+        if not numeric_cols_fc:
+            st.info("Need at least one numeric column for forecasting.")
+        else:
+            fc_col1, fc_col2, fc_col3 = st.columns(3)
+            with fc_col1:
+                fc_date = st.selectbox("Date column:", date_cols_fc, key="fc_date")
+            with fc_col2:
+                fc_value = st.selectbox("Value column:", numeric_cols_fc, key="fc_value")
+            with fc_col3:
+                fc_periods = st.slider("Forecast periods:", 3, 36, 12, key="fc_periods")
+
+            if st.button("Run Forecast", type="primary", key="run_forecast"):
+                result = run_time_series_forecast(df, fc_date, fc_value, periods=fc_periods)
+                if "error" in result:
+                    st.error(result["error"])
+                else:
+                    st.success(f"Model: {result.get('model_summary', 'N/A')}")
+                    if result.get("aic"):
+                        st.caption(f"AIC: {result['aic']}")
+
+                    fig = build_forecast_chart(result)
+                    if fig:
+                        st.plotly_chart(fig, use_container_width=True)
+
+                    # Show forecast values
+                    with st.expander("Forecast Values"):
+                        st.dataframe(result["forecast"], use_container_width=True)

@@ -50,8 +50,9 @@ if client is None:
 
 st.success("Connected to Supabase.")
 
-tab_datasets, tab_reports, tab_rules, tab_insights = st.tabs(
-    ["\U0001F4E6 Datasets", "\U0001F4CB Reports", "\u2705 Rule Sets", "\U0001F916 Insights"]
+tab_datasets, tab_reports, tab_rules, tab_insights, tab_projects, tab_audit, tab_versions = st.tabs(
+    ["\U0001F4E6 Datasets", "\U0001F4CB Reports", "\u2705 Rule Sets", "\U0001F916 Insights",
+     "\U0001F4C1 Projects", "\U0001F4DC Audit Log", "\U0001F504 Dataset Versions"]
 )
 
 
@@ -232,3 +233,142 @@ with tab_insights:
                     ok2, msg = db.delete_insight(ins["id"])
                     st.success(msg) if ok2 else st.error(msg)
                     st.rerun()
+
+
+# ---------------- Projects ----------------
+with tab_projects:
+    st.markdown("### Projects")
+    st.markdown("Organize your work into named projects.")
+
+    from utils.workspace import save_project, list_projects, delete_project
+
+    with st.expander("Create New Project", expanded=False):
+        proj_name = st.text_input("Project name:", key="cw_proj_name", placeholder="e.g. Q2 Enrollment Analysis")
+        proj_desc = st.text_input("Description (optional):", key="cw_proj_desc")
+        if st.button("Create Project", type="primary", key="cw_proj_create"):
+            if not proj_name.strip():
+                st.error("Please enter a project name.")
+            else:
+                ok, msg = save_project(proj_name.strip(), proj_desc.strip())
+                st.success(msg) if ok else st.error(msg)
+                st.rerun()
+
+    st.markdown("---")
+    st.markdown("### Saved Projects")
+    ok, projects = list_projects()
+    if not ok:
+        st.error(projects)
+    elif not projects:
+        st.info("No projects created yet.")
+    else:
+        for proj in projects:
+            with st.container(border=True):
+                c1, c2 = st.columns([6, 2])
+                with c1:
+                    st.markdown(f"**{proj['name']}**")
+                    if proj.get("description"):
+                        st.caption(proj["description"])
+                    st.caption(str(proj.get("created_at", ""))[:19].replace("T", " "))
+                with c2:
+                    if st.button("Delete", key=f"cw_del_proj_{proj['id']}", use_container_width=True):
+                        ok2, msg = delete_project(proj["id"])
+                        st.success(msg) if ok2 else st.error(msg)
+                        st.rerun()
+
+
+# ---------------- Audit Log ----------------
+with tab_audit:
+    st.markdown("### Audit Log")
+    st.markdown("Track all actions performed in the workspace.")
+
+    from utils.workspace import log_action, list_audit_log
+
+    if st.button("Refresh Audit Log", key="cw_refresh_audit"):
+        st.rerun()
+
+    ok, entries = list_audit_log(limit=50)
+    if not ok:
+        st.error(entries)
+    elif not entries:
+        st.info("No audit log entries yet. Actions are logged automatically as you use the platform.")
+    else:
+        log_df = pd.DataFrame(entries)
+        display_cols = [c for c in ["action", "details", "created_at"] if c in log_df.columns]
+        if display_cols:
+            st.dataframe(log_df[display_cols], use_container_width=True, hide_index=True)
+
+
+# ---------------- Dataset Versions ----------------
+with tab_versions:
+    st.markdown("### Dataset Versions")
+    st.markdown("Save and restore versioned snapshots of your datasets.")
+
+    from utils.workspace import save_dataset_version, list_dataset_versions, restore_dataset_version
+
+    # Save a version
+    with st.expander("Save Current Dataset Version", expanded=False):
+        ver_candidates = {}
+        if st.session_state.get("uploaded_df") is not None:
+            ver_candidates["Uploaded Data"] = st.session_state.uploaded_df
+        if st.session_state.get("working_df") is not None:
+            ver_candidates["Cleaned Data"] = st.session_state.working_df
+
+        if ver_candidates:
+            ver_src = st.selectbox("Dataset:", list(ver_candidates.keys()), key="cw_ver_src")
+            ver_name = st.text_input("Version name:", key="cw_ver_name", placeholder="e.g. after_cleaning_v1")
+            ver_note = st.text_input("Note (optional):", key="cw_ver_note")
+            if st.button("Save Version", type="primary", key="cw_ver_save"):
+                if not ver_name.strip():
+                    st.error("Please enter a version name.")
+                else:
+                    ok, msg = save_dataset_version(ver_name.strip(), ver_candidates[ver_src], ver_note.strip())
+                    st.success(msg) if ok else st.error(msg)
+                    st.rerun()
+        else:
+            st.info("No datasets in session to version. Load or upload data first.")
+
+    st.markdown("---")
+    st.markdown("### Saved Versions")
+    ok, versions = list_dataset_versions()
+    if not ok:
+        st.error(versions)
+    elif not versions:
+        st.info("No dataset versions saved yet.")
+    else:
+        for ver in versions:
+            with st.container(border=True):
+                c1, c2 = st.columns([6, 2])
+                with c1:
+                    st.markdown(f"**{ver.get('dataset_name', 'Unknown')}**")
+                    st.caption(
+                        f"{ver.get('row_count', 0):,} rows x {ver.get('column_count', 0)} cols"
+                        f" | {ver.get('version_note', '')}"
+                        f" | {str(ver.get('created_at', ''))[:19].replace('T', ' ')}"
+                    )
+                with c2:
+                    if st.button("Restore", key=f"cw_restore_ver_{ver['id']}", use_container_width=True):
+                        ok2, result = restore_dataset_version(ver["id"])
+                        if ok2:
+                            st.session_state.uploaded_df = result
+                            st.session_state.working_df = result.copy()
+                            save_session_state()
+                            st.success(f"Restored version '{ver.get('dataset_name', '')}'.")
+                        else:
+                            st.error(result)
+
+
+# --- Onboarding Checklist ---
+st.markdown("---")
+st.markdown("### \U0001F3AF Onboarding Checklist")
+checklist_items = {
+    "Upload a dataset": st.session_state.get("uploaded_df") is not None,
+    "Run AI Insights": st.session_state.get("last_insight") is not None,
+    "Clean data": len(st.session_state.get("cleaning_log", [])) > 0,
+    "Generate a report": st.session_state.get("generated_report") is not None,
+    "Save to cloud": True,  # They are on this page with Supabase connected
+}
+for label, done in checklist_items.items():
+    icon = "\u2705" if done else "\u2B1C"
+    st.markdown(f"{icon} {label}")
+completed = sum(1 for v in checklist_items.values() if v)
+st.progress(completed / len(checklist_items))
