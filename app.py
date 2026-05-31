@@ -90,6 +90,72 @@ st.markdown(
 
 st.markdown("---")
 
+# --- Start Here: 3-button decision tree ---
+st.markdown(
+    "<h2 style='margin-bottom:0.2rem;'>\U0001F9ED Start Here</h2>",
+    unsafe_allow_html=True,
+)
+st.markdown("Pick the path that matches what you want to do right now.")
+
+
+def _start_card(emoji, title, description):
+    st.markdown(
+        f"""
+        <div style="border:1px solid rgba(0,212,255,0.22); border-radius:14px;
+                    padding:1.1rem 1.2rem; height:170px; margin-bottom:0.6rem;
+                    background:linear-gradient(135deg, rgba(0,212,255,0.07), rgba(123,97,255,0.05));">
+            <div style="font-size:1.9rem; line-height:1;">{emoji}</div>
+            <h4 style="margin:0.5rem 0 0.35rem 0; color:#E2E8F0;">{title}</h4>
+            <p style="margin:0; color:#94A3B8; font-size:0.88rem;">{description}</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+start_col1, start_col2, start_col3 = st.columns(3)
+with start_col1:
+    _start_card(
+        "\U0001F4C1",
+        "I have my own data",
+        "Upload a CSV or Excel file (including Power BI exports) for instant "
+        "automated analysis, distributions, and data-quality checks.",
+    )
+    st.page_link(
+        "pages/2_Upload_and_Analyze.py",
+        label="Upload & Analyze",
+        icon="\U0001F4C1",
+        use_container_width=True,
+    )
+with start_col2:
+    _start_card(
+        "\U0001F9ED",
+        "Show me how it works",
+        "New to DataPrism? Take the guided, step-by-step workflow using the "
+        "built-in sample dataset \u2014 load, clean, explore, and report.",
+    )
+    st.page_link(
+        "pages/0_Guided_Analysis.py",
+        label="Launch Guided Analysis",
+        icon="\U0001F9ED",
+        use_container_width=True,
+    )
+with start_col3:
+    _start_card(
+        "\U0001F310",
+        "Find data online",
+        "No data yet? Fetch a dataset from any URL or browse the curated "
+        "catalog of verified public datasets to get started fast.",
+    )
+    st.page_link(
+        "pages/6_Online_Data_Explorer.py",
+        label="Online Data Explorer",
+        icon="\U0001F310",
+        use_container_width=True,
+    )
+
+st.markdown("---")
+
 # Guided Analysis callout (the dedicated page is wired up separately)
 st.markdown(
     """

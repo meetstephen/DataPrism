@@ -6,6 +6,20 @@ DataPrism is an enterprise-grade data intelligence platform built with Streamlit
 
 ---
 
+## What's New
+
+This release adds a set of analyst-grade capabilities across the platform:
+
+- **"Start Here" home screen** — A clear 3-path decision tree on the home page routes you to the right starting point: *upload your own data*, *take the guided walkthrough* with sample data, or *find data online*.
+- **Calculated Columns / Feature Engineering** — A new tab in the Data Cleaning Engine lets you derive new columns from existing ones, either with a guided arithmetic builder (column ± column/value) or a custom expression. Evaluation is sandboxed via `DataFrame.eval` (arithmetic & comparisons only — no arbitrary code).
+- **Multi-format Export** — Cleaned data can be downloaded as **CSV, Excel (.xlsx), JSON, or Parquet** from a single export bar.
+- **Time Intelligence** — A new Advanced Analytics tab computes period-over-period change (MoM/QoQ/etc.), **year-over-year (YoY)**, and **rolling averages** from any date/value pair, with charts and metrics.
+- **Data Validation Rules** — Declare expectations (no missing values, uniqueness, numeric range, allowed values, regex match) and run them for a pass/fail report with drill-down into violating rows.
+- **AI Confidence Badges** — AI Insights now disclose whether output is *AI-generated* or *rule-based*, with a transparency confidence level (High/Medium/Low) derived from sample size and completeness, plus the factors behind the score.
+- **"View as Table" toggle** — Charts in the Custom Chart Builder and Time Intelligence views include an accessible expander to inspect the underlying data as a table.
+
+---
+
 ## Recent Fixes & Improvements
 
 The platform has been hardened for reliable, enterprise-grade operation:
@@ -27,9 +41,9 @@ The platform has been hardened for reliable, enterprise-grade operation:
 | — | **Guided Analysis** | Step-by-step guided workflow for beginners — load, clean, explore, and report without guesswork *(wired up separately)* |
 | 1 | **Getting Started** | Quick start guide with 3-step onboarding, data flow diagram, and AI feature overview |
 | 2 | **Upload & Analyze** | Upload CSV/Excel (incl. Power BI exports) for instant automated analysis with distributions, correlations, and data quality reports |
-| 3 | **Data Cleaning Engine** | Comprehensive data cleaning with undo/redo, missing value handling, outlier removal, and audit logging |
-| 4 | **AI Insights Engine** | Natural language insights via Google Gemini 2.5 Flash with structured executive reports and rule-based fallback |
-| 5 | **Advanced Analytics** | Pivot table builder, custom chart creator, group-by analysis, and statistical summaries |
+| 3 | **Data Cleaning Engine** | Comprehensive data cleaning with undo/redo, missing value handling, outlier removal, **calculated columns / feature engineering**, **data validation rules**, audit logging, and **multi-format export (CSV/Excel/JSON/Parquet)** |
+| 4 | **AI Insights Engine** | Natural language insights via Google Gemini 2.5 Flash with structured executive reports, rule-based fallback, and **AI confidence-disclosure badges** |
+| 5 | **Advanced Analytics** | Pivot table builder, custom chart creator (with **view-as-table** toggle), group-by analysis, statistical summaries, and **time intelligence (MoM, YoY, rolling averages)** |
 | 6 | **Online Data Explorer** | Fetch datasets from any URL (CSV, JSON, Excel), browse curated public catalogs, scrape web tables |
 | 7 | **Report Generator** | Generate comprehensive HTML analysis reports with embedded charts and AI summaries |
 | 8 | **Chat With Your Data** | One assistant for **both** structured data **and** documents — ask questions about CSV/Excel (with auto-generated charts) or upload a PDF, Word, Excel, CSV, or **Power BI export** and chat with it |
@@ -137,13 +151,16 @@ community-college-data-analysis/
 │       #                                       (Guided Analysis page is wired up separately)
 ├── utils/
 │   ├── __init__.py                           # Module init
-│   ├── styles.py                             # Global CSS & premium theme system
+│   ├── styles.py                             # Global CSS, premium theme & confidence badges
 │   ├── ai_client.py                          # Centralized Gemini client & API-key helper
 │   ├── data_loader.py                        # Shared data loading & session-state init
-│   ├── data_engine.py                        # Data cleaning engine with audit log
+│   ├── data_engine.py                        # Data cleaning engine, audit log & calculated columns
+│   ├── validation.py                         # Data validation rules engine
+│   ├── time_intelligence.py                  # MoM / YoY / rolling-average time analysis
+│   ├── exporters.py                          # Multi-format export (CSV/Excel/JSON/Parquet)
 │   ├── persistence.py                        # Session persistence (save/restore to disk)
 │   ├── data_generator.py                     # Synthetic data generation
-│   ├── visualizations.py                     # Reusable Plotly charts
+│   ├── visualizations.py                     # Reusable Plotly charts & view-as-table helper
 │   ├── ai_insights.py                        # AI and rule-based analysis engine
 │   ├── online_data.py                        # Web data fetching utilities
 │   └── report_generator.py                   # Report generation utilities
@@ -204,7 +221,11 @@ DataPrism pages are interconnected. Data loaded on one page is automatically ava
 - **Session Persistence** - Your work survives page refreshes and app reboots. Data, chat history, and cleaning logs are automatically saved.
 - **Premium Enterprise Theme** - Refined dark UI with gradient hero titles, depth-layered background, glowing gradient buttons, pill-style selectors, hover-lift metrics, rounded dataframes/expanders, an on-brand scrollbar, and polished chat & navigation components.
 - **Guided Analysis Mode** - A beginner-friendly, step-by-step workflow that walks you from raw data to a finished report *(wired up separately)*.
-- **Data Cleaning with Undo/Redo** - Non-destructive data transformations with full audit trail
+- **Data Cleaning with Undo/Redo** - Non-destructive data transformations with full audit trail, plus calculated columns and declarative validation rules
+- **Multi-Format Export** - Download cleaned data as CSV, Excel, JSON, or Parquet
+- **Time Intelligence** - Month-over-month, year-over-year, and rolling-average analysis on any date/value pair
+- **AI Confidence Disclosure** - Insight output is badged as AI-generated or rule-based with a transparency confidence level
+- **Accessible Visualizations** - "View as table" toggle exposes the data behind charts
 - **Unified Chat With Data** - One assistant for both structured data (ask questions, get auto-generated charts) and documents (PDF, Word, Excel, CSV, **Power BI exports**) for AI-powered insights and summaries
 - **Power BI Integration** - Upload Power BI Desktop exports for instant analysis on Upload & Analyze and Chat With Data
 - **AI-Powered Insights** - Structured executive reports from Google Gemini 2.5 Flash

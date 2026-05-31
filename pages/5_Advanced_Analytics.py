@@ -17,7 +17,13 @@ from utils.visualizations import (
     create_scatter_plot,
     create_histogram,
     create_box_plot,
-    create_line_chart
+    create_line_chart,
+    render_chart_with_table,
+)
+from utils.time_intelligence import (
+    detect_date_columns,
+    compute_time_intelligence,
+    FREQ_CHOICES,
 )
 
 st.title("\U0001F527 Advanced Analytics")
@@ -56,11 +62,12 @@ st.info(f"Working with: {len(df)} rows, {len(df.columns)} columns")
 st.markdown("---")
 
 # Tab layout for different tools
-tab1, tab2, tab3, tab4 = st.tabs([
+tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "Pivot Table Builder",
     "Custom Chart Builder",
     "Statistical Summary",
-    "Group By Analysis"
+    "Group By Analysis",
+    "Time Intelligence"
 ])
 
 # --- Pivot Table Builder ---
@@ -154,6 +161,7 @@ with tab2:
         with st.spinner("Generating chart..."):
             try:
                 color_param = color_col if color_col != "None" else None
+                chart_data = None
 
                 if chart_type == "Bar":
                     if color_param:
@@ -162,9 +170,12 @@ with tab2:
                         chart_df = df.groupby(x_axis)[y_axis].mean().reset_index()
                     fig = create_bar_chart(chart_df, x_axis, y_axis, f"{y_axis} by {x_axis}", color=color_param)
                     fig.update_layout(xaxis_tickangle=-45)
+                    chart_data = chart_df
 
                 elif chart_type == "Scatter":
                     fig = create_scatter_plot(df, x_axis, y_axis, f"{y_axis} vs {x_axis}", color=color_param)
+                    scatter_cols = [c for c in [x_axis, y_axis, color_param] if c]
+                    chart_data = df[scatter_cols]
 
                 elif chart_type == "Line":
                     if color_param:
@@ -176,14 +187,17 @@ with tab2:
                         f"{y_axis} over {x_axis}",
                         color=color_param
                     )
+                    chart_data = chart_df
 
                 elif chart_type == "Box":
                     fig = create_box_plot(df, x_axis, y_axis, f"{y_axis} by {x_axis}")
+                    chart_data = df[[x_axis, y_axis]]
 
                 elif chart_type == "Histogram":
                     fig = create_histogram(df, x_axis, f"Distribution of {x_axis}")
+                    chart_data = df[[x_axis]]
 
-                st.plotly_chart(fig, use_container_width=True)
+                render_chart_with_table(fig, chart_data, key="custom_chart")
 
             except Exception as e:
                 st.error(f"Error creating chart: {str(e)}")
@@ -276,3 +290,109 @@ with tab4:
 
         except Exception as e:
             st.error(f"Error in group by analysis: {str(e)}")
+
+
+# --- Time Intelligence ---
+with tab5:
+    st.markdown("### Time Intelligence")
+    st.markdown(
+        "Track how a metric changes over time: period-over-period (e.g. MoM), "
+        "year-over-year (YoY), and rolling averages."
+    )
+
+    ti_numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+    date_candidates = detect_date_columns(df)
+    date_options = date_candidates if date_candidates else df.columns.tolist()
+
+    if not ti_numeric_cols:
+        st.info("Time intelligence needs at least one numeric value column.")
+    else:
+        if not date_candidates:
+            st.warning(
+                "No obvious date/time column was detected. Pick the column that "
+                "represents time (a date, or a year/period column)."
+            )
+
+        ti_col1, ti_col2, ti_col3 = st.columns(3)
+        with ti_col1:
+            ti_date_col = st.selectbox("Date / time column", date_options, key="ti_date_col")
+        with ti_col2:
+            ti_value_col = st.selectbox("Value column", ti_numeric_cols, key="ti_value_col")
+        with ti_col3:
+            ti_agg = st.selectbox("Aggregation", ["sum", "mean", "min", "max", "count"], key="ti_agg")
+
+        ti_col4, ti_col5 = st.columns(2)
+        with ti_col4:
+            ti_freq_label = st.selectbox("Period", list(FREQ_CHOICES.keys()), index=2, key="ti_freq")
+        with ti_col5:
+            ti_window = st.slider("Rolling average window (periods)", 2, 12, 3, key="ti_window")
+
+        if st.button("Run Time Intelligence", type="primary", key="ti_run"):
+            try:
+                ti = compute_time_intelligence(
+                    df,
+                    ti_date_col,
+                    ti_value_col,
+                    freq=FREQ_CHOICES[ti_freq_label],
+                    agg=ti_agg,
+                    rolling_window=ti_window,
+                )
+                series = ti["series"]
+                pop_label = ti["pop_label"]
+                rolling_label = ti["rolling_label"]
+                pop_col = f"{pop_label} %"
+
+                if series.empty or len(series) < 2:
+                    st.warning(
+                        "Not enough time periods to compute trends. Try a coarser "
+                        "period (e.g. Yearly) or check the date column."
+                    )
+                else:
+                    latest = series.iloc[-1]
+                    m1, m2, m3 = st.columns(3)
+                    with m1:
+                        st.metric(f"Latest {ti_value_col}", f"{latest[ti_value_col]:,.2f}")
+                    with m2:
+                        pop_val = latest.get(pop_col)
+                        st.metric(
+                            f"{pop_label} change",
+                            "N/A" if pd.isna(pop_val) else f"{pop_val:+.2f}%",
+                        )
+                    with m3:
+                        yoy_val = latest.get("YoY %")
+                        st.metric(
+                            "YoY change",
+                            "N/A" if pd.isna(yoy_val) else f"{yoy_val:+.2f}%",
+                        )
+
+                    # Value + rolling average overlay
+                    line_long = series.melt(
+                        id_vars=["Period"],
+                        value_vars=[ti_value_col, rolling_label],
+                        var_name="Series",
+                        value_name="Value",
+                    )
+                    line_fig = create_line_chart(
+                        line_long, "Period", "Value",
+                        f"{ti_agg.capitalize()} of {ti_value_col} over time",
+                        color="Series",
+                    )
+                    render_chart_with_table(
+                        line_fig, series, key="ti_line",
+                        caption="Period aggregates with change metrics and rolling average.",
+                    )
+
+                    # Period-over-period % change bar chart
+                    change_df = series.dropna(subset=[pop_col])
+                    if not change_df.empty:
+                        change_fig = create_bar_chart(
+                            change_df, "Period", pop_col,
+                            f"{pop_label} % change in {ti_value_col}",
+                        )
+                        render_chart_with_table(
+                            change_fig, change_df[["Period", pop_col, "YoY %"]],
+                            key="ti_change",
+                            caption="Period-over-period and year-over-year percentage change.",
+                        )
+            except Exception as e:
+                st.error(f"Error computing time intelligence: {str(e)}")

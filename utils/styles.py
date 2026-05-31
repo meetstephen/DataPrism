@@ -251,3 +251,95 @@ def render_empty_state(icon: str, title: str, message: str):
         <p style="max-width:400px; margin:0 auto 1.5rem;">{message}</p>
     </div>
     """, unsafe_allow_html=True)
+
+
+
+def compute_confidence(df, source="ai"):
+    """Heuristically score how much to trust generated insights for a dataset.
+
+    The score blends sample size, data completeness and the analysis source.
+    Returns ``(level, score_pct, reasons)`` where level is "High"/"Medium"/"Low",
+    score_pct is an int 0-100, and reasons is a list of short explanation strings.
+
+    This is a transparency aid, not a statistical guarantee.
+    """
+    reasons = []
+    score = 0.5
+
+    n_rows = len(df) if df is not None else 0
+    if n_rows >= 500:
+        score += 0.2
+        reasons.append(f"Large sample ({n_rows:,} rows)")
+    elif n_rows >= 100:
+        score += 0.1
+        reasons.append(f"Adequate sample ({n_rows:,} rows)")
+    elif n_rows < 30:
+        score -= 0.2
+        reasons.append(f"Small sample ({n_rows:,} rows) \u2014 interpret with caution")
+
+    # Completeness
+    try:
+        total_cells = (len(df) * len(df.columns)) if df is not None and len(df.columns) else 0
+        missing = int(df.isnull().sum().sum()) if total_cells else 0
+        completeness = ((total_cells - missing) / total_cells * 100) if total_cells else 100
+    except Exception:
+        completeness = 100
+    if completeness >= 99:
+        score += 0.15
+        reasons.append(f"High completeness ({completeness:.0f}%)")
+    elif completeness >= 95:
+        score += 0.1
+        reasons.append(f"Good completeness ({completeness:.0f}%)")
+    elif completeness < 80:
+        score -= 0.15
+        reasons.append(f"Notable missing data (completeness {completeness:.0f}%)")
+
+    # Source: rule-based output is deterministic and reproducible.
+    if source == "rule_based":
+        score += 0.1
+        reasons.append("Deterministic rule-based analysis")
+    else:
+        reasons.append("AI-generated \u2014 verify key numbers before acting")
+
+    score = max(0.05, min(0.95, score))
+    score_pct = int(round(score * 100))
+    if score_pct >= 75:
+        level = "High"
+    elif score_pct >= 50:
+        level = "Medium"
+    else:
+        level = "Low"
+    return level, score_pct, reasons
+
+
+def render_confidence_badge(level, score=None, source_label="AI-generated", reasons=None):
+    """Render a confidence/disclosure badge above generated insights.
+
+    Args:
+        level: "High" / "Medium" / "Low".
+        score: Optional 0-100 confidence score to display.
+        source_label: e.g. "AI-generated" or "Rule-based".
+        reasons: Optional list of short factor strings shown as a caption.
+    """
+    import streamlit as st
+
+    colors = {"High": "#10B981", "Medium": "#F59E0B", "Low": "#EF4444"}
+    color = colors.get(level, "#00D4FF")
+    score_txt = f" &middot; {score}% confidence" if score is not None else ""
+    tooltip = " | ".join(reasons) if reasons else ""
+
+    st.markdown(
+        f"""
+    <div title="{tooltip}" style="display:inline-flex; align-items:center; gap:0.5rem;
+                border:1px solid {color}55; background:{color}1A; color:{color};
+                border-radius:999px; padding:0.3rem 0.85rem; font-size:0.78rem;
+                font-weight:700; letter-spacing:0.03em; margin:0.25rem 0 0.5rem 0;">
+        <span style="width:8px; height:8px; border-radius:50%; background:{color};
+                     display:inline-block;"></span>
+        {source_label} &middot; {level} confidence{score_txt}
+    </div>
+    """,
+        unsafe_allow_html=True,
+    )
+    if reasons:
+        st.caption("Confidence factors: " + " &nbsp;|&nbsp; ".join(reasons))

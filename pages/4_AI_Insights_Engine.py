@@ -4,7 +4,7 @@ AI Insights Engine - Generate automated insights with Google Gemini or rule-base
 
 import streamlit as st
 st.set_page_config(page_title="AI Insights Engine", page_icon="\U0001f4a0", layout="wide")
-from utils.styles import inject_global_css
+from utils.styles import inject_global_css, compute_confidence, render_confidence_badge
 inject_global_css()
 
 import pandas as pd
@@ -132,6 +132,8 @@ if df is not None:
                 ai_result = generate_insights_gemini(summary_text, api_key)
 
                 if ai_result is not None:
+                    level, score, reasons = compute_confidence(df, source="ai")
+                    render_confidence_badge(level, score, source_label="AI-generated", reasons=reasons)
                     st.markdown(ai_result)
                 else:
                     st.warning(
@@ -139,6 +141,8 @@ if df is not None:
                         "Please check your Gemini API key. "
                         "Falling back to rule-based analysis."
                     )
+                    level, score, reasons = compute_confidence(df, source="rule_based")
+                    render_confidence_badge(level, score, source_label="Rule-based", reasons=reasons)
                     insights = generate_insights_fallback(df)
 
                     st.markdown("#### Key Findings")
@@ -162,6 +166,9 @@ if df is not None:
             else:
                 st.markdown("### Rule-Based Insights")
                 st.caption("Using automated rule-based analysis (no API key provided)")
+
+                level, score, reasons = compute_confidence(df, source="rule_based")
+                render_confidence_badge(level, score, source_label="Rule-based", reasons=reasons)
 
                 insights = generate_insights_fallback(df)
 
