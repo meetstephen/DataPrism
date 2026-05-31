@@ -15,8 +15,15 @@ from utils.data_engine import (
     remove_outliers_iqr,
     drop_columns,
     rename_columns,
+    flag_missing,
+    cap_outliers,
+    split_column,
+    merge_columns,
+    standardize_text,
+    convert_column_type,
 )
 from utils.persistence import save_session_state
+from utils.ai_client import generate_content, get_api_key
 
 # Ensure cleaning state is initialized
 init_cleaning_state()
@@ -132,8 +139,8 @@ with met_col4:
 st.markdown("---")
 
 # --- Cleaning Tabs ---
-tab_missing, tab_duplicates, tab_outliers, tab_columns = st.tabs(
-    ["\U0001F50D Missing Values", "\U0001F503 Duplicates", "\U0001F4CA Outliers", "\U0001F527 Column Operations"]
+tab_missing, tab_duplicates, tab_outliers, tab_columns, tab_ai_clean, tab_text_type = st.tabs(
+    ["\U0001F50D Missing Values", "\U0001F503 Duplicates", "\U0001F4CA Outliers", "\U0001F527 Column Operations", "\U0001F916 AI Cleaning Assistant", "\U0001F524 Text & Type Ops"]
 )
 
 # --- Missing Values Tab ---
@@ -199,6 +206,23 @@ with tab_missing:
             )
             save_session_state()
             st.success(f"Removed {rows_affected} rows with missing values.")
+            st.rerun()
+
+        st.markdown("#### Flag Missing Values")
+        st.caption("Create a boolean indicator column instead of dropping or filling missing values.")
+        flag_col = st.selectbox(
+            "Select column to flag missing values:",
+            missing_cols.index.tolist(),
+            key="flag_missing_col_select"
+        )
+        if flag_col and st.button("Flag Missing", type="primary", key="flag_missing_btn"):
+            rows_affected = apply_cleaning_step(
+                f"Flag missing in '{flag_col}' (new column: {flag_col}_is_missing)",
+                flag_missing,
+                flag_col
+            )
+            save_session_state()
+            st.success(f"Flagged {rows_affected} missing values in '{flag_col}'. New indicator column added.")
             st.rerun()
 
 # --- Duplicates Tab ---
@@ -277,16 +301,29 @@ with tab_outliers:
                 with st.expander("Preview Outlier Rows"):
                     st.dataframe(df[outlier_mask].head(20), use_container_width=True)
 
-                if st.button("Remove Outliers", type="primary", key="remove_outliers_btn"):
-                    rows_affected = apply_cleaning_step(
-                        f"Remove outliers in '{outlier_col}' (IQR x{multiplier})",
-                        remove_outliers_iqr,
-                        outlier_col,
-                        multiplier
-                    )
-                    save_session_state()
-                    st.success(f"Removed {rows_affected} outlier rows from '{outlier_col}'.")
-                    st.rerun()
+                outlier_action_col1, outlier_action_col2 = st.columns(2)
+                with outlier_action_col1:
+                    if st.button("Remove Outliers", type="primary", key="remove_outliers_btn"):
+                        rows_affected = apply_cleaning_step(
+                            f"Remove outliers in '{outlier_col}' (IQR x{multiplier})",
+                            remove_outliers_iqr,
+                            outlier_col,
+                            multiplier
+                        )
+                        save_session_state()
+                        st.success(f"Removed {rows_affected} outlier rows from '{outlier_col}'.")
+                        st.rerun()
+                with outlier_action_col2:
+                    if st.button("Cap Outliers", type="primary", key="cap_outliers_btn"):
+                        rows_affected = apply_cleaning_step(
+                            f"Cap outliers in '{outlier_col}' (IQR x{multiplier})",
+                            cap_outliers,
+                            outlier_col,
+                            multiplier
+                        )
+                        save_session_state()
+                        st.success(f"Capped {rows_affected} outlier values in '{outlier_col}' to IQR bounds.")
+                        st.rerun()
             else:
                 st.success(f"No outliers detected in '{outlier_col}' with multiplier {multiplier}.")
 
@@ -330,6 +367,247 @@ with tab_columns:
             save_session_state()
             st.success(f"Renamed '{col_to_rename}' to '{new_name}'.")
             st.rerun()
+
+# --- AI Cleaning Assistant Tab ---
+with tab_ai_clean:
+    st.markdown("#### AI Cleaning Assistant")
+    st.markdown("Describe what you want to do in plain English and let AI suggest the cleaning action.")
+
+    api_key = get_api_key()
+    if not api_key:
+        st.info("Enter a Gemini API key in the sidebar or secrets to use the AI Cleaning Assistant.")
+    else:
+        ai_request = st.text_area(
+            "Describe the cleaning operation you want:",
+            placeholder="e.g., 'Remove all rows where Revenue is negative' or 'Convert the Date column to datetime format'",
+            key="ai_clean_request",
+            height=100,
+        )
+
+        if st.button("Ask AI", type="primary", key="ask_ai_clean_btn"):
+            if not ai_request.strip():
+                st.warning("Please describe what you want to do.")
+            else:
+                with st.spinner("AI is analyzing your request..."):
+                    # Build schema context
+                    schema_info = []
+                    for col in df.columns:
+                        dtype = str(df[col].dtype)
+                        sample_vals = df[col].dropna().head(3).tolist()
+                        schema_info.append(f"- {col} ({dtype}): sample values = {sample_vals}")
+                    schema_text = "\n".join(schema_info)
+
+                    prompt = f"""You are a data cleaning expert. The user has a DataFrame with these columns:
+{schema_text}
+
+The user wants: "{ai_request}"
+
+Respond with EXACTLY this JSON format (no markdown, no code blocks):
+{{"action": "brief description of cleaning action", "code": "single line of pandas code using variable 'df'", "preview": "what will change in plain English"}}
+
+The code should be a single expression that transforms df and returns the new df (e.g., df.dropna(subset=['col']), df[df['col'] > 0], etc.).
+Only use pandas operations. Never use exec, eval, import, or os."""
+
+                    system = "You are a data cleaning assistant. Return only valid JSON."
+                    try:
+                        response_text, err = generate_content(prompt, api_key=api_key, system_instruction=system)
+                        if err:
+                            st.error(f"AI error: {err}")
+                        elif response_text:
+                            # Try to parse JSON from response
+                            import json
+                            try:
+                                # Clean markdown code blocks if present
+                                clean_text = response_text.strip()
+                                if clean_text.startswith("```"):
+                                    clean_text = clean_text.split("\n", 1)[1]
+                                    clean_text = clean_text.rsplit("```", 1)[0]
+                                ai_suggestion = json.loads(clean_text)
+                                st.session_state["_ai_clean_suggestion"] = ai_suggestion
+                            except (json.JSONDecodeError, IndexError):
+                                st.info(f"AI suggestion: {response_text}")
+                                st.session_state["_ai_clean_suggestion"] = {
+                                    "action": "AI suggestion",
+                                    "code": "",
+                                    "preview": response_text,
+                                }
+                    except Exception as e:
+                        st.error(f"AI request failed: {str(e)}")
+
+        # Display suggestion and confirm button
+        if "_ai_clean_suggestion" in st.session_state and st.session_state["_ai_clean_suggestion"]:
+            suggestion = st.session_state["_ai_clean_suggestion"]
+            st.markdown("---")
+            st.markdown("**AI Suggested Action:**")
+            st.info(suggestion.get("action", ""))
+            if suggestion.get("preview"):
+                st.markdown(f"**Preview:** {suggestion['preview']}")
+            if suggestion.get("code"):
+                st.code(suggestion["code"], language="python")
+
+                if st.button("Confirm & Apply", type="primary", key="confirm_ai_clean_btn"):
+                    try:
+                        code = suggestion["code"]
+                        # Safety check: block dangerous operations
+                        blocked = ["import ", "exec(", "eval(", "os.", "sys.", "__", "open(", "subprocess"]
+                        if any(b in code for b in blocked):
+                            st.error("The suggested code contains unsafe operations and cannot be applied.")
+                        else:
+                            # Apply the operation
+                            local_df = df.copy()
+                            result_df = eval(code, {"__builtins__": {}}, {"df": local_df, "pd": pd, "np": np})
+                            if isinstance(result_df, pd.DataFrame):
+                                rows_diff = len(df) - len(result_df)
+                                st.session_state.cleaning_history.append(st.session_state.working_df.copy())
+                                st.session_state.working_df = result_df
+                                from datetime import datetime
+                                st.session_state.cleaning_log.append({
+                                    "step": len(st.session_state.cleaning_log) + 1,
+                                    "action": f"AI-assisted: {suggestion.get('action', 'custom operation')}",
+                                    "rows_affected": abs(rows_diff),
+                                    "timestamp": datetime.utcnow().isoformat(),
+                                })
+                                save_session_state()
+                                st.session_state["_ai_clean_suggestion"] = None
+                                st.success(f"Applied AI cleaning action. Rows affected: {abs(rows_diff)}")
+                                st.rerun()
+                            else:
+                                st.error("The AI code did not return a valid DataFrame. Please try a different request.")
+                    except Exception as e:
+                        st.error(f"Failed to apply AI suggestion: {str(e)}")
+
+# --- Text & Type Operations Tab ---
+with tab_text_type:
+    st.markdown("#### Text & Type Operations")
+
+    text_ops_section, type_ops_section = st.columns(2)
+
+    with text_ops_section:
+        st.markdown("##### Text Standardization")
+        text_cols = df.select_dtypes(include=["object", "category"]).columns.tolist()
+        if not text_cols:
+            st.info("No text columns available for standardization.")
+        else:
+            std_col = st.selectbox(
+                "Select text column:",
+                text_cols,
+                key="std_text_col_select"
+            )
+            std_mode = st.selectbox(
+                "Standardization mode:",
+                ["lowercase", "uppercase", "title", "strip"],
+                key="std_mode_select"
+            )
+            if st.button("Apply Standardization", type="primary", key="apply_std_btn"):
+                rows_affected = apply_cleaning_step(
+                    f"Standardize text in '{std_col}' ({std_mode})",
+                    standardize_text,
+                    std_col,
+                    std_mode
+                )
+                save_session_state()
+                st.success(f"Applied {std_mode} to '{std_col}' ({rows_affected} values affected).")
+                st.rerun()
+
+    with type_ops_section:
+        st.markdown("##### Type Conversion")
+        type_col = st.selectbox(
+            "Select column to convert:",
+            df.columns.tolist(),
+            key="type_conv_col_select"
+        )
+        target_type = st.selectbox(
+            "Target type:",
+            ["numeric", "datetime", "string", "category"],
+            key="target_type_select"
+        )
+        if st.button("Convert Type", type="primary", key="apply_type_conv_btn"):
+            rows_affected = apply_cleaning_step(
+                f"Convert '{type_col}' to {target_type}",
+                convert_column_type,
+                type_col,
+                target_type
+            )
+            save_session_state()
+            st.success(f"Converted '{type_col}' to {target_type} ({rows_affected} values processed).")
+            st.rerun()
+
+    st.markdown("---")
+
+    # Split Column
+    st.markdown("##### Split Column")
+    split_col_options = df.select_dtypes(include=["object", "category"]).columns.tolist()
+    if not split_col_options:
+        st.info("No text columns available for splitting.")
+    else:
+        split_col_name = st.selectbox(
+            "Select column to split:",
+            split_col_options,
+            key="split_col_select"
+        )
+        split_delimiter = st.text_input(
+            "Delimiter:",
+            value=",",
+            key="split_delimiter_input",
+            help="Character(s) to split on (e.g., comma, space, hyphen)"
+        )
+        split_new_names = st.text_input(
+            "New column names (comma-separated):",
+            placeholder="e.g., first_part, second_part",
+            key="split_new_names_input"
+        )
+        if st.button("Split Column", type="primary", key="apply_split_btn"):
+            if not split_delimiter:
+                st.warning("Please provide a delimiter.")
+            elif not split_new_names.strip():
+                st.warning("Please provide new column names.")
+            else:
+                new_names = [n.strip() for n in split_new_names.split(",") if n.strip()]
+                apply_cleaning_step(
+                    f"Split '{split_col_name}' by '{split_delimiter}' into {new_names}",
+                    split_column,
+                    split_col_name,
+                    split_delimiter,
+                    new_names
+                )
+                save_session_state()
+                st.success(f"Split '{split_col_name}' into {len(new_names)} new columns.")
+                st.rerun()
+
+    st.markdown("---")
+
+    # Merge Columns
+    st.markdown("##### Merge Columns")
+    merge_col_options = df.columns.tolist()
+    merge_cols_selected = st.multiselect(
+        "Select columns to merge:",
+        merge_col_options,
+        key="merge_cols_select"
+    )
+    merge_separator = st.text_input(
+        "Separator:",
+        value=" ",
+        key="merge_separator_input"
+    )
+    merge_new_name = st.text_input(
+        "New column name:",
+        placeholder="e.g., full_address",
+        key="merge_new_name_input"
+    )
+    if len(merge_cols_selected) >= 2 and merge_new_name.strip():
+        if st.button("Merge Columns", type="primary", key="apply_merge_btn"):
+            apply_cleaning_step(
+                f"Merge {merge_cols_selected} with '{merge_separator}' into '{merge_new_name}'",
+                merge_columns,
+                merge_cols_selected,
+                merge_separator,
+                merge_new_name.strip()
+            )
+            save_session_state()
+            st.success(f"Merged {len(merge_cols_selected)} columns into '{merge_new_name}'.")
+            st.rerun()
+    elif merge_cols_selected and len(merge_cols_selected) < 2:
+        st.caption("Select at least 2 columns to merge.")
 
 # --- Cleaning Log ---
 st.markdown("---")
