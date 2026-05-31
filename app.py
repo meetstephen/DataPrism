@@ -45,17 +45,15 @@ with st.sidebar:
 
         Navigate using the pages in the sidebar:
 
+        - \U0001F9ED **Guided Analysis** - Step-by-step workflow
         - \U0001F680 **Getting Started** - Quick start guide
-        - \U0001F4CA **Dashboard** - Pre-built visualizations
         - \U0001F4C1 **Upload & Analyze** - Your own datasets
+        - \U0001f9f9 **Data Cleaning** - Transform & prepare
         - \U0001F916 **AI Insights** - Automated analysis
         - \U0001F527 **Advanced Analytics** - Custom tools
         - \U0001F310 **Online Explorer** - Web data fetching
         - \U0001F4CB **Report Generator** - Export reports
-        - \U0001F393 **Expert Analyst** - Deep file analysis
-        - \U0001f9f9 **Data Cleaning** - Transform & prepare
-        - \U0001F4AC **Chat With Data** - Natural language queries
-        - \U0001F4C4 **Document Chat** - Chat with any document
+        - \U0001F4AC **Chat With Data** - Structured data & documents
         """
     )
     st.markdown("---")
@@ -92,18 +90,43 @@ st.markdown(
 
 st.markdown("---")
 
+# Guided Analysis callout (the dedicated page is wired up separately)
+st.markdown(
+    """
+    <div style="border:1px solid rgba(0,212,255,0.35); border-radius:14px;
+                padding:1.25rem 1.5rem; margin-bottom:0.5rem;
+                background:linear-gradient(135deg, rgba(0,212,255,0.10), rgba(123,97,255,0.08));">
+        <span style="font-size:0.75rem; font-weight:700; color:#00D4FF;
+                     text-transform:uppercase; letter-spacing:0.08em;">
+            \U0001F9ED New &middot; Recommended for beginners
+        </span>
+        <h3 style="margin:0.35rem 0 0.4rem 0; color:#E2E8F0;">Guided Analysis Mode</h3>
+        <p style="margin:0; color:#94A3B8; max-width:760px;">
+            Not sure where to start? Guided Analysis Mode walks you through the full
+            workflow step by step - load data, clean it, explore insights, and generate a
+            report - without needing to know which page to open first.
+            <strong>Look for &ldquo;\U0001F9ED Guided Analysis&rdquo; at the top of the sidebar.</strong>
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+st.page_link("pages/0_Guided_Analysis.py", label="\U0001F9ED Launch Guided Analysis", icon="\U0001F9ED")
+
+st.markdown("---")
+
 # Feature cards
 col1, col2 = st.columns(2)
 
 with col1:
     st.markdown(
         """
-        #### \U0001F4CA Community College Dashboard
-        Explore pre-built interactive visualizations of community college data including:
-        - Student enrollment by major and year
-        - Professor and course evaluations
-        - Cost analysis across departments
-        - KPI metrics and filters
+        #### \U0001F4C1 Upload & Analyze
+        Upload and analyze any dataset:
+        - Support for CSV and Excel files (incl. **Power BI exports**)
+        - Automatic column type detection
+        - Summary statistics and distributions
+        - Correlation analysis, data quality reports, and automated insights
         """
     )
     st.markdown(
@@ -120,12 +143,13 @@ with col1:
 with col2:
     st.markdown(
         """
-        #### \U0001F4C1 Upload & Analyze
-        Upload and analyze any dataset:
-        - Support for CSV and Excel files
-        - Automatic column type detection
-        - Summary statistics and distributions
-        - Correlation analysis and data quality reports
+        #### \U0001f9f9 Data Cleaning Engine
+        Transform and prepare your data for analysis:
+        - Handle missing values with multiple strategies
+        - Remove duplicates and outliers (IQR method)
+        - Drop or rename columns interactively
+        - Full undo support and audit logging
+        - Export cleaned data as CSV
         """
     )
     st.markdown(
@@ -165,59 +189,17 @@ with col4:
         """
     )
 
-# Expert Analyst feature card
-col5, col6 = st.columns(2)
+# Unified Chat With Data card (structured data AND documents)
+col5, _col6 = st.columns(2)
 with col5:
     st.markdown(
         """
-        #### \U0001F393 Expert Data Analyst
-        Get professional-grade analysis of any dataset:
-        - Upload CSV, Excel, or Power BI exports
-        - Automatic data domain detection
-        - AI-powered narrative insights
-        - Ask questions about your data
-        - Anomaly detection and recommendations
-        """
-    )
-
-with col6:
-    st.markdown(
-        """
-        #### \U0001f9f9 Data Cleaning Engine
-        Transform and prepare your data for analysis:
-        - Handle missing values with multiple strategies
-        - Remove duplicates and outliers (IQR method)
-        - Drop or rename columns interactively
-        - Full undo support and audit logging
-        - Export cleaned data as CSV
-        """
-    )
-
-# Chat feature card
-col7, col8 = st.columns(2)
-with col7:
-    st.markdown(
-        """
         #### \U0001f4ac Chat With Your Data
-        Natural language data analysis:
-        - Ask questions in plain English
-        - Get AI-powered answers with data citations
-        - Auto-generated Plotly visualizations
-        - Contextual follow-up questions
-        - Powered by Gemini 2.5 Flash
-        """
-    )
-
-with col8:
-    st.markdown(
-        """
-        #### \U0001F4C4 Document Chat
-        Chat with any uploaded document:
-        - Upload PDF, Word, Excel, CSV, JSON, or text files
-        - Get AI-powered summaries and key insights
-        - Ask questions in natural language
-        - Extract data and patterns from documents
-        - Export conversation history
+        One assistant for **both structured data and documents**:
+        - Chat with CSV/Excel data - answers with data citations and auto-generated Plotly charts
+        - Chat with documents - PDF, Word, Excel, CSV, JSON, text, **and Power BI exports**
+        - Upload a file, get expert insights, summaries, and recommendations
+        - Contextual follow-up questions, powered by Gemini 2.5 Flash
         """
     )
 
@@ -225,20 +207,30 @@ st.markdown("---")
 
 # Dataset overview
 st.markdown("### Dataset Overview")
+df = st.session_state.df
 st.markdown(
-    f"The built-in community college dataset contains **{len(st.session_state.df)}** "
-    f"records with **{len(st.session_state.df.columns)}** columns."
+    f"The built-in dataset currently loaded contains **{len(df):,}** "
+    f"records with **{len(df.columns)}** columns."
 )
 
 col1, col2, col3, col4 = st.columns(4)
 with col1:
-    st.metric("Total Records", len(st.session_state.df))
+    st.metric("Total Records", f"{len(df):,}")
 with col2:
-    st.metric("Columns", len(st.session_state.df.columns))
+    st.metric("Columns", len(df.columns))
 with col3:
-    st.metric("Majors", st.session_state.df["Major"].nunique())
+    if "Major" in df.columns:
+        st.metric("Majors", df["Major"].nunique())
+    else:
+        # Generic fallback when the built-in schema is not present
+        numeric_cols = df.select_dtypes(include="number").shape[1]
+        st.metric("Numeric Columns", numeric_cols)
 with col4:
-    st.metric("Years Covered", st.session_state.df["Year"].nunique())
+    if "Year" in df.columns:
+        st.metric("Years Covered", df["Year"].nunique())
+    else:
+        text_cols = df.select_dtypes(include=["object", "category"]).shape[1]
+        st.metric("Text Columns", text_cols)
 
 st.markdown("---")
 st.markdown("*Select a page from the sidebar to get started.*")

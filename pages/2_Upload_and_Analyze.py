@@ -18,13 +18,16 @@ from utils.visualizations import (
 from utils.ai_insights import generate_data_quality_report
 
 st.title("\U0001F4C1 Upload & Analyze Your Data")
-st.markdown("Upload a CSV or Excel file to get instant analysis and visualizations.")
+st.markdown(
+    "Upload a CSV or Excel file — **including Power BI exported data (CSV/Excel)** — to get "
+    "instant automated analysis, visualizations, and data-quality insights."
+)
 
 # File uploader
 uploaded_file = st.file_uploader(
     "Choose a file",
     type=["csv", "xlsx", "xls"],
-    help="Upload a CSV or Excel file for analysis."
+    help="Upload a CSV or Excel file for analysis. Power BI: use 'Export data' and save as CSV or Excel, then upload here."
 )
 
 if uploaded_file is not None:
@@ -200,11 +203,11 @@ if uploaded_file is not None:
             st.markdown("### \U0001F517 Continue Analysis")
             nav_col1, nav_col2, nav_col3, nav_col4 = st.columns(4)
             with nav_col1:
-                st.page_link("pages/9_Data_Cleaning.py", label="\U0001f9f9 Clean This Data", icon="\U0001f9f9")
+                st.page_link("pages/3_Data_Cleaning.py", label="\U0001f9f9 Clean This Data", icon="\U0001f9f9")
             with nav_col2:
                 st.page_link("pages/4_AI_Insights_Engine.py", label="\U0001F916 AI Insights", icon="\U0001F916")
             with nav_col3:
-                st.page_link("pages/10_Chat_With_Data.py", label="\U0001F4AC Chat With Data", icon="\U0001F4AC")
+                st.page_link("pages/8_Chat_With_Data.py", label="\U0001F4AC Chat With Data", icon="\U0001F4AC")
             with nav_col4:
                 st.page_link("pages/7_Report_Generator.py", label="\U0001F4CB Generate Report", icon="\U0001F4CB")
 

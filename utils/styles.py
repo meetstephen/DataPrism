@@ -126,6 +126,88 @@ h1, h2, h3 { letter-spacing: -0.02em; }
     border: none;
     border-radius: 8px;
 }
+
+/* ===== Enterprise / premium polish ===== */
+
+/* App background: subtle radial depth so the platform feels premium, not flat */
+[data-testid="stAppViewContainer"] {
+    background:
+        radial-gradient(1100px 600px at 12% -8%, rgba(0,212,255,0.07), transparent 60%),
+        radial-gradient(900px 500px at 100% 0%, rgba(123,97,255,0.06), transparent 55%),
+        #0B1524;
+}
+
+/* Glow + lift on the primary gradient buttons */
+.stButton > button[kind="primary"],
+.stDownloadButton > button[kind="primary"] {
+    box-shadow: 0 4px 16px rgba(0, 102, 255, 0.28);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+}
+.stButton > button[kind="primary"]:hover,
+.stDownloadButton > button[kind="primary"]:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(0, 212, 255, 0.35);
+}
+
+/* Secondary buttons: crisp enterprise outline that responds to hover */
+.stButton > button[kind="secondary"] {
+    border: 1px solid rgba(0, 212, 255, 0.22);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.02);
+    transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+}
+.stButton > button[kind="secondary"]:hover {
+    border-color: rgba(0, 212, 255, 0.5);
+    background: rgba(0, 212, 255, 0.06);
+    transform: translateY(-1px);
+}
+
+/* Premium pill styling for radio groups (e.g. the chat mode selector) */
+div[role="radiogroup"] {
+    gap: 0.5rem;
+}
+div[role="radiogroup"] > label {
+    background: rgba(26, 39, 64, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    padding: 0.4rem 1rem;
+    transition: border-color 0.18s ease, background 0.18s ease;
+}
+div[role="radiogroup"] > label:hover {
+    border-color: rgba(0, 212, 255, 0.45);
+    background: rgba(0, 212, 255, 0.08);
+}
+
+/* Focus ring for text inputs / selects to feel polished and accessible */
+.stTextInput input:focus,
+.stNumberInput input:focus,
+.stTextArea textarea:focus {
+    border-color: #00D4FF !important;
+    box-shadow: 0 0 0 2px rgba(0, 212, 255, 0.25) !important;
+}
+
+/* Refined gradient hero headings across the platform */
+h1 {
+    font-weight: 700;
+}
+
+/* Slim, on-brand scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #0B1524; }
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, rgba(0,212,255,0.45), rgba(0,102,255,0.45));
+    border-radius: 8px;
+    border: 2px solid #0B1524;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, rgba(0,212,255,0.7), rgba(0,102,255,0.7));
+}
+
+/* Tabs: smooth hover transition for a polished feel */
+.stTabs [data-baseweb="tab"] {
+    transition: color 0.18s ease, background 0.18s ease;
+    border-radius: 8px 8px 0 0;
+}
 </style>
 """
 

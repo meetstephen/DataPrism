@@ -24,17 +24,15 @@ The platform has been hardened for reliable, enterprise-grade operation:
 
 | # | Page | Description |
 |---|------|-------------|
+| — | **Guided Analysis** | Step-by-step guided workflow for beginners — load, clean, explore, and report without guesswork *(wired up separately)* |
 | 1 | **Getting Started** | Quick start guide with 3-step onboarding, data flow diagram, and AI feature overview |
-| 2 | **Community College Dashboard** | Pre-built interactive visualizations with KPI metrics, multi-filter sidebar, and data export |
-| 3 | **Upload & Analyze** | Upload CSV/Excel for instant automated analysis with distributions, correlations, and data quality reports |
+| 2 | **Upload & Analyze** | Upload CSV/Excel (incl. Power BI exports) for instant automated analysis with distributions, correlations, and data quality reports |
+| 3 | **Data Cleaning Engine** | Comprehensive data cleaning with undo/redo, missing value handling, outlier removal, and audit logging |
 | 4 | **AI Insights Engine** | Natural language insights via Google Gemini 2.5 Flash with structured executive reports and rule-based fallback |
 | 5 | **Advanced Analytics** | Pivot table builder, custom chart creator, group-by analysis, and statistical summaries |
 | 6 | **Online Data Explorer** | Fetch datasets from any URL (CSV, JSON, Excel), browse curated public catalogs, scrape web tables |
 | 7 | **Report Generator** | Generate comprehensive HTML analysis reports with embedded charts and AI summaries |
-| 8 | **Expert Data Analyst** | Upload any file (CSV, Excel, Power BI exports) for deep automated analysis with AI insights |
-| 9 | **Data Cleaning Engine** | Comprehensive data cleaning with undo/redo, missing value handling, outlier removal, and audit logging |
-| 10 | **Chat With Your Data** | Natural language AI chat interface - ask questions about your data and get answers with auto-generated charts |
-| 11 | **Document Chat** | Upload any document (PDF, Word, Excel, CSV, JSON, text) and chat with it using AI for insights and analysis |
+| 8 | **Chat With Your Data** | One assistant for **both** structured data **and** documents — ask questions about CSV/Excel (with auto-generated charts) or upload a PDF, Word, Excel, CSV, or **Power BI export** and chat with it |
 
 ---
 
@@ -129,16 +127,14 @@ community-college-data-analysis/
 │   └── config.toml                           # Enterprise dark theme & server config
 ├── pages/
 │   ├── 1_Getting_Started.py                  # Quick start guide & onboarding
-│   ├── 2_Community_College_Dashboard.py      # Interactive dashboard with filters
-│   ├── 3_Upload_and_Analyze.py               # Universal file analyzer
+│   ├── 2_Upload_and_Analyze.py               # Universal file analyzer (incl. Power BI exports)
+│   ├── 3_Data_Cleaning.py                    # Data cleaning engine with undo/redo
 │   ├── 4_AI_Insights_Engine.py               # AI-powered insights (Gemini + fallback)
 │   ├── 5_Advanced_Analytics.py               # Pivot tables, charts, statistics
 │   ├── 6_Online_Data_Explorer.py             # Web data fetching & scraping
 │   ├── 7_Report_Generator.py                 # Professional report generation
-│   ├── 8_Expert_Analyst.py                   # Expert analysis with Power BI support
-│   ├── 9_Data_Cleaning.py                    # Data cleaning engine with undo/redo
-│   ├── 10_Chat_With_Data.py                  # Natural language data chat
-│   └── 11_Document_Chat.py                   # Document chat interface
+│   └── 8_Chat_With_Data.py                   # Chat with structured data AND documents
+│       #                                       (Guided Analysis page is wired up separately)
 ├── utils/
 │   ├── __init__.py                           # Module init
 │   ├── styles.py                             # Global CSS & premium theme system
@@ -171,9 +167,9 @@ DataPrism pages are interconnected. Data loaded on one page is automatically ava
           │                          │                           │
           v                          v                           v
   ┌───────────────┐      ┌────────────────────┐      ┌──────────────────┐
-  │ Upload &      │      │ Online Data        │      │ Community College│
-  │ Analyze       │      │ Explorer           │      │ Dashboard        │
-  │ (uploaded_df) │      │ (online_df)        │      │ (df)             │
+  │ Upload &      │      │ Online Data        │      │ Chat With Data   │
+  │ Analyze       │      │ Explorer           │      │ (docs / Power BI │
+  │ (uploaded_df) │      │ (online_df)        │      │  exports)        │
   └───────┬───────┘      └────────┬───────────┘      └────────┬─────────┘
           │                       │                            │
           └───────────────────────┼────────────────────────────┘
@@ -189,7 +185,7 @@ DataPrism pages are interconnected. Data loaded on one page is automatically ava
           v                       v                            v
   ┌───────────────┐    ┌──────────────────┐      ┌────────────────────┐
   │ AI Insights   │    │ Chat With Data   │      │ Report Generator   │
-  │ Engine        │    │                  │      │                    │
+  │ Engine        │    │ (structured)     │      │                    │
   └───────────────┘    └──────────────────┘      └────────────────────┘
 ```
 
@@ -206,11 +202,11 @@ DataPrism pages are interconnected. Data loaded on one page is automatically ava
 ## Enterprise Features
 
 - **Session Persistence** - Your work survives page refreshes and app reboots. Data, chat history, and cleaning logs are automatically saved.
-- **Premium Dark Theme** - Custom enterprise styling with gradient buttons, styled metrics, and polished UI
+- **Premium Enterprise Theme** - Refined dark UI with gradient hero titles, depth-layered background, glowing gradient buttons, pill-style selectors, hover-lift metrics, rounded dataframes/expanders, an on-brand scrollbar, and polished chat & navigation components.
+- **Guided Analysis Mode** - A beginner-friendly, step-by-step workflow that walks you from raw data to a finished report *(wired up separately)*.
 - **Data Cleaning with Undo/Redo** - Non-destructive data transformations with full audit trail
-- **Natural Language Chat** - Ask questions about your data in plain English, get answers with charts
-- **Document Chat** - Upload any document (PDF, Word, Excel, CSV) and chat with it for AI-powered insights
-- **Power BI Integration** - Upload Power BI Desktop exports for instant analysis
+- **Unified Chat With Data** - One assistant for both structured data (ask questions, get auto-generated charts) and documents (PDF, Word, Excel, CSV, **Power BI exports**) for AI-powered insights and summaries
+- **Power BI Integration** - Upload Power BI Desktop exports for instant analysis on Upload & Analyze and Chat With Data
 - **AI-Powered Insights** - Structured executive reports from Google Gemini 2.5 Flash
 - **Multiple Data Sources** - Built-in data, file upload, URL fetch, web scraping
 - **Professional Reports** - Downloadable HTML reports with embedded interactive charts
@@ -222,13 +218,12 @@ DataPrism pages are interconnected. Data loaded on one page is automatically ava
 
 ## Power BI Integration
 
-DataPrism supports Power BI data through the **Expert Data Analyst** page:
+DataPrism supports Power BI data on the **Upload & Analyze** and **Chat With Data** pages:
 
 1. In Power BI Desktop, select your visual or table
 2. Click **Export data** (or More options > Export data)
 3. Save as CSV or Excel format
-4. Upload the exported file to DataPrism's Expert Analyst page
-5. Get instant automated analysis, AI insights, and recommendations
+4. Upload the exported file to **Upload & Analyze** for instant automated analysis, distributions, correlations, and a data-quality report — or to **Chat With Data** (document mode) to ask questions and get AI-powered insights about it
 
 ---
 
