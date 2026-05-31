@@ -11,6 +11,12 @@ DataPrism is an enterprise-grade data intelligence platform built with Streamlit
 This release adds a set of analyst-grade capabilities across the platform:
 
 - **"Start Here" home screen** — A clear 3-path decision tree on the home page routes you to the right starting point: *upload your own data*, *take the guided walkthrough* with sample data, or *find data online*.
+- **Data Join & Merge** — Combine multiple datasets with inner/left/right/outer joins or vertical concatenation, with key column selection and result preview.
+- **SQL Query Interface** — Write SQL queries against loaded datasets using pandasql, with execution timing, example queries, and save/export results.
+- **Column Transformations** — Extract date parts, bin numerics, one-hot encode, and regex extract directly in the Data Cleaning page.
+- **Saved Analysis Templates** — Save and reload analysis configurations (chart types, columns, filters) in Advanced Analytics.
+- **Chart Annotations** — Add text notes to chart data points for context and documentation.
+- **Data Dictionary** — Auto-generated column documentation with editable descriptions, type info, completeness scores, and markdown/CSV export.
 - **Calculated Columns / Feature Engineering** — A new tab in the Data Cleaning Engine lets you derive new columns from existing ones, either with a guided arithmetic builder (column ± column/value) or a custom expression. Evaluation is sandboxed via `DataFrame.eval` (arithmetic & comparisons only — no arbitrary code).
 - **Multi-format Export** — Cleaned data (Data Cleaning), uploaded data (Upload & Analyze), and report datasets (Report Generator) can be downloaded as **CSV, Excel (.xlsx), JSON, or Parquet** from a single export bar.
 - **Time Intelligence** — A new Advanced Analytics tab computes period-over-period change (MoM/QoQ/etc.), **year-over-year (YoY)**, and **rolling averages** from any date/value pair, with charts and metrics.
@@ -49,6 +55,12 @@ The platform has been hardened for reliable, enterprise-grade operation:
 | 7 | **Report Generator** | Generate comprehensive HTML analysis reports with embedded charts and AI summaries |
 | 8 | **Chat With Your Data** | One assistant for **both** structured data **and** documents — ask questions about CSV/Excel (with auto-generated charts) or upload a PDF, Word, Excel, CSV, or **Power BI export** and chat with it |
 | 9 | **Cloud Workspace** | Optional Supabase-backed storage — save/reload datasets, reports, validation rule sets, and insights across sessions (see [SUPABASE_SETUP.md](SUPABASE_SETUP.md)) |
+| 10 | **Data Profiling** | In-depth data quality assessment with completeness scores, type detection, and distribution profiling |
+| 11 | **Dashboard Builder** | Interactive KPI dashboards with drag-and-drop chart configuration |
+| 12 | **Admin Panel** | User management, activity logs, and system configuration (role-restricted) |
+| 13 | **Data Join & Merge** | Combine multiple datasets with inner/left/right/outer joins or vertical concatenation |
+| 14 | **SQL Query Interface** | Write SQL queries against loaded datasets using pandasql with execution timing and result export |
+| 15 | **Data Dictionary** | Auto-generated column documentation with editable descriptions, type info, and markdown/CSV export |
 
 ---
 
@@ -64,6 +76,7 @@ The platform has been hardened for reliable, enterprise-grade operation:
 | **Web Scraping** | BeautifulSoup4, requests, lxml |
 | **File Support** | openpyxl (Excel), PyMuPDF (PDF), python-docx (Word), CSV, JSON, Power BI exports |
 | **Encoding Detection** | chardet |
+| **SQL Engine** | pandasql (query DataFrames with SQL) |
 
 ---
 
@@ -150,7 +163,13 @@ community-college-data-analysis/
 │   ├── 6_Online_Data_Explorer.py             # Web data fetching & scraping
 │   ├── 7_Report_Generator.py                 # Professional report generation
 │   ├── 8_Chat_With_Data.py                   # Chat with structured data AND documents
-│   └── 9_Cloud_Workspace.py                  # Optional Supabase cloud persistence UI
+│   ├── 9_Cloud_Workspace.py                  # Optional Supabase cloud persistence UI
+│   ├── 10_Data_Profiling.py                  # In-depth data quality profiling
+│   ├── 11_Dashboard.py                       # Interactive KPI dashboard builder
+│   ├── 12_Admin_Panel.py                     # User management & system config
+│   ├── 13_Data_Join.py                       # Dataset join & merge (inner/left/right/outer)
+│   ├── 14_SQL_Query.py                       # SQL query interface (pandasql)
+│   └── 15_Data_Dictionary.py                 # Auto-generated column documentation
 │       #                                       (Guided Analysis page is wired up separately)
 ├── utils/
 │   ├── __init__.py                           # Module init
@@ -158,6 +177,11 @@ community-college-data-analysis/
 │   ├── ai_client.py                          # Centralized Gemini client & API-key helper
 │   ├── data_loader.py                        # Shared data loading & session-state init
 │   ├── data_engine.py                        # Data cleaning engine, audit log & calculated columns
+│   ├── column_transforms.py                  # Column transformations (date parts, binning, encoding)
+│   ├── data_join.py                          # Dataset join/merge logic
+│   ├── sql_engine.py                         # SQL query execution via pandasql
+│   ├── templates.py                          # Saved analysis templates (cloud + local)
+│   ├── annotations.py                        # Chart annotation management
 │   ├── validation.py                         # Data validation rules engine
 │   ├── time_intelligence.py                  # MoM / YoY / rolling-average time analysis
 │   ├── exporters.py                          # Multi-format export (CSV/Excel/JSON/Parquet)

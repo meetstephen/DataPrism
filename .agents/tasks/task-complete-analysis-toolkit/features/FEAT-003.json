@@ -2,7 +2,7 @@
   "id": "FEAT-003",
   "type": "feat",
   "description": "Update README, app.py sidebar navigation, and SUPABASE_SETUP.md to reflect all new pages and features. Final integration and documentation pass.",
-  "status": "pending",
+  "status": "in_progress",
   "steps": [
     "Update app.py sidebar navigation to list the new pages: Data Join & Merge, SQL Query Interface, Data Dictionary",
     "Update README.md features table to include pages 13 (Data Join), 14 (SQL Query), 15 (Data Dictionary) and mention column transformations, templates, annotations",

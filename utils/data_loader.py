@@ -30,6 +30,8 @@ def init_all_session_state():
         "uploaded_df": None,
         "working_df": None,
         "raw_df": None,
+        "merged_df": None,
+        "sql_result_df": None,
         "generated_report": None,
         "chat_history": [],
         "doc_chat_history": [],
@@ -40,6 +42,9 @@ def init_all_session_state():
         "cleaning_history": [],
         "dp_active_theme": "Enterprise Dark",
         "dp_onboarding_done": False,
+        "dp_annotations": {},
+        "dp_data_dictionary": {},
+        "dp_templates_cache": None,
     }
     for key, val in defaults.items():
         if key not in st.session_state:
