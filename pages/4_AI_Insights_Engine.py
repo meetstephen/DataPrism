@@ -4,12 +4,14 @@ AI Insights Engine - Generate automated insights with Google Gemini or rule-base
 
 import streamlit as st
 st.set_page_config(page_title="AI Insights Engine", page_icon="\U0001f4a0", layout="wide")
-from utils.styles import inject_global_css
+from utils.styles import inject_global_css, compute_confidence, render_confidence_badge
 inject_global_css()
 
 import pandas as pd
 from utils.data_loader import ensure_builtin_data
 from utils.ai_client import get_api_key, generate_content, GEMINI_MODEL
+from utils.supabase_client import is_configured
+from utils import database as db
 from utils.ai_insights import (
     generate_insights_gemini,
     generate_insights_fallback,
@@ -20,6 +22,22 @@ from utils.ai_insights import (
     generate_recommendations,
     generate_data_quality_report
 )
+
+
+def _insights_to_markdown(insights):
+    """Convert a rule-based insights dict into a single markdown string."""
+    parts = []
+    sections = [
+        ("Key Findings", insights.get("key_findings")),
+        ("Patterns Detected", insights.get("patterns")),
+        ("Concerns", insights.get("concerns")),
+        ("Recommendations", insights.get("recommendations")),
+    ]
+    for heading, items in sections:
+        if items:
+            parts.append(f"#### {heading}")
+            parts.extend(f"- {item}" for item in items)
+    return "\n".join(parts)
 
 st.title("\U0001F916 AI Insights Engine")
 st.markdown("Generate automated insights from your data using **Google Gemini 2.5 Flash** or rule-based analysis.")
@@ -132,14 +150,26 @@ if df is not None:
                 ai_result = generate_insights_gemini(summary_text, api_key)
 
                 if ai_result is not None:
+                    level, score, reasons = compute_confidence(df, source="ai")
+                    render_confidence_badge(level, score, source_label="AI-generated", reasons=reasons)
                     st.markdown(ai_result)
+                    st.session_state["last_insight"] = {
+                        "content": ai_result, "source": "ai",
+                        "level": level, "score": score, "dataset_name": str(data_source),
+                    }
                 else:
                     st.warning(
                         "AI analysis is temporarily unavailable. "
                         "Please check your Gemini API key. "
                         "Falling back to rule-based analysis."
                     )
+                    level, score, reasons = compute_confidence(df, source="rule_based")
+                    render_confidence_badge(level, score, source_label="Rule-based", reasons=reasons)
                     insights = generate_insights_fallback(df)
+                    st.session_state["last_insight"] = {
+                        "content": _insights_to_markdown(insights), "source": "rule_based",
+                        "level": level, "score": score, "dataset_name": str(data_source),
+                    }
 
                     st.markdown("#### Key Findings")
                     for finding in insights.get("key_findings", []):
@@ -163,7 +193,14 @@ if df is not None:
                 st.markdown("### Rule-Based Insights")
                 st.caption("Using automated rule-based analysis (no API key provided)")
 
+                level, score, reasons = compute_confidence(df, source="rule_based")
+                render_confidence_badge(level, score, source_label="Rule-based", reasons=reasons)
+
                 insights = generate_insights_fallback(df)
+                st.session_state["last_insight"] = {
+                    "content": _insights_to_markdown(insights), "source": "rule_based",
+                    "level": level, "score": score, "dataset_name": str(data_source),
+                }
 
                 # Key Findings
                 st.markdown("#### Key Findings")
@@ -250,3 +287,19 @@ if df is not None:
             - **Recommendations** - Actionable suggestions based on data patterns
             """
         )
+
+    # Save the most recent insight to the cloud (optional)
+    last = st.session_state.get("last_insight")
+    if last:
+        st.markdown("---")
+        if is_configured():
+            if st.button("\u2601\uFE0F Save this insight to cloud", key="ai_cloud_save"):
+                ok, msg = db.save_insight(
+                    last["content"], last.get("dataset_name", ""), last.get("source", "ai"),
+                    last.get("level", ""), last.get("score", 0),
+                )
+                st.success(msg) if ok else st.error(msg)
+        else:
+            st.caption(
+                "\u2601\uFE0F Tip: connect a database (see SUPABASE_SETUP.md) to save insights to the cloud."
+            )

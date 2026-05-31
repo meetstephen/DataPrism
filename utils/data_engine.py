@@ -80,3 +80,42 @@ def drop_columns(df, columns):
 def rename_columns(df, rename_map):
     result = df.rename(columns=rename_map)
     return result, 0
+
+
+
+def add_calculated_column(df, new_col_name, expression):
+    """Add a new column computed from a pandas arithmetic expression.
+
+    Uses ``DataFrame.eval`` with the (safe) Python engine, which supports
+    arithmetic (+ - * / // % **), comparison and boolean operators referencing
+    existing columns. Column names containing spaces must be wrapped in
+    backticks, e.g. ``\u0060Course Cost\u0060 * 1.1``. Arbitrary function calls
+    and attribute access are not permitted, keeping evaluation safe.
+
+    Returns (new_df, rows_affected).
+    """
+    df = df.copy()
+    result = df.eval(expression, engine="python")
+    df[new_col_name] = result
+    return df, len(df)
+
+
+def build_arithmetic_expression(left, operator, right, right_is_column=True):
+    """Build a safe DataFrame.eval expression from a guided arithmetic builder.
+
+    Args:
+        left: Left-hand column name.
+        operator: One of + - * / (also accepts the wrapped operands as-is).
+        right: Right-hand column name or scalar value.
+        right_is_column: If True, ``right`` is treated as a column name;
+            otherwise it is treated as a literal numeric value.
+
+    Returns the expression string suitable for ``add_calculated_column``.
+    """
+    def _wrap(name):
+        # Backtick-quote identifiers so names with spaces/special chars work.
+        return f"`{name}`"
+
+    left_token = _wrap(left)
+    right_token = _wrap(right) if right_is_column else f"{right}"
+    return f"{left_token} {operator} {right_token}"

@@ -15,8 +15,18 @@ from utils.data_engine import (
     remove_outliers_iqr,
     drop_columns,
     rename_columns,
+    add_calculated_column,
+    build_arithmetic_expression,
 )
+from utils.validation import run_validation, get_violation_mask, RULE_TYPES, describe_rule
+from utils.exporters import render_export_buttons
+from utils.supabase_client import is_configured
+from utils import database as db
 from utils.persistence import save_session_state
+
+# Validation rules persist for the session
+if "validation_rules" not in st.session_state:
+    st.session_state.validation_rules = []
 
 # Ensure cleaning state is initialized
 init_cleaning_state()
@@ -132,8 +142,15 @@ with met_col4:
 st.markdown("---")
 
 # --- Cleaning Tabs ---
-tab_missing, tab_duplicates, tab_outliers, tab_columns = st.tabs(
-    ["\U0001F50D Missing Values", "\U0001F503 Duplicates", "\U0001F4CA Outliers", "\U0001F527 Column Operations"]
+tab_missing, tab_duplicates, tab_outliers, tab_columns, tab_calc, tab_validate = st.tabs(
+    [
+        "\U0001F50D Missing Values",
+        "\U0001F503 Duplicates",
+        "\U0001F4CA Outliers",
+        "\U0001F527 Column Operations",
+        "\U0001F9EE Calculated Columns",
+        "\u2705 Validation Rules",
+    ]
 )
 
 # --- Missing Values Tab ---
@@ -331,6 +348,224 @@ with tab_columns:
             st.success(f"Renamed '{col_to_rename}' to '{new_name}'.")
             st.rerun()
 
+# --- Calculated Columns Tab ---
+with tab_calc:
+    st.markdown("#### Create a Calculated Column")
+    st.markdown(
+        "Engineer new features from existing columns using arithmetic. "
+        "Build a formula with the guided builder, or write a custom expression."
+    )
+
+    numeric_cols_calc = df.select_dtypes(include=[np.number]).columns.tolist()
+
+    calc_mode = st.radio(
+        "Builder mode:",
+        ["Guided builder", "Custom expression"],
+        horizontal=True,
+        key="calc_mode_radio",
+    )
+
+    new_col_name = st.text_input(
+        "New column name:",
+        key="calc_new_col_name",
+        placeholder="e.g. Cost_Per_Credit",
+    )
+
+    if calc_mode == "Guided builder":
+        if len(numeric_cols_calc) < 1:
+            st.info("No numeric columns available to build a calculated column.")
+        else:
+            gb1, gb2, gb3, gb4 = st.columns([3, 1, 2, 3])
+            with gb1:
+                left_col = st.selectbox("Column", numeric_cols_calc, key="calc_left_col")
+            with gb2:
+                operator = st.selectbox("Op", ["+", "-", "*", "/"], key="calc_operator")
+            with gb3:
+                right_kind = st.radio(
+                    "Operand", ["Column", "Value"], key="calc_right_kind", horizontal=False
+                )
+            with gb4:
+                if right_kind == "Column":
+                    right_operand = st.selectbox("With column", numeric_cols_calc, key="calc_right_col")
+                    right_is_column = True
+                else:
+                    right_operand = st.number_input("With value", value=1.0, key="calc_right_val")
+                    right_is_column = False
+
+            expression_preview = build_arithmetic_expression(
+                left_col, operator, right_operand, right_is_column=right_is_column
+            )
+            st.caption(f"Formula: `{new_col_name or 'new_column'} = {expression_preview}`")
+
+            if st.button("Add Calculated Column", type="primary", key="calc_add_guided"):
+                if not new_col_name.strip():
+                    st.error("Please enter a name for the new column.")
+                else:
+                    try:
+                        df.eval(expression_preview, engine="python")  # validate first
+                        rows_affected = apply_cleaning_step(
+                            f"Add calculated column '{new_col_name}' = {expression_preview}",
+                            add_calculated_column,
+                            new_col_name.strip(),
+                            expression_preview,
+                        )
+                        save_session_state()
+                        st.success(f"Created column '{new_col_name}' ({rows_affected:,} values).")
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"Could not create column: {e}")
+
+    else:  # Custom expression
+        st.markdown(
+            "Reference existing columns by name. Wrap names with spaces in "
+            "backticks, e.g. `` `Course Cost` * 1.1 ``. Supported operators: "
+            "`+ - * / // % **` and comparisons."
+        )
+        custom_expr = st.text_input(
+            "Expression:",
+            key="calc_custom_expr",
+            placeholder="e.g. `Course_Cost` / `Credits`",
+        )
+        if custom_expr:
+            st.caption(f"Formula: `{new_col_name or 'new_column'} = {custom_expr}`")
+        if st.button("Add Calculated Column", type="primary", key="calc_add_custom"):
+            if not new_col_name.strip():
+                st.error("Please enter a name for the new column.")
+            elif not custom_expr.strip():
+                st.error("Please enter an expression.")
+            else:
+                try:
+                    df.eval(custom_expr, engine="python")  # validate first
+                    rows_affected = apply_cleaning_step(
+                        f"Add calculated column '{new_col_name}' = {custom_expr}",
+                        add_calculated_column,
+                        new_col_name.strip(),
+                        custom_expr.strip(),
+                    )
+                    save_session_state()
+                    st.success(f"Created column '{new_col_name}' ({rows_affected:,} values).")
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Could not evaluate expression: {e}")
+
+# --- Validation Rules Tab ---
+with tab_validate:
+    st.markdown("#### Data Validation Rules")
+    st.markdown(
+        "Define expectations your data should meet, then run them to get a "
+        "pass/fail report and inspect any violating rows."
+    )
+
+    vb1, vb2 = st.columns(2)
+    with vb1:
+        v_column = st.selectbox("Column", df.columns.tolist(), key="val_column")
+    with vb2:
+        v_rule_type = st.selectbox(
+            "Rule type",
+            list(RULE_TYPES.keys()),
+            format_func=lambda k: RULE_TYPES[k],
+            key="val_rule_type",
+        )
+
+    params = {}
+    if v_rule_type == "range":
+        rc1, rc2 = st.columns(2)
+        with rc1:
+            min_raw = st.text_input("Minimum (optional)", key="val_min")
+        with rc2:
+            max_raw = st.text_input("Maximum (optional)", key="val_max")
+        if min_raw.strip():
+            params["min"] = min_raw.strip()
+        if max_raw.strip():
+            params["max"] = max_raw.strip()
+    elif v_rule_type == "allowed_values":
+        allowed_raw = st.text_input(
+            "Allowed values (comma-separated)", key="val_allowed",
+            placeholder="e.g. Active, Inactive, Pending",
+        )
+        if allowed_raw.strip():
+            params["allowed"] = [v.strip() for v in allowed_raw.split(",") if v.strip()]
+    elif v_rule_type == "regex":
+        params["pattern"] = st.text_input(
+            "Regex pattern", key="val_pattern", placeholder=r"e.g. ^\d{4}-\d{2}-\d{2}$"
+        )
+
+    if st.button("Add Rule", key="val_add_rule"):
+        new_rule = {"column": v_column, "rule_type": v_rule_type, "params": params}
+        st.session_state.validation_rules.append(new_rule)
+        st.success(f"Added rule: {describe_rule(new_rule)}")
+        st.rerun()
+
+    st.markdown("---")
+    if st.session_state.validation_rules:
+        st.markdown("##### Active Rules")
+        for idx, rule in enumerate(st.session_state.validation_rules):
+            rcol1, rcol2 = st.columns([8, 1])
+            with rcol1:
+                st.markdown(f"{idx + 1}. {describe_rule(rule)}")
+            with rcol2:
+                if st.button("\U0001F5D1\uFE0F", key=f"val_del_{idx}", help="Remove rule"):
+                    st.session_state.validation_rules.pop(idx)
+                    st.rerun()
+
+        run_col, clear_col = st.columns([1, 1])
+        with run_col:
+            run_now = st.button("Run Validation", type="primary", key="val_run")
+        with clear_col:
+            if st.button("Clear All Rules", key="val_clear"):
+                st.session_state.validation_rules = []
+                st.rerun()
+
+        # Optional: persist this rule set to the cloud
+        if is_configured():
+            rs_name = st.text_input(
+                "Save rule set as", key="val_cloud_rs_name",
+                placeholder="e.g. Enrollment expectations",
+            )
+            if st.button("\u2601\uFE0F Save rules to cloud", key="val_cloud_save"):
+                if not rs_name.strip():
+                    st.error("Please enter a name for the rule set.")
+                else:
+                    ok, msg = db.save_rule_set(rs_name.strip(), st.session_state.validation_rules)
+                    st.success(msg) if ok else st.error(msg)
+        else:
+            st.caption(
+                "\u2601\uFE0F Tip: connect a database (see SUPABASE_SETUP.md) to save rule sets to the cloud."
+            )
+
+        if run_now:
+            report = run_validation(df, st.session_state.validation_rules)
+            m1, m2, m3 = st.columns(3)
+            with m1:
+                st.metric("Rules Checked", report["total_rules"])
+            with m2:
+                st.metric("Passed", report["passed"])
+            with m3:
+                st.metric("Failed", report["failed"])
+
+            results_df = pd.DataFrame(report["results"])[
+                ["rule", "status", "violations", "violation_pct"]
+            ].rename(columns={
+                "rule": "Rule",
+                "status": "Status",
+                "violations": "Violations",
+                "violation_pct": "% of Rows",
+            })
+            st.dataframe(results_df, use_container_width=True)
+
+            failed_rules = [r for r in st.session_state.validation_rules
+                            if run_validation(df, [r])["failed"] > 0]
+            if failed_rules:
+                st.markdown("##### Inspect Violating Rows")
+                for idx, rule in enumerate(failed_rules):
+                    with st.expander(f"\u26A0\uFE0F {describe_rule(rule)}"):
+                        mask = get_violation_mask(df, rule)
+                        st.dataframe(df[mask].head(50), use_container_width=True)
+            else:
+                st.success("All validation rules passed.")
+    else:
+        st.info("No rules defined yet. Add a rule above to start validating your data.")
+
 # --- Cleaning Log ---
 st.markdown("---")
 st.markdown("### \U0001F4DC Cleaning Audit Log")
@@ -343,16 +578,26 @@ else:
 # --- Download Cleaned Data ---
 st.markdown("---")
 st.markdown("### \U0001F4E5 Export Cleaned Data")
-download_col1, download_col2 = st.columns([1, 3])
-with download_col1:
-    csv_data = st.session_state.working_df.to_csv(index=False)
-    st.download_button(
-        "\U0001F4BE Download Cleaned CSV",
-        csv_data,
-        file_name="cleaned_data.csv",
-        mime="text/csv",
-        type="primary",
-        use_container_width=True,
+st.caption("Download your cleaned dataset in the format that fits your next tool.")
+render_export_buttons(
+    st.session_state.working_df,
+    base_filename="cleaned_data",
+    key_prefix="cleaning_export",
+)
+
+# Optional: save the cleaned dataset to the cloud
+if is_configured():
+    with st.expander("\u2601\uFE0F Save cleaned dataset to the cloud"):
+        clean_name = st.text_input("Save as name", key="clean_cloud_name", placeholder="e.g. cleaned_enrollment")
+        if st.button("Save to cloud", key="clean_cloud_save"):
+            if not clean_name.strip():
+                st.error("Please enter a name.")
+            else:
+                ok, msg = db.save_dataset(clean_name.strip(), st.session_state.working_df, "Cleaned in DataPrism")
+                st.success(msg) if ok else st.error(msg)
+else:
+    st.caption(
+        "\u2601\uFE0F Tip: connect a database (see SUPABASE_SETUP.md) to save cleaned datasets to the cloud."
     )
 
 # Cross-module navigation

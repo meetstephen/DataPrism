@@ -13,3 +13,7 @@ __pycache__/
 # OS
 .DS_Store
 Thumbs.db
+
+
+# Streamlit secrets (never commit real credentials)
+.streamlit/secrets.toml
