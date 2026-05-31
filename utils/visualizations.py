@@ -222,3 +222,29 @@ def create_line_chart(df, x, y, title, color=None):
         color_discrete_sequence=COLOR_SEQUENCE
     )
     return _apply_layout(fig, title)
+
+
+def render_chart_with_table(fig, data=None, key=None, table_label="View as table",
+                            caption=None, use_container_width=True):
+    """Render a Plotly chart with an accessible "View as table" toggle.
+
+    Displays the chart, then an expander revealing the underlying data as a
+    table. This improves accessibility (screen readers, low-vision users) and
+    lets analysts inspect exact values behind a visualization.
+
+    Args:
+        fig: A Plotly figure to display.
+        data: Optional DataFrame/Series with the data behind the chart.
+        key: Optional unique key (reserved for future widget use).
+        table_label: Label shown on the expander toggle.
+        caption: Optional caption rendered above the table.
+        use_container_width: Passed through to ``st.plotly_chart``.
+    """
+    import streamlit as st
+
+    st.plotly_chart(fig, use_container_width=use_container_width)
+    if data is not None:
+        with st.expander(f"\U0001F4CB {table_label}"):
+            if caption:
+                st.caption(caption)
+            st.dataframe(data, use_container_width=True)
