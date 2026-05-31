@@ -4,7 +4,7 @@ AI Insights Engine - Generate automated insights with Google Gemini or rule-base
 
 import streamlit as st
 st.set_page_config(page_title="AI Insights Engine", page_icon="\U0001f4a0", layout="wide")
-from utils.styles import inject_global_css
+from utils.styles import inject_global_css, render_insight_card
 inject_global_css()
 
 import pandas as pd
@@ -19,6 +19,11 @@ from utils.ai_insights import (
     detect_trends,
     generate_recommendations,
     generate_data_quality_report
+)
+from utils.ai_intelligence import (
+    generate_insight_cards,
+    explain_this_number,
+    generate_executive_summary_brief,
 )
 
 st.title("\U0001F916 AI Insights Engine")
@@ -238,6 +243,33 @@ if df is not None:
                 for idx, rec in enumerate(recommendations, 1):
                     st.markdown(f"{idx}. {rec}")
 
+            # Auto-Insight Cards (AI-powered)
+            st.markdown("### Auto-Insight Cards")
+            if api_key and api_key.strip():
+                with st.spinner("Generating insight cards..."):
+                    summary_stats_cards = generate_summary_stats(df)
+                    summary_text_cards = format_summary_as_markdown(df, summary_stats_cards)
+                    cards, cards_err = generate_insight_cards(summary_text_cards, api_key)
+                    if cards_err:
+                        st.warning(f"Insight cards partially unavailable: {cards_err}")
+                    rendered_any = False
+                    for finding in cards.get("findings", []):
+                        render_insight_card("finding", finding)
+                        rendered_any = True
+                    for risk in cards.get("risks", []):
+                        render_insight_card("risk", risk)
+                        rendered_any = True
+                    for opp in cards.get("opportunities", []):
+                        render_insight_card("opportunity", opp)
+                        rendered_any = True
+                    for rec_item in cards.get("recommendations", []):
+                        render_insight_card("recommendation", rec_item)
+                        rendered_any = True
+                    if not rendered_any:
+                        st.info("No insight cards generated.")
+            else:
+                st.info("Add a Gemini API key to generate AI-powered insight cards.")
+
     else:
         st.markdown("---")
         st.markdown("Click **Generate Insights** to analyze the selected data.")
@@ -250,3 +282,50 @@ if df is not None:
             - **Recommendations** - Actionable suggestions based on data patterns
             """
         )
+
+    # --- Explain This Number ---
+    st.markdown("---")
+    st.markdown("### Explain This Number")
+    st.caption("Enter a value from your data and get an AI-powered explanation of what it means in context.")
+
+    etn_col1, etn_col2 = st.columns(2)
+    with etn_col1:
+        etn_value = st.text_input("Value to explain", key="etn_value", placeholder="e.g. 42000")
+    with etn_col2:
+        etn_column = st.selectbox("Column context", df.columns.tolist(), key="etn_col")
+
+    if st.button("Explain", key="btn_explain_number"):
+        if not etn_value:
+            st.warning("Please enter a value to explain.")
+        elif not api_key:
+            st.warning("A Gemini API key is required for this feature. Add one in the sidebar.")
+        else:
+            try:
+                with st.spinner("Generating explanation..."):
+                    explanation, err = explain_this_number(etn_value, etn_column, df, api_key)
+                    if explanation:
+                        st.markdown(explanation)
+                    elif err:
+                        st.error(f"Explanation failed: {err}")
+            except Exception as e:
+                st.error(f"Error: {str(e)}")
+
+    # --- Executive Summary Generator ---
+    st.markdown("---")
+    st.markdown("### Executive Summary Generator")
+    st.caption("Generate a formal 400-word executive brief covering situation, metrics, findings, risks, and recommendations.")
+
+    if st.button("Generate Executive Summary", key="btn_exec_summary"):
+        if not api_key:
+            st.warning("A Gemini API key is required for executive summary generation. Add one in the sidebar.")
+        else:
+            try:
+                with st.spinner("Generating executive summary..."):
+                    summary, err = generate_executive_summary_brief(df, api_key)
+                    if summary:
+                        with st.expander("Executive Summary Brief", expanded=True):
+                            st.markdown(summary)
+                    elif err:
+                        st.error(f"Summary generation failed: {err}")
+            except Exception as e:
+                st.error(f"Error: {str(e)}")
