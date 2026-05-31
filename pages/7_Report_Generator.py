@@ -6,7 +6,7 @@ inject_global_css()
 import pandas as pd
 from utils.data_loader import ensure_builtin_data
 from utils.ai_client import get_api_key, generate_content, GEMINI_MODEL
-from utils.report_generator import generate_html_report, generate_executive_summary
+from utils.report_generator import generate_html_report, generate_executive_summary, generate_pdf_report, generate_docx_report
 
 st.title("\U0001F4CB Report Generator")
 st.markdown("Generate comprehensive, downloadable HTML analysis reports.")
@@ -106,22 +106,89 @@ if include_ai:
     else:
         st.warning("Enter a Gemini API key in the sidebar for AI summary.")
 
+# Report Branding
+with st.expander("\U0001F3A8 Report Branding", expanded=False):
+    brand_col1, brand_col2 = st.columns(2)
+    with brand_col1:
+        branding_logo = st.file_uploader(
+            "Company Logo (PNG/JPG)", type=["png", "jpg", "jpeg"],
+            key="branding_logo_upload"
+        )
+        branding_company = st.text_input("Company Name", key="branding_company_name")
+    with brand_col2:
+        branding_primary = st.color_picker("Primary Color", value="#00D4FF", key="branding_primary")
+        branding_secondary = st.color_picker("Secondary Color", value="#0066FF", key="branding_secondary")
+
+    # Store branding in session state
+    logo_bytes = None
+    if branding_logo is not None:
+        logo_bytes = branding_logo.getvalue()
+
+    st.session_state.report_branding = {
+        "logo_bytes": logo_bytes,
+        "company_name": branding_company,
+        "primary_color": branding_primary,
+        "secondary_color": branding_secondary,
+    }
+
+# Report Format Selection
+st.markdown("**Output Format:**")
+report_format = st.selectbox(
+    "Choose report format",
+    ["HTML", "PDF", "DOCX"],
+    key="report_format_select",
+    label_visibility="collapsed",
+)
+
 # Generate button with progress
 if st.button("Generate Report", type="primary", use_container_width=True):
     with st.spinner("Generating report..."):
-        html_report = generate_html_report(
-            df,
-            title=report_title,
-            include_ai_summary=include_ai,
-            api_key=api_key
-        )
+        branding_data = st.session_state.get("report_branding")
 
-        # Store in session state
-        st.session_state.generated_report = html_report
+        # Generate AI summary if requested
+        ai_summary_text = None
+        if include_ai and api_key:
+            try:
+                ai_summary_text = generate_executive_summary(df, api_key=api_key)
+            except Exception:
+                ai_summary_text = None
+
+        if report_format == "HTML":
+            html_report = generate_html_report(
+                df,
+                title=report_title,
+                include_ai_summary=include_ai,
+                api_key=api_key
+            )
+            st.session_state.generated_report = html_report
+            st.session_state.generated_report_format = "HTML"
+        elif report_format == "PDF":
+            try:
+                pdf_bytes = generate_pdf_report(
+                    df, title=report_title,
+                    branding=branding_data, ai_summary=ai_summary_text
+                )
+                st.session_state.generated_report_pdf = pdf_bytes
+                st.session_state.generated_report_format = "PDF"
+            except Exception as e:
+                st.error(f"PDF generation error: {str(e)}")
+        elif report_format == "DOCX":
+            try:
+                docx_bytes = generate_docx_report(
+                    df, title=report_title,
+                    branding=branding_data, ai_summary=ai_summary_text
+                )
+                st.session_state.generated_report_docx = docx_bytes
+                st.session_state.generated_report_format = "DOCX"
+            except Exception as e:
+                st.error(f"DOCX generation error: {str(e)}")
+
         st.success("Report generated successfully!")
 
 # Display report preview and download
-if "generated_report" in st.session_state:
+report_fmt = st.session_state.get("generated_report_format", "HTML")
+
+if report_fmt == "HTML" and "generated_report" in st.session_state:
     st.markdown("---")
     st.markdown("### Report Preview")
     import streamlit.components.v1 as components
@@ -132,6 +199,42 @@ if "generated_report" in st.session_state:
     with col1:
         st.download_button("Download HTML Report", st.session_state.generated_report,
                            file_name="analysis_report.html", mime="text/html")
+    with col2:
+        csv_data = df.to_csv(index=False)
+        st.download_button("Download Data as CSV", csv_data,
+                           file_name="data_export.csv", mime="text/csv")
+
+elif report_fmt == "PDF" and "generated_report_pdf" in st.session_state:
+    st.markdown("---")
+    st.markdown("### PDF Report Ready")
+    st.info("PDF report has been generated. Click below to download.")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.download_button(
+            "\U0001F4E5 Download PDF Report",
+            st.session_state.generated_report_pdf,
+            file_name="analysis_report.pdf",
+            mime="application/pdf",
+            type="primary",
+        )
+    with col2:
+        csv_data = df.to_csv(index=False)
+        st.download_button("Download Data as CSV", csv_data,
+                           file_name="data_export.csv", mime="text/csv")
+
+elif report_fmt == "DOCX" and "generated_report_docx" in st.session_state:
+    st.markdown("---")
+    st.markdown("### Word Document Ready")
+    st.info("DOCX report has been generated. Click below to download.")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.download_button(
+            "\U0001F4E5 Download DOCX Report",
+            st.session_state.generated_report_docx,
+            file_name="analysis_report.docx",
+            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            type="primary",
+        )
     with col2:
         csv_data = df.to_csv(index=False)
         st.download_button("Download Data as CSV", csv_data,

@@ -2,7 +2,7 @@
   "id": "FEAT-004",
   "type": "feat",
   "description": "PDF/DOCX report export with branding, Guided Mode enhancements (floating glossary, guardrails, sensitivity detection), Workspace/Collaboration features (projects, audit log, versioning, onboarding), UX polish (empty states, keep-alive workflow), and SUPABASE_SETUP.md update with new tables.",
-  "status": "pending",
+  "status": "in_progress",
   "steps": [
     "Step 1 - Update utils/report_generator.py: (a) Add generate_pdf_report(df, title, branding=None, ai_summary=None) using fpdf2. Creates a multi-page PDF with: cover page (logo if branding provided, title, date), executive summary page, data overview table, key charts (rendered as images via plotly .to_image() or as table fallback if kaleido unavailable), and data quality section. Branding dict has keys: logo_bytes, company_name, primary_color, secondary_color. (b) Add generate_docx_report(df, title, branding=None, ai_summary=None) using python-docx. Creates a Word doc with: title page, executive summary, statistics tables, and section headers. Apply branding colors to headings if provided. (c) Both functions return bytes suitable for st.download_button.",
     "Step 2 - Update pages/7_Report_Generator.py: (a) Add format selector: HTML (existing), PDF, DOCX. (b) Wire PDF/DOCX buttons to the new generator functions. (c) Add a 'Report Branding' expander in the sidebar or config section: file_uploader for logo (PNG/JPG), text inputs for company name, color pickers for primary/secondary colors. Store in session_state['report_branding']. Pass branding to report generators.",

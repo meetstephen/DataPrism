@@ -576,3 +576,378 @@ def _text_to_html(text):
         if p:
             html_paragraphs.append(f"<p>{p}</p>")
     return "\n".join(html_paragraphs) if html_paragraphs else f"<p>{text}</p>"
+
+
+# ---------------------------------------------------------------------------
+# PDF Report Generation (using fpdf2)
+# ---------------------------------------------------------------------------
+
+def generate_pdf_report(df, title="Data Analysis Report", branding=None, ai_summary=None):
+    """Generate a PDF report using fpdf2. Returns bytes.
+
+    Args:
+        df: DataFrame to analyze
+        title: Report title string
+        branding: dict with keys logo_bytes (bytes or None), company_name (str),
+                  primary_color (str hex), secondary_color (str hex)
+        ai_summary: optional string for executive summary section
+
+    Returns:
+        bytes: PDF file content
+    """
+    from fpdf import FPDF
+    import tempfile
+    import os
+
+    if df is None or df.empty:
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Helvetica", size=16)
+        pdf.cell(0, 10, title, new_x="LMARGIN", new_y="NEXT", align="C")
+        pdf.set_font("Helvetica", size=12)
+        pdf.cell(0, 10, "No data available.", new_x="LMARGIN", new_y="NEXT", align="C")
+        return pdf.output()
+
+    # Parse branding
+    company_name = ""
+    primary_color = (0, 212, 255)  # default cyan
+    secondary_color = (0, 102, 255)
+    logo_bytes = None
+
+    if branding:
+        company_name = branding.get("company_name", "") or ""
+        logo_bytes = branding.get("logo_bytes")
+        pc = branding.get("primary_color", "#00D4FF")
+        sc = branding.get("secondary_color", "#0066FF")
+        primary_color = _hex_to_rgb(pc)
+        secondary_color = _hex_to_rgb(sc)
+
+    pdf = FPDF()
+    pdf.set_auto_page_break(auto=True, margin=20)
+
+    # --- Cover Page ---
+    pdf.add_page()
+
+    # Logo
+    logo_tmp = None
+    if logo_bytes:
+        try:
+            logo_tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
+            logo_tmp.write(logo_bytes)
+            logo_tmp.close()
+            pdf.image(logo_tmp.name, x=80, y=30, w=50)
+            pdf.ln(60)
+        except Exception:
+            pdf.ln(30)
+    else:
+        pdf.ln(50)
+
+    # Company name
+    if company_name:
+        pdf.set_font("Helvetica", "B", 14)
+        pdf.set_text_color(*secondary_color)
+        pdf.cell(0, 10, company_name, new_x="LMARGIN", new_y="NEXT", align="C")
+        pdf.ln(5)
+
+    # Title
+    pdf.set_font("Helvetica", "B", 24)
+    pdf.set_text_color(*primary_color)
+    pdf.cell(0, 15, title, new_x="LMARGIN", new_y="NEXT", align="C")
+    pdf.ln(10)
+
+    # Date
+    now = datetime.now().strftime("%B %d, %Y")
+    pdf.set_font("Helvetica", "", 12)
+    pdf.set_text_color(100, 100, 100)
+    pdf.cell(0, 8, f"Generated: {now}", new_x="LMARGIN", new_y="NEXT", align="C")
+    pdf.cell(0, 8, f"Dataset: {len(df):,} rows x {len(df.columns)} columns", new_x="LMARGIN", new_y="NEXT", align="C")
+
+    # --- Executive Summary Page ---
+    pdf.add_page()
+    pdf.set_font("Helvetica", "B", 18)
+    pdf.set_text_color(*primary_color)
+    pdf.cell(0, 12, "Executive Summary", new_x="LMARGIN", new_y="NEXT")
+    pdf.ln(5)
+
+    pdf.set_font("Helvetica", "", 11)
+    pdf.set_text_color(40, 40, 40)
+
+    summary_text = ai_summary if ai_summary else _generate_rule_based_summary(df)
+    # Clean summary for PDF (remove markdown formatting)
+    summary_text = summary_text.replace("**", "").replace("*", "").replace("#", "")
+    pdf.multi_cell(0, 6, summary_text)
+
+    # --- Data Overview Page ---
+    pdf.add_page()
+    pdf.set_font("Helvetica", "B", 18)
+    pdf.set_text_color(*primary_color)
+    pdf.cell(0, 12, "Data Overview", new_x="LMARGIN", new_y="NEXT")
+    pdf.ln(5)
+
+    pdf.set_font("Helvetica", "", 11)
+    pdf.set_text_color(40, 40, 40)
+    pdf.cell(0, 7, f"Total Rows: {len(df):,}", new_x="LMARGIN", new_y="NEXT")
+    pdf.cell(0, 7, f"Total Columns: {len(df.columns)}", new_x="LMARGIN", new_y="NEXT")
+
+    numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+    categorical_cols = df.select_dtypes(include=["object", "category"]).columns.tolist()
+    pdf.cell(0, 7, f"Numeric Columns: {len(numeric_cols)}", new_x="LMARGIN", new_y="NEXT")
+    pdf.cell(0, 7, f"Categorical Columns: {len(categorical_cols)}", new_x="LMARGIN", new_y="NEXT")
+    pdf.ln(5)
+
+    # Column list table
+    pdf.set_font("Helvetica", "B", 12)
+    pdf.cell(0, 8, "Columns:", new_x="LMARGIN", new_y="NEXT")
+    pdf.set_font("Helvetica", "", 10)
+
+    col_width = 60
+    type_width = 40
+    null_width = 30
+
+    pdf.set_fill_color(*primary_color)
+    pdf.set_text_color(255, 255, 255)
+    pdf.set_font("Helvetica", "B", 9)
+    pdf.cell(col_width, 7, "Column", border=1, fill=True)
+    pdf.cell(type_width, 7, "Type", border=1, fill=True)
+    pdf.cell(null_width, 7, "Null %", border=1, new_x="LMARGIN", new_y="NEXT", fill=True)
+    pdf.set_text_color(40, 40, 40)
+    pdf.set_font("Helvetica", "", 9)
+
+    for col in df.columns[:30]:  # Limit to 30 columns
+        null_pct = df[col].isnull().sum() / len(df) * 100
+        col_name = str(col)[:25]
+        pdf.cell(col_width, 6, col_name, border=1)
+        pdf.cell(type_width, 6, str(df[col].dtype), border=1)
+        pdf.cell(null_width, 6, f"{null_pct:.1f}%", border=1, new_x="LMARGIN", new_y="NEXT")
+
+    # --- Statistics Page ---
+    if numeric_cols:
+        pdf.add_page()
+        pdf.set_font("Helvetica", "B", 18)
+        pdf.set_text_color(*primary_color)
+        pdf.cell(0, 12, "Summary Statistics", new_x="LMARGIN", new_y="NEXT")
+        pdf.ln(5)
+
+        desc = df[numeric_cols[:8]].describe().round(2)  # Limit cols for readability
+        stats_list = ["count", "mean", "std", "min", "25%", "50%", "75%", "max"]
+
+        # Table header
+        stat_col_w = max(25, int(170 / (len(desc.columns) + 1)))
+        pdf.set_font("Helvetica", "B", 8)
+        pdf.set_fill_color(*primary_color)
+        pdf.set_text_color(255, 255, 255)
+        pdf.cell(stat_col_w, 6, "Stat", border=1, fill=True)
+        for c in desc.columns:
+            pdf.cell(stat_col_w, 6, str(c)[:12], border=1, fill=True)
+        pdf.ln()
+
+        pdf.set_text_color(40, 40, 40)
+        pdf.set_font("Helvetica", "", 8)
+        for stat in stats_list:
+            if stat in desc.index:
+                pdf.cell(stat_col_w, 5, stat, border=1)
+                for c in desc.columns:
+                    val = desc.loc[stat, c]
+                    pdf.cell(stat_col_w, 5, f"{val:.2f}" if abs(val) < 1e6 else f"{val:.1e}", border=1)
+                pdf.ln()
+
+    # --- Data Quality Page ---
+    pdf.add_page()
+    pdf.set_font("Helvetica", "B", 18)
+    pdf.set_text_color(*primary_color)
+    pdf.cell(0, 12, "Data Quality", new_x="LMARGIN", new_y="NEXT")
+    pdf.ln(5)
+
+    total_cells = len(df) * len(df.columns)
+    missing_total = int(df.isnull().sum().sum())
+    completeness = ((total_cells - missing_total) / total_cells * 100) if total_cells > 0 else 100
+    duplicates = int(df.duplicated().sum())
+
+    pdf.set_font("Helvetica", "", 11)
+    pdf.set_text_color(40, 40, 40)
+    pdf.cell(0, 7, f"Completeness: {completeness:.1f}%", new_x="LMARGIN", new_y="NEXT")
+    pdf.cell(0, 7, f"Missing Values: {missing_total:,}", new_x="LMARGIN", new_y="NEXT")
+    pdf.cell(0, 7, f"Duplicate Rows: {duplicates:,}", new_x="LMARGIN", new_y="NEXT")
+    pdf.cell(0, 7, f"Total Cells: {total_cells:,}", new_x="LMARGIN", new_y="NEXT")
+
+    # Clean up temp file
+    if logo_tmp:
+        try:
+            os.unlink(logo_tmp.name)
+        except Exception:
+            pass
+
+    return pdf.output()
+
+
+def generate_docx_report(df, title="Data Analysis Report", branding=None, ai_summary=None):
+    """Generate a DOCX report using python-docx. Returns bytes.
+
+    Args:
+        df: DataFrame to analyze
+        title: Report title string
+        branding: dict with keys logo_bytes (bytes or None), company_name (str),
+                  primary_color (str hex), secondary_color (str hex)
+        ai_summary: optional string for executive summary section
+
+    Returns:
+        bytes: DOCX file content
+    """
+    from docx import Document
+    from docx.shared import Inches, Pt, RGBColor
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+    import io
+
+    doc = Document()
+
+    # Parse branding
+    company_name = ""
+    primary_rgb = RGBColor(0x00, 0xD4, 0xFF)
+
+    if branding:
+        company_name = branding.get("company_name", "") or ""
+        pc = branding.get("primary_color", "#00D4FF")
+        r, g, b = _hex_to_rgb(pc)
+        primary_rgb = RGBColor(r, g, b)
+
+    # --- Title Page ---
+    if company_name:
+        p = doc.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        run = p.add_run(company_name)
+        run.bold = True
+        run.font.size = Pt(14)
+        run.font.color.rgb = primary_rgb
+
+    # Logo
+    logo_bytes = branding.get("logo_bytes") if branding else None
+    if logo_bytes:
+        try:
+            logo_stream = io.BytesIO(logo_bytes)
+            p = doc.add_paragraph()
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            run = p.add_run()
+            run.add_picture(logo_stream, width=Inches(2))
+        except Exception:
+            pass
+
+    # Title heading
+    heading = doc.add_heading(title, level=0)
+    heading.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    for run in heading.runs:
+        run.font.color.rgb = primary_rgb
+
+    # Date
+    p = doc.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    now = datetime.now().strftime("%B %d, %Y")
+    p.add_run(f"Generated: {now}")
+
+    if df is None or df.empty:
+        doc.add_paragraph("No data available for report generation.")
+        buffer = io.BytesIO()
+        doc.save(buffer)
+        return buffer.getvalue()
+
+    p = doc.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.add_run(f"Dataset: {len(df):,} rows x {len(df.columns)} columns")
+
+    doc.add_page_break()
+
+    # --- Executive Summary ---
+    h = doc.add_heading("Executive Summary", level=1)
+    for run in h.runs:
+        run.font.color.rgb = primary_rgb
+
+    summary_text = ai_summary if ai_summary else _generate_rule_based_summary(df)
+    summary_text = summary_text.replace("**", "").replace("*", "").replace("#", "")
+    for para in summary_text.split("\n\n"):
+        para = para.strip()
+        if para:
+            doc.add_paragraph(para)
+
+    # --- Data Overview ---
+    h = doc.add_heading("Data Overview", level=1)
+    for run in h.runs:
+        run.font.color.rgb = primary_rgb
+
+    doc.add_paragraph(f"Total Rows: {len(df):,}")
+    doc.add_paragraph(f"Total Columns: {len(df.columns)}")
+
+    numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+    categorical_cols = df.select_dtypes(include=["object", "category"]).columns.tolist()
+    doc.add_paragraph(f"Numeric Columns: {len(numeric_cols)}")
+    doc.add_paragraph(f"Categorical Columns: {len(categorical_cols)}")
+
+    # Column table
+    doc.add_heading("Column Details", level=2)
+    cols_to_show = df.columns[:30]
+    table = doc.add_table(rows=1, cols=3)
+    table.style = "Table Grid"
+    header_cells = table.rows[0].cells
+    header_cells[0].text = "Column"
+    header_cells[1].text = "Type"
+    header_cells[2].text = "Null %"
+
+    for col in cols_to_show:
+        null_pct = df[col].isnull().sum() / len(df) * 100
+        row_cells = table.add_row().cells
+        row_cells[0].text = str(col)[:30]
+        row_cells[1].text = str(df[col].dtype)
+        row_cells[2].text = f"{null_pct:.1f}%"
+
+    # --- Statistics ---
+    if numeric_cols:
+        doc.add_page_break()
+        h = doc.add_heading("Summary Statistics", level=1)
+        for run in h.runs:
+            run.font.color.rgb = primary_rgb
+
+        desc = df[numeric_cols[:8]].describe().round(2)
+        stats_table = doc.add_table(rows=1, cols=len(desc.columns) + 1)
+        stats_table.style = "Table Grid"
+
+        # Header
+        stats_table.rows[0].cells[0].text = "Statistic"
+        for i, col in enumerate(desc.columns):
+            stats_table.rows[0].cells[i + 1].text = str(col)[:15]
+
+        # Data
+        for stat in desc.index:
+            row_cells = stats_table.add_row().cells
+            row_cells[0].text = str(stat)
+            for i, col in enumerate(desc.columns):
+                val = desc.loc[stat, col]
+                row_cells[i + 1].text = f"{val:.2f}" if abs(val) < 1e6 else f"{val:.1e}"
+
+    # --- Data Quality ---
+    h = doc.add_heading("Data Quality", level=1)
+    for run in h.runs:
+        run.font.color.rgb = primary_rgb
+
+    total_cells = len(df) * len(df.columns)
+    missing_total = int(df.isnull().sum().sum())
+    completeness = ((total_cells - missing_total) / total_cells * 100) if total_cells > 0 else 100
+    duplicates = int(df.duplicated().sum())
+
+    doc.add_paragraph(f"Completeness: {completeness:.1f}%")
+    doc.add_paragraph(f"Missing Values: {missing_total:,}")
+    doc.add_paragraph(f"Duplicate Rows: {duplicates:,}")
+    doc.add_paragraph(f"Total Cells: {total_cells:,}")
+
+    # Save to bytes
+    buffer = io.BytesIO()
+    doc.save(buffer)
+    return buffer.getvalue()
+
+
+def _hex_to_rgb(hex_color):
+    """Convert hex color string to RGB tuple."""
+    hex_color = hex_color.lstrip("#")
+    if len(hex_color) != 6:
+        return (0, 212, 255)  # fallback to default cyan
+    try:
+        return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+    except ValueError:
+        return (0, 212, 255)

@@ -7,7 +7,7 @@ with interactive dashboards, AI-powered insights, and advanced analytics tools.
 
 import streamlit as st
 
-from utils.styles import inject_global_css
+from utils.styles import inject_global_css, render_theme_switcher
 from utils.data_engine import init_cleaning_state
 from utils.data_loader import ensure_builtin_data, init_all_session_state
 from utils.persistence import restore_session_state, save_session_state, get_last_saved_time, clear_persisted_session
@@ -27,6 +27,18 @@ ensure_builtin_data()
 
 # Initialize cleaning state
 init_cleaning_state()
+
+# Additional session state keys for enterprise features
+if "onboarding_complete" not in st.session_state:
+    st.session_state.onboarding_complete = {"upload": False, "profile": False, "clean": False, "insights": False, "report": False}
+if "active_project_id" not in st.session_state:
+    st.session_state.active_project_id = None
+if "report_branding" not in st.session_state:
+    st.session_state.report_branding = None
+if "dashboard_charts" not in st.session_state:
+    st.session_state.dashboard_charts = []
+if "dashboard_filters" not in st.session_state:
+    st.session_state.dashboard_filters = {}
 
 # Restore persisted session on first load
 if "session_restored" not in st.session_state:
@@ -54,10 +66,16 @@ with st.sidebar:
         - \U0001F310 **Online Explorer** - Web data fetching
         - \U0001F4CB **Report Generator** - Export reports
         - \U0001F4AC **Chat With Data** - Structured data & documents
+        - \u2601\uFE0F **Cloud Workspace** - Projects & versioning
+        - \U0001F4CA **Data Profiling** - Deep quality analysis
+        - \U0001F4CA **Dashboard** - KPI cards & charts
         """
     )
     st.markdown("---")
     st.caption("DataPrism | Enterprise Data Intelligence")
+    st.markdown("---")
+    st.markdown("##### \U0001F3A8 Theme")
+    render_theme_switcher()
     st.markdown("---")
     st.markdown("##### \U0001F4BE Session")
     last_saved = get_last_saved_time()

@@ -29,6 +29,7 @@ from utils.visualizations import (
 )
 from utils.online_data import get_dataset_catalog, fetch_data_from_url
 from utils.report_generator import generate_html_report
+from utils.sensitivity import detect_sensitive_columns, mask_column
 
 # ---------------------------------------------------------------------------
 # Page config (MUST be first Streamlit call)
@@ -60,6 +61,26 @@ STAGE_LABELS = [
     "Insights",
     "Report",
 ]
+
+# Glossary of analytics terms for the floating sidebar reference
+GLOSSARY = {
+    "Correlation": "A statistical measure (range -1 to +1) that describes the strength and direction of a relationship between two variables.",
+    "P-value": "The probability of observing results at least as extreme as the measured results, assuming the null hypothesis is true. Lower values (< 0.05) suggest statistical significance.",
+    "Outlier": "A data point that differs significantly from other observations, often defined as beyond 1.5x the IQR from quartiles.",
+    "IQR (Interquartile Range)": "The range between the 25th percentile (Q1) and 75th percentile (Q3). Used to measure spread and detect outliers.",
+    "Regression": "A statistical method that models the relationship between a dependent variable and one or more independent variables.",
+    "R-squared": "A measure of how well a regression model fits the data. Ranges from 0 to 1, where 1 indicates perfect fit.",
+    "Standard Deviation": "A measure of the amount of variation or dispersion in a set of values. Higher values indicate more spread.",
+    "Mean": "The arithmetic average of a set of values, calculated by summing all values and dividing by the count.",
+    "Median": "The middle value in a sorted dataset. Less sensitive to outliers than the mean.",
+    "Null/Missing Value": "A cell in the dataset with no value. Can bias analysis if not handled properly.",
+    "Duplicate": "A row that appears more than once in the dataset. Often indicates data collection errors.",
+    "Distribution": "The pattern of how values in a variable are spread across the possible range.",
+    "Skewness": "A measure of asymmetry in a distribution. Positive skew means a tail to the right; negative skew means a tail to the left.",
+    "Confidence Interval": "A range of values that likely contains the true population parameter, typically at 95% confidence.",
+    "ANOVA": "Analysis of Variance. A statistical test that compares means across three or more groups to determine if at least one differs significantly.",
+    "Data Quality Score": "A composite metric (0-100) that considers completeness, uniqueness, consistency, and accuracy of a dataset.",
+}
 
 
 # ---------------------------------------------------------------------------
@@ -263,6 +284,26 @@ def render_stage_3():
         _nav_buttons(can_next=False)
         return
 
+    # Small sample size warning (Responsible Analysis Guardrail)
+    if len(df) < 30:
+        st.warning(
+            "\u26A0\uFE0F Small sample size (<30 rows). Statistical results may not be reliable."
+        )
+
+    # Sensitivity detection
+    sensitive_cols = detect_sensitive_columns(df)
+    if sensitive_cols:
+        col_list = ", ".join([f"**{col}** ({reason})" for col, reason in sensitive_cols])
+        st.warning(
+            f"\U0001F512 Sensitive data detected in columns: {col_list}. "
+            "Consider masking these before sharing results."
+        )
+        if st.button("Mask Sensitive Columns", key="guide_mask_sensitive"):
+            for col_name, _reason in sensitive_cols:
+                apply_cleaning_step(f"Mask sensitive ({col_name})", mask_column, col_name)
+            st.success("Sensitive columns masked.")
+            st.rerun()
+
     # Quality report
     quality = generate_data_quality_report(df)
     score = quality.get("completeness_score", 100)
@@ -409,6 +450,22 @@ def render_stage_4():
     issue = all_issues[idx]
     st.markdown(f"#### Issue {idx + 1} of {len(all_issues)}: {issue['label']}")
 
+    # Responsible Analysis Guardrail: warn if operation removes >30% of rows
+    if issue["type"] == "outliers":
+        removal_pct = issue.get("count", 0) / max(len(df), 1) * 100
+        if removal_pct > 30:
+            st.warning(
+                "\u26A0\uFE0F This operation will remove more than 30% of your data. "
+                "Consider if this is appropriate."
+            )
+    elif issue["type"] == "nulls":
+        null_pct = issue.get("pct", 0)
+        if null_pct > 30:
+            st.warning(
+                "\u26A0\uFE0F This operation will remove more than 30% of your data. "
+                "Consider if this is appropriate."
+            )
+
     action = st.radio(
         "How would you like to handle this?",
         ["Fix it (recommended)", "Skip for now"],
@@ -484,8 +541,18 @@ def render_stage_5():
         np.fill_diagonal(corr_matrix.values, 0)
         max_pair = corr_matrix.stack().idxmax()
         x_col, y_col = max_pair
+        max_corr_val = corr_matrix.loc[x_col, y_col]
         st.markdown(f"#### Scatter: `{x_col}` vs `{y_col}`")
         st.markdown(f"These two variables have the strongest correlation in your data.")
+
+        # Responsible Analysis Guardrail: correlation vs causation
+        if max_corr_val > 0.85:
+            st.warning(
+                "\u26A0\uFE0F Reminder: Correlation does not equal causation. "
+                "A strong statistical relationship does not prove one variable "
+                "causes changes in another."
+            )
+
         fig = create_scatter_plot(df, x_col, y_col, f"{x_col} vs {y_col}")
         st.plotly_chart(fig, use_container_width=True)
         analyses_done.append(f"Scatter: {x_col} vs {y_col}")
@@ -689,6 +756,16 @@ def render_stage_7():
 # ---------------------------------------------------------------------------
 
 _render_progress_bar()
+
+# Floating Glossary in sidebar
+with st.sidebar:
+    with st.expander("\U0001F4D6 Glossary", expanded=False):
+        glossary_search = st.text_input("Search terms", key="glossary_search", placeholder="Type to filter...")
+        for term, definition in GLOSSARY.items():
+            if glossary_search and glossary_search.lower() not in term.lower():
+                continue
+            st.markdown(f"**{term}**")
+            st.caption(definition)
 
 stage = st.session_state.guide_stage
 if stage == 1:
