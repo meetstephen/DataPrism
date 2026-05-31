@@ -15,6 +15,15 @@ from utils.sql_engine import get_sql_tables, run_sql_query, EXAMPLE_QUERIES
 st.title("\U0001F4DD SQL Query Interface")
 st.markdown("Write and execute SQL queries against your loaded datasets.")
 
+with st.expander("❓ How to use this page", expanded=False):
+    st.markdown("""
+    1. Your loaded datasets appear as SQL tables (e.g. `builtin`, `uploaded`, `cleaned`)
+    2. Write any **SELECT** query using standard SQL (SQLite dialect)
+    3. Click **Run Query** to see results with execution time
+    4. **Save Result** stores the output as a new dataset for use elsewhere
+    5. Only read queries are allowed (INSERT/DELETE/DROP are blocked for safety)
+    """)
+
 # --- Direct file upload option ---
 with st.expander("\U0001F4C1 Upload your own file directly", expanded=False):
     sql_file = st.file_uploader(

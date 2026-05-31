@@ -229,6 +229,49 @@ with start_col3:
 
 st.markdown("---")
 
+# --- Your Current Session ---
+st.markdown("### 📋 Your Current Session")
+
+has_data = False
+session_col1, session_col2, session_col3 = st.columns(3)
+
+with session_col1:
+    if st.session_state.get("uploaded_df") is not None:
+        df = st.session_state.uploaded_df
+        st.markdown(f"**📁 Uploaded Data**")
+        st.caption(f"{len(df):,} rows x {len(df.columns)} cols")
+        has_data = True
+    else:
+        st.markdown("**📁 Uploaded Data**")
+        st.caption("None loaded")
+
+with session_col2:
+    if st.session_state.get("working_df") is not None:
+        df = st.session_state.working_df
+        st.markdown(f"**🧹 Cleaned Data**")
+        st.caption(f"{len(df):,} rows x {len(df.columns)} cols")
+        has_data = True
+    else:
+        st.markdown("**🧹 Cleaned Data**")
+        st.caption("None yet")
+
+with session_col3:
+    if st.session_state.get("online_df") is not None:
+        df = st.session_state.online_df
+        st.markdown(f"**🌐 Online Data**")
+        st.caption(f"{len(df):,} rows x {len(df.columns)} cols")
+        has_data = True
+    else:
+        st.markdown("**🌐 Online Data**")
+        st.caption("None fetched")
+
+if has_data:
+    st.success("You have data loaded! Navigate to any analysis page to continue working.")
+else:
+    st.info("No data in your session yet. Use the paths above to get started.")
+
+st.markdown("---")
+
 # Guided Analysis callout (the dedicated page is wired up separately)
 st.markdown(
     """

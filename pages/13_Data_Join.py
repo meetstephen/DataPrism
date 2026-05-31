@@ -15,6 +15,14 @@ from utils.data_join import get_available_datasets, join_datasets, concat_datase
 st.title("\U0001F517 Data Join & Merge")
 st.markdown("Combine multiple datasets using joins, merges, or concatenation.")
 
+with st.expander("❓ How to use this page", expanded=False):
+    st.markdown("""
+    1. You need **at least 2 datasets** loaded (upload multiple files, or load one from Online Explorer)
+    2. **Join tab**: Pick left/right datasets, select key columns, choose join type (inner/left/right/outer)
+    3. **Concatenate tab**: Stack datasets vertically (append rows) or horizontally (add columns)
+    4. Preview the result, then **Save to Session** to use it on other pages
+    """)
+
 # --- Direct file upload option ---
 with st.expander("\U0001F4C1 Upload your own file directly", expanded=False):
     join_file = st.file_uploader(

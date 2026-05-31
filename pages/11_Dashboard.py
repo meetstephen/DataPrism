@@ -29,6 +29,15 @@ init_all_session_state()
 st.title("\U0001F4CA Dashboard Builder")
 st.markdown("Build interactive dashboards with KPI cards, chart library, and auto-build capabilities.")
 
+with st.expander("❓ How to use this page", expanded=False):
+    st.markdown("""
+    1. **Select or upload** a dataset
+    2. **KPI Cards** auto-detect your top numeric columns with trend indicators
+    3. **Chart Library** lets you build any of 11 chart types (bar, line, scatter, pie, etc.)
+    4. **Auto-Build** uses AI to pick the best 4-6 charts for your data
+    5. **Global Filters** in the sidebar apply across all charts simultaneously
+    """)
+
 # Data source selection
 st.markdown("### Select Data Source")
 sources = ["Built-in Community College Data"]

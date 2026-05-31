@@ -29,6 +29,23 @@ from utils.time_intelligence import (
 st.title("\U0001F527 Advanced Analytics")
 st.markdown("Advanced analytical tools for deeper data exploration.")
 
+with st.expander("❓ How to use this page", expanded=False):
+    st.markdown("""
+    1. **Select a data source** from the radio buttons above (or upload directly)
+    2. **Choose a tab** for the type of analysis you want:
+       - **Pivot Table** - Summarize data by categories
+       - **Custom Chart** - Build any visualization
+       - **Statistical Summary** - Descriptive stats and distributions
+       - **Group By** - Aggregate by categories
+       - **Time Intelligence** - MoM, YoY, rolling averages
+       - **EDA** - Auto-generated charts for all columns
+       - **Stats Tests** - t-test, chi-square, ANOVA
+       - **Regression** - Linear and logistic
+       - **Clustering & Forecast** - K-Means and time series forecasting
+    3. **Configure** your analysis and click the action button
+    4. Results appear below with "View as table" toggles for accessibility
+    """)
+
 # Load data
 if "df" not in st.session_state:
     st.session_state.df = generate_dataset()
