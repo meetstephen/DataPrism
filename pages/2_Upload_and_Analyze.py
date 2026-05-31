@@ -16,6 +16,7 @@ from utils.visualizations import (
     create_box_plot
 )
 from utils.ai_insights import generate_data_quality_report
+from utils.exporters import render_export_buttons
 
 st.title("\U0001F4C1 Upload & Analyze Your Data")
 st.markdown(
@@ -70,13 +71,9 @@ if uploaded_file is not None:
 
             st.success(f"File loaded successfully: {uploaded_file.name}")
 
-            # Download button for loaded data
-            st.download_button(
-                "\U0001F4E5 Download Data as CSV",
-                df.to_csv(index=False),
-                "analyzed_data.csv",
-                "text/csv"
-            )
+            # Multi-format export for the loaded data
+            st.markdown("**Download data:**")
+            render_export_buttons(df, base_filename="analyzed_data", key_prefix="upload_export")
 
             # Data Preview
             st.markdown("### Data Preview")

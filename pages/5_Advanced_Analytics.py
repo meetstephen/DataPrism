@@ -127,7 +127,10 @@ with tab1:
                             f"{agg_func.capitalize()} of {values_col} by {index_col}"
                         )
                         fig.update_layout(xaxis_tickangle=-45)
-                        st.plotly_chart(fig, use_container_width=True)
+                        render_chart_with_table(
+                            fig, pivot_reset, key="pivot_chart",
+                            caption="Data behind the pivot visualization.",
+                        )
             except Exception as e:
                 st.error(f"Error creating pivot table: {str(e)}")
 
@@ -286,7 +289,10 @@ with tab4:
                     f"{gb_agg.capitalize()} of {numeric_col} by {groupby_col}"
                 )
                 fig.update_layout(xaxis_tickangle=-45)
-                st.plotly_chart(fig, use_container_width=True)
+                render_chart_with_table(
+                    fig, result, key="groupby_chart",
+                    caption="Aggregated values behind the chart.",
+                )
 
         except Exception as e:
             st.error(f"Error in group by analysis: {str(e)}")

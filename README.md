@@ -12,11 +12,11 @@ This release adds a set of analyst-grade capabilities across the platform:
 
 - **"Start Here" home screen** — A clear 3-path decision tree on the home page routes you to the right starting point: *upload your own data*, *take the guided walkthrough* with sample data, or *find data online*.
 - **Calculated Columns / Feature Engineering** — A new tab in the Data Cleaning Engine lets you derive new columns from existing ones, either with a guided arithmetic builder (column ± column/value) or a custom expression. Evaluation is sandboxed via `DataFrame.eval` (arithmetic & comparisons only — no arbitrary code).
-- **Multi-format Export** — Cleaned data can be downloaded as **CSV, Excel (.xlsx), JSON, or Parquet** from a single export bar.
+- **Multi-format Export** — Cleaned data (Data Cleaning), uploaded data (Upload & Analyze), and report datasets (Report Generator) can be downloaded as **CSV, Excel (.xlsx), JSON, or Parquet** from a single export bar.
 - **Time Intelligence** — A new Advanced Analytics tab computes period-over-period change (MoM/QoQ/etc.), **year-over-year (YoY)**, and **rolling averages** from any date/value pair, with charts and metrics.
 - **Data Validation Rules** — Declare expectations (no missing values, uniqueness, numeric range, allowed values, regex match) and run them for a pass/fail report with drill-down into violating rows.
 - **AI Confidence Badges** — AI Insights now disclose whether output is *AI-generated* or *rule-based*, with a transparency confidence level (High/Medium/Low) derived from sample size and completeness, plus the factors behind the score.
-- **"View as Table" toggle** — Charts in the Custom Chart Builder and Time Intelligence views include an accessible expander to inspect the underlying data as a table.
+- **"View as Table" toggle** — Charts across Advanced Analytics (Custom Chart Builder, Time Intelligence, Pivot Table, and Group By) include an accessible expander to inspect the underlying data as a table.
 
 ---
 

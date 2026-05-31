@@ -7,6 +7,7 @@ import pandas as pd
 from utils.data_loader import ensure_builtin_data
 from utils.ai_client import get_api_key, generate_content, GEMINI_MODEL
 from utils.report_generator import generate_html_report, generate_executive_summary
+from utils.exporters import render_export_buttons
 
 st.title("\U0001F4CB Report Generator")
 st.markdown("Generate comprehensive, downloadable HTML analysis reports.")
@@ -127,12 +128,13 @@ if "generated_report" in st.session_state:
     import streamlit.components.v1 as components
     components.html(st.session_state.generated_report, height=600, scrolling=True)
 
-    # Download buttons
-    col1, col2 = st.columns(2)
-    with col1:
-        st.download_button("Download HTML Report", st.session_state.generated_report,
-                           file_name="analysis_report.html", mime="text/html")
-    with col2:
-        csv_data = df.to_csv(index=False)
-        st.download_button("Download Data as CSV", csv_data,
-                           file_name="data_export.csv", mime="text/csv")
+    # Download the report
+    st.download_button(
+        "Download HTML Report", st.session_state.generated_report,
+        file_name="analysis_report.html", mime="text/html",
+        use_container_width=True,
+    )
+
+    # Multi-format export of the underlying data
+    st.markdown("**Export underlying data:**")
+    render_export_buttons(df, base_filename="report_data", key_prefix="report_export")
