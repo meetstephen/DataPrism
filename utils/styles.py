@@ -68,8 +68,18 @@ NAV_ITEMS = [
 
 
 def render_sidebar_nav():
-    """Render the custom styled sidebar navigation menu on any page."""
+    """Render the COMPLETE sidebar on every page so it is identical app-wide:
+    brand, navigation menu, user info / sign-out, theme switcher, session
+    controls, and the feedback widget. Previously the session/feedback/theme
+    controls only existed on the home page; consolidating them here makes the
+    full sidebar (and its scrollable bottom content) appear on every page.
+    """
     with st.sidebar:
+        # --- Brand ---
+        st.markdown("## \U0001F4A0 DataPrism")
+        st.markdown("---")
+
+        # --- Navigation ---
         st.markdown(
             '<div class="dp-nav-header">\U0001F4CD Navigation</div>',
             unsafe_allow_html=True,
@@ -93,6 +103,99 @@ def render_sidebar_nav():
         except Exception:
             pass
         st.markdown("---")
+
+        # --- User info / Sign out ---
+        try:
+            from utils.auth import get_current_user, sign_out
+            current_user = get_current_user()
+            if current_user and not current_user.get("is_mock"):
+                st.markdown(f"**\U0001F464 {current_user.get('display_name', 'User')}**")
+                st.caption(
+                    f"{current_user.get('email', '')} | "
+                    f"Role: {current_user.get('role', 'viewer').title()}"
+                )
+                if st.button("\U0001F6AA Sign Out", key="sidebar_signout", use_container_width=True):
+                    sign_out()
+                    st.rerun()
+                st.markdown("---")
+            elif current_user and current_user.get("is_mock"):
+                st.caption("\U0001F464 Local Dev Mode (no login required)")
+                st.markdown("---")
+        except Exception:
+            pass
+
+        # --- Theme switcher ---
+        try:
+            render_theme_switcher()
+        except Exception:
+            pass
+
+        # --- Session controls ---
+        try:
+            from utils.persistence import (
+                save_session_state, get_last_saved_time, clear_persisted_session,
+            )
+            st.markdown("---")
+            st.markdown("##### \U0001F4BE Session")
+            last_saved = get_last_saved_time()
+            if last_saved:
+                st.caption(f"Last saved: {last_saved[:19]}")
+            scol, ccol = st.columns(2)
+            with scol:
+                if st.button("\U0001F4BE Save", key="sidebar_session_save",
+                             use_container_width=True, help="Save current work"):
+                    save_session_state()
+                    st.toast("\u2705 Session saved!", icon="\U0001F4BE")
+            with ccol:
+                if st.button("\U0001F5D1\uFE0F Clear", key="sidebar_session_clear",
+                             use_container_width=True, help="Clear saved session"):
+                    clear_persisted_session()
+                    st.toast("\U0001F5D1\uFE0F Session cleared!", icon="\U0001F5D1\uFE0F")
+        except Exception:
+            pass
+
+        # --- Feedback widget ---
+        try:
+            st.markdown("---")
+            st.markdown("##### \U0001F4AC Feedback")
+            st.caption("Report bugs, suggestions, or observations to the team.")
+            with st.expander("\u270F\uFE0F Submit Feedback", expanded=False):
+                fb_type = st.selectbox(
+                    "Type",
+                    ["\U0001F41B Bug Report", "\U0001F4A1 Suggestion",
+                     "\u2753 Confusion / UX Issue", "\U0001F44D Positive Feedback"],
+                    key="sidebar_fb_type",
+                )
+                fb_page = st.selectbox(
+                    "Which page?",
+                    ["Home", "Guided Analysis", "Getting Started", "Upload & Analyze",
+                     "Data Cleaning", "AI Insights", "Advanced Analytics",
+                     "Online Explorer", "Report Generator", "Chat With Data",
+                     "Cloud Workspace", "Data Profiling", "Dashboard",
+                     "Data Join", "SQL Query", "Data Dictionary", "Admin Panel", "Other"],
+                    key="sidebar_fb_page",
+                )
+                fb_text = st.text_area(
+                    "Describe your feedback",
+                    key="sidebar_fb_text",
+                    placeholder="What happened? What did you expect? How can we improve?",
+                    height=100,
+                )
+                if st.button("Submit Feedback", key="sidebar_fb_submit", use_container_width=True):
+                    if not fb_text.strip():
+                        st.warning("Please describe your feedback.")
+                    else:
+                        from utils.feedback import save_feedback
+                        ok, msg = save_feedback(fb_type, fb_page, fb_text.strip())
+                        if ok:
+                            st.success("\u2705 Thank you! Feedback submitted.")
+                        else:
+                            st.error(msg)
+        except Exception:
+            pass
+
+        st.markdown("---")
+        st.caption("DataPrism | Enterprise Data Intelligence")
 
 
 def _get_active_theme():
