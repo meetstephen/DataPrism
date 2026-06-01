@@ -11,7 +11,7 @@ import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 
-from utils.styles import inject_global_css
+from utils.styles import inject_global_css, render_sidebar_nav
 from utils.data_loader import init_all_session_state
 from utils.ai_client import get_api_key, generate_content
 from utils.data_engine import (
@@ -40,6 +40,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 inject_global_css()
+render_sidebar_nav()
 init_all_session_state()
 init_cleaning_state()
 

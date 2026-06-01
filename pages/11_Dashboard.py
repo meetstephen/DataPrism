@@ -1,8 +1,9 @@
 """Dashboard Builder - KPI cards, chart library, auto-build, global filters."""
 import streamlit as st
 st.set_page_config(page_title="Dashboard Builder", page_icon="\U0001f4a0", layout="wide")
-from utils.styles import inject_global_css
+from utils.styles import inject_global_css, render_sidebar_nav
 inject_global_css()
+render_sidebar_nav()
 
 import pandas as pd
 import numpy as np

@@ -7,7 +7,7 @@ with interactive dashboards, AI-powered insights, and advanced analytics tools.
 
 import streamlit as st
 
-from utils.styles import inject_global_css
+from utils.styles import inject_global_css, render_sidebar_nav
 from utils.data_engine import init_cleaning_state
 from utils.data_loader import ensure_builtin_data, init_all_session_state
 from utils.persistence import restore_session_state, save_session_state, get_last_saved_time, clear_persisted_session
@@ -46,6 +46,9 @@ with st.sidebar:
     st.title("\U0001f4a0 DataPrism")
     st.markdown("---")
 
+    # --- Custom styled navigation menu ---
+    render_sidebar_nav()
+
     # --- User Info ---
     current_user = get_current_user()
     if current_user and not current_user.get("is_mock"):
@@ -68,30 +71,6 @@ with st.sidebar:
     from utils.styles import render_theme_switcher
     render_theme_switcher()
 
-    st.markdown("---")
-    st.markdown(
-        """
-        **Enterprise Data Intelligence Platform**
-
-        Navigate using the pages in the sidebar:
-
-        - \U0001F9ED **Guided Analysis** - Step-by-step workflow
-        - \U0001F680 **Getting Started** - Quick start guide
-        - \U0001F4C1 **Upload & Analyze** - Your own datasets
-        - \U0001f9f9 **Data Cleaning** - Transform & prepare
-        - \U0001F916 **AI Insights** - Automated analysis
-        - \U0001F527 **Advanced Analytics** - Custom tools
-        - \U0001F310 **Online Explorer** - Web data fetching
-        - \U0001F4CB **Report Generator** - Export reports
-        - \U0001F4AC **Chat With Data** - Structured data & documents
-        - \u2601\uFE0F **Cloud Workspace** - Save & restore
-        - \U0001F50D **Data Profiling** - Quality assessment
-        - \U0001F4CA **Dashboard Builder** - KPI & charts
-        - \U0001F517 **Data Join** - Merge & combine datasets
-        - \U0001F4DD **SQL Query** - Query with SQL
-        - \U0001F4D6 **Data Dictionary** - Column documentation
-        """
-    )
     st.markdown("---")
     st.caption("DataPrism | Enterprise Data Intelligence")
     st.markdown("---")
