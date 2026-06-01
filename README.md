@@ -4,6 +4,12 @@
 
 DataPrism is an enterprise-grade data intelligence platform built with Streamlit. Transform raw datasets into actionable insights with AI-powered analysis, interactive visualizations, data cleaning tools, and natural language conversations with your data.
 
+### 🚀 Live App
+
+**Try DataPrism now → [dataprism-ai.streamlit.app](https://dataprism-ai.streamlit.app)**
+
+> When authentication is configured, you'll be asked to sign in or create an account on first visit. Without a database configured, the app runs in open (local) mode.
+
 ---
 
 ## What's New
@@ -24,6 +30,10 @@ This release adds a set of analyst-grade capabilities across the platform:
 - **AI Confidence Badges** — AI Insights now disclose whether output is *AI-generated* or *rule-based*, with a transparency confidence level (High/Medium/Low) derived from sample size and completeness, plus the factors behind the score.
 - **"View as Table" toggle** — Charts across Advanced Analytics (Custom Chart Builder, Time Intelligence, Pivot Table, and Group By) include an accessible expander to inspect the underlying data as a table.
 - **☁️ Cloud Workspace (Supabase)** — Optional cloud persistence for datasets, reports, validation rule sets, and saved insights. The app works fully without it; when configured, "Save to cloud" buttons appear across the relevant pages and a dedicated **Cloud Workspace** page lets you browse, reload, and delete saved items. See **[SUPABASE_SETUP.md](SUPABASE_SETUP.md)** for the complete setup guide and SQL schema.
+- **🔐 Authentication & User Management** — Optional Supabase-backed login/signup gate. Each user has their own account and data space. Admins get an **Admin Panel** to view all users, see activity logs and login times, and add/change roles (Admin / Analyst / Viewer). Set `ADMIN_EMAIL` in secrets to auto-assign the admin role. Works in open mode when no database is configured.
+- **🧭 Custom styled sidebar navigation** — A premium "📍 Navigation" menu where each page is an interactive bar/card with an emoji icon and hover effect, consistent across every page and all three themes.
+- **👋 First-time onboarding wizard & session resume** — New users see a dismissable step-by-step getting-started checklist on the home page, plus a "Your Current Session" panel showing what data is currently loaded.
+- **💬 Sidebar feedback widget** — Testers and users can report bugs, suggestions, and observations directly from the sidebar; submissions save to Supabase (`dp_feedback`) or locally.
 
 ---
 
@@ -73,6 +83,7 @@ The platform has been hardened for reliable, enterprise-grade operation:
 | **Visualizations** | Plotly (enterprise dark theme) |
 | **Machine Learning** | scikit-learn |
 | **AI Integration** | Google Gemini 2.5 Flash API |
+| **Auth & Database** | Supabase (Postgres + Auth) — optional, with graceful fallback |
 | **Web Scraping** | BeautifulSoup4, requests, lxml |
 | **File Support** | openpyxl (Excel), PyMuPDF (PDF), python-docx (Word), CSV, JSON, Power BI exports |
 | **Encoding Detection** | chardet |
@@ -91,8 +102,8 @@ The platform has been hardened for reliable, enterprise-grade operation:
 
 ```bash
 # Clone the repository
-git clone https://github.com/meetstephen/community-college-data-analysis.git
-cd community-college-data-analysis
+git clone https://github.com/meetstephen/DataPrism.git
+cd DataPrism
 
 # Install dependencies
 pip install -r requirements.txt
@@ -128,28 +139,48 @@ Enter your API key in the sidebar of any AI-powered page during your session.
 
 > **Note:** All AI features work without an API key using rule-based analysis as a fallback.
 
+### Authentication & Cloud Workspace (Optional)
+
+DataPrism can require users to log in and persist work to a Supabase database. This is **optional** — without it, the app runs in open (local) mode with no login.
+
+To enable it, add to `.streamlit/secrets.toml` (or Streamlit Cloud secrets):
+```toml
+SUPABASE_URL = "https://your-project-ref.supabase.co"
+SUPABASE_KEY = "your-supabase-anon-key"
+ADMIN_EMAIL  = "meetstephenoyim@gmail.com"   # this account becomes admin on sign-up
+```
+
+Then run the SQL from **[SUPABASE_SETUP.md](SUPABASE_SETUP.md)** in the Supabase SQL Editor to create the required tables. The first user who signs up with `ADMIN_EMAIL` is automatically granted the **admin** role and gains access to the Admin Panel.
+
 ---
 
-## Deployment on Streamlit Cloud
+## Live Deployment
+
+**This app is live at → [dataprism-ai.streamlit.app](https://dataprism-ai.streamlit.app)**
+
+### Deploy your own on Streamlit Cloud
 
 1. Push this repository to GitHub
 2. Go to [share.streamlit.io](https://share.streamlit.io)
 3. Click **New app** and connect your GitHub repository
 4. Set the main file path to `app.py`
-5. In **Advanced settings > Secrets**, add:
+5. In **Advanced settings > Secrets**, add your keys:
    ```toml
    GEMINI_API_KEY = "your-api-key-here"
+   SUPABASE_URL = "https://your-project-ref.supabase.co"   # optional
+   SUPABASE_KEY = "your-supabase-anon-key"                 # optional
+   ADMIN_EMAIL  = "your-email@example.com"                 # optional
    ```
 6. Click **Deploy**
 
-The app supports up to 200MB file uploads and runs in headless mode by default.
+The app supports up to 200MB file uploads and runs in headless mode by default. A keep-alive GitHub Action pings the app to prevent it from sleeping.
 
 ---
 
 ## Project Structure
 
 ```
-community-college-data-analysis/
+DataPrism/
 ├── app.py                                    # Main entry point (DataPrism home)
 ├── requirements.txt                          # Python dependencies
 ├── .streamlit/
@@ -189,13 +220,22 @@ community-college-data-analysis/
 │   ├── data_generator.py                     # Synthetic data generation
 │   ├── visualizations.py                     # Reusable Plotly charts & view-as-table helper
 │   ├── ai_insights.py                        # AI and rule-based analysis engine
+│   ├── ai_intelligence.py                    # Insight cards, explain-number, exec summary
+│   ├── profiling.py                          # Data quality scoring & column profiles
+│   ├── statistics.py                         # t-test, chi-square, ANOVA, regression, K-Means
+│   ├── forecasting.py                        # Time-series forecasting (Holt-Winters)
+│   ├── dashboard_builder.py                  # KPI detection & chart library
+│   ├── sensitivity.py                        # PII detection & column masking
 │   ├── online_data.py                        # Web data fetching utilities
-│   ├── report_generator.py                   # Report generation utilities
+│   ├── report_generator.py                   # Report generation (HTML/PDF/DOCX)
+│   ├── auth.py                               # Authentication, RBAC & activity logging
+│   ├── workspace.py                          # Projects, audit log & dataset versioning
+│   ├── feedback.py                           # Sidebar feedback collection
 │   ├── supabase_client.py                    # Optional Supabase client (graceful fallback)
 │   └── database.py                           # Cloud persistence data-access layer
 ├── data/
 │   └── community_college_data.csv            # Built-in synthetic dataset
-└── SUPABASE_SETUP.md                         # Cloud Workspace setup guide + SQL schema
+└── SUPABASE_SETUP.md                         # Cloud Workspace + auth setup guide + SQL schema
 ```
 
 ---

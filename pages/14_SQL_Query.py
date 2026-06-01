@@ -4,8 +4,9 @@ SQL Query Interface - Run SQL queries against your loaded datasets.
 
 import streamlit as st
 st.set_page_config(page_title="SQL Query Interface", page_icon="\U0001f4a0", layout="wide")
-from utils.styles import inject_global_css
+from utils.styles import inject_global_css, render_sidebar_nav
 inject_global_css()
+render_sidebar_nav()
 from utils.data_loader import ensure_builtin_data
 ensure_builtin_data()
 

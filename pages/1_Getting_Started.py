@@ -1,8 +1,9 @@
 """Getting Started - Quick start guide for DataPrism."""
 import streamlit as st
 st.set_page_config(page_title="Getting Started", page_icon="\U0001f4a0", layout="wide")
-from utils.styles import inject_global_css
+from utils.styles import inject_global_css, render_sidebar_nav
 inject_global_css()
+render_sidebar_nav()
 
 st.title("🚀 Getting Started")
 st.markdown("""

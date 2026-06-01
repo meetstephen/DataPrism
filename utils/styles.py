@@ -44,6 +44,57 @@ THEMES = {
 }
 
 
+# ---------------------------------------------------------------------------
+# Sidebar navigation items: (page_path, emoji_icon, label)
+# ---------------------------------------------------------------------------
+NAV_ITEMS = [
+    ("app.py", "\U0001F3E0", "Home"),
+    ("pages/0_Guided_Analysis.py", "\U0001F9ED", "Guided Analysis"),
+    ("pages/1_Getting_Started.py", "\U0001F680", "Getting Started"),
+    ("pages/2_Upload_and_Analyze.py", "\U0001F4C1", "Upload & Analyze"),
+    ("pages/3_Data_Cleaning.py", "\U0001F9F9", "Data Cleaning"),
+    ("pages/4_AI_Insights_Engine.py", "\U0001F916", "AI Insights"),
+    ("pages/5_Advanced_Analytics.py", "\U0001F527", "Advanced Analytics"),
+    ("pages/6_Online_Data_Explorer.py", "\U0001F310", "Online Explorer"),
+    ("pages/7_Report_Generator.py", "\U0001F4CB", "Report Generator"),
+    ("pages/8_Chat_With_Data.py", "\U0001F4AC", "Chat With Data"),
+    ("pages/9_Cloud_Workspace.py", "\u2601\uFE0F", "Cloud Workspace"),
+    ("pages/10_Data_Profiling.py", "\U0001F50D", "Data Profiling"),
+    ("pages/11_Dashboard.py", "\U0001F4CA", "Dashboard"),
+    ("pages/13_Data_Join.py", "\U0001F517", "Data Join"),
+    ("pages/14_SQL_Query.py", "\U0001F4DD", "SQL Query"),
+    ("pages/15_Data_Dictionary.py", "\U0001F4D6", "Data Dictionary"),
+]
+
+
+def render_sidebar_nav():
+    """Render the custom styled sidebar navigation menu on any page."""
+    with st.sidebar:
+        st.markdown(
+            '<div class="dp-nav-header">\U0001F4CD Navigation</div>',
+            unsafe_allow_html=True,
+        )
+        st.caption("Navigate to")
+        for path, icon, label in NAV_ITEMS:
+            try:
+                st.page_link(path, label=label, icon=icon)
+            except Exception:
+                pass
+        # Admin Panel link only visible to admins
+        try:
+            from utils.auth import get_current_user
+            current = get_current_user()
+            if current and current.get("role") == "admin":
+                st.page_link(
+                    "pages/12_Admin_Panel.py",
+                    label="Admin Panel",
+                    icon="\U0001F6E1\uFE0F",
+                )
+        except Exception:
+            pass
+        st.markdown("---")
+
+
 def _get_active_theme():
     """Get the currently active theme dict. Defaults to Enterprise Dark."""
     theme_name = st.session_state.get("dp_active_theme", "Enterprise Dark")
@@ -107,6 +158,47 @@ section[data-testid="stSidebar"] > div {{
 [data-testid="stSidebar"] .stMarkdown li {{
     font-size: 0.92rem !important;
     line-height: 1.6 !important;
+}}
+
+/* Hide the default auto-generated page nav - we use a custom styled nav */
+[data-testid="stSidebarNav"] {{ display: none !important; }}
+
+/* Custom navigation header */
+.dp-nav-header {{
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: {theme['accent']};
+    margin: 0.3rem 0 0.1rem 0;
+    letter-spacing: 0.02em;
+}}
+
+/* Sidebar page_link items styled as interactive bars/boxes */
+[data-testid="stSidebar"] [data-testid="stPageLink"] {{
+    margin: 0.3rem 0 !important;
+}}
+[data-testid="stSidebar"] [data-testid="stPageLink"] a {{
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.6rem !important;
+    background: rgba(255,255,255,0.03) !important;
+    border: 1px solid {theme['sidebar_border']} !important;
+    border-radius: 10px !important;
+    padding: 0.6rem 0.85rem !important;
+    font-size: 0.97rem !important;
+    font-weight: 500 !important;
+    color: {theme['text_primary']} !important;
+    transition: all 0.18s ease !important;
+}}
+[data-testid="stSidebar"] [data-testid="stPageLink"] a:hover {{
+    background: {theme['accent']}1A !important;
+    border-color: {theme['accent']}80 !important;
+    transform: translateX(3px) !important;
+    box-shadow: 0 2px 12px {theme['accent']}33 !important;
+}}
+[data-testid="stSidebar"] [data-testid="stPageLink"] a p {{
+    font-size: 0.97rem !important;
+    font-weight: 500 !important;
+    margin: 0 !important;
 }}
 
 /* Main content area */

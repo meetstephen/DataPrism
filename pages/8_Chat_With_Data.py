@@ -8,8 +8,9 @@ Two modes:
 """
 import streamlit as st
 st.set_page_config(page_title="Chat With Data", page_icon="\U0001f4a0", layout="wide")
-from utils.styles import inject_global_css, render_empty_state
+from utils.styles import inject_global_css, render_empty_state, render_sidebar_nav
 inject_global_css()
+render_sidebar_nav()
 
 import pandas as pd
 import numpy as np
@@ -576,9 +577,12 @@ else:
 st.markdown("---")
 st.markdown("### Related Tools")
 nav_col1, nav_col2, nav_col3 = st.columns(3)
-with nav_col1:
-    st.page_link("pages/2_Upload_and_Analyze.py", label="Upload & Analyze", icon="\U0001F4C1")
-with nav_col2:
-    st.page_link("pages/4_AI_Insights_Engine.py", label="AI Insights", icon="\U0001F916")
-with nav_col3:
-    st.page_link("pages/7_Report_Generator.py", label="Generate Report", icon="\U0001F4CB")
+try:
+    with nav_col1:
+        st.page_link("pages/2_Upload_and_Analyze.py", label="Upload & Analyze", icon="\U0001F4C1")
+    with nav_col2:
+        st.page_link("pages/4_AI_Insights_Engine.py", label="AI Insights", icon="\U0001F916")
+    with nav_col3:
+        st.page_link("pages/7_Report_Generator.py", label="Generate Report", icon="\U0001F4CB")
+except Exception:
+    pass
