@@ -195,6 +195,20 @@ section[data-testid="stSidebar"] > div {{
     transform: translateX(3px) !important;
     box-shadow: 0 2px 12px {theme['accent']}33 !important;
 }}
+/* Highlight the CURRENT page in the nav (Streamlit sets aria-current="page") */
+[data-testid="stSidebar"] [data-testid="stPageLink"] a[aria-current],
+[data-testid="stSidebar"] [data-testid="stPageLink"] a[aria-current="page"],
+[data-testid="stSidebar"] [data-testid="stPageLink"] a.active {{
+    background: {theme['accent']}2B !important;
+    border-color: {theme['accent']} !important;
+    border-left: 4px solid {theme['accent']} !important;
+    font-weight: 700 !important;
+    color: {theme['accent']} !important;
+}}
+[data-testid="stSidebar"] [data-testid="stPageLink"] a[aria-current="page"] p {{
+    font-weight: 700 !important;
+    color: {theme['accent']} !important;
+}}
 [data-testid="stSidebar"] [data-testid="stPageLink"] a p {{
     font-size: 0.97rem !important;
     font-weight: 500 !important;
@@ -259,13 +273,12 @@ section[data-testid="stSidebar"] > div {{
     background: {theme['accent']}08 !important;
 }}
 
-/* Smooth fade-in for the main content area */
-@keyframes dpFadeIn {{
-    from {{ opacity: 0; transform: translateY(8px); }}
-    to   {{ opacity: 1; transform: translateY(0); }}
-}}
+/* Main content area spacing.
+   NOTE: No replay-on-rerun animation here. A keyframe animation on the
+   block-container replays on every Streamlit rerun (tab click, button,
+   widget change), making the content visibly jump/slide upward. Keeping
+   this static gives a smooth, stable enterprise feel. */
 [data-testid="stAppViewContainer"] .main .block-container {{
-    animation: dpFadeIn 0.5s ease-out;
     padding-top: 3rem;
 }}
 
@@ -413,13 +426,8 @@ h1, h2, h3 { letter-spacing: -0.02em; }
 
 /* ===== Premium enterprise enhancements ===== */
 
-/* Smooth fade-in for the main content area */
-@keyframes dpFadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
+/* Main content area spacing (no replay-on-rerun animation - see note above) */
 [data-testid="stAppViewContainer"] .main .block-container {
-    animation: dpFadeIn 0.5s ease-out;
     padding-top: 3rem;
 }
 
