@@ -6,8 +6,9 @@ configured, the page shows setup guidance instead of failing.
 
 import streamlit as st
 st.set_page_config(page_title="Cloud Workspace", page_icon="\U0001f4a0", layout="wide")
-from utils.styles import inject_global_css
+from utils.styles import inject_global_css, render_sidebar_nav
 inject_global_css()
+render_sidebar_nav()
 
 import pandas as pd
 from utils.supabase_client import is_configured, get_client, status_message

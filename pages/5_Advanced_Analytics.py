@@ -4,8 +4,9 @@ Advanced Analytics - Pivot tables, custom charts, and statistical tools.
 
 import streamlit as st
 st.set_page_config(page_title="Advanced Analytics", page_icon="\U0001f4a0", layout="wide")
-from utils.styles import inject_global_css
+from utils.styles import inject_global_css, render_sidebar_nav
 inject_global_css()
+render_sidebar_nav()
 from utils.data_loader import ensure_builtin_data
 ensure_builtin_data()
 
