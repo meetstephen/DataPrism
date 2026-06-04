@@ -215,12 +215,10 @@ def generate_executive_summary(df, api_key=None):
 
     if api_key:
         try:
-            import google.generativeai as genai
+            from google import genai
+            from google.genai import types
 
-            genai.configure(api_key=api_key)
-            # NOTE: This duplicates the Gemini pattern from ai_insights.py for isolation.
-            # Future refactoring could unify these into a shared Gemini client utility.
-            model = genai.GenerativeModel("gemini-2.5-flash")
+            client = genai.Client(api_key=api_key)
 
             # Build data summary for context
             shape_info = f"{len(df)} rows and {len(df.columns)} columns"
@@ -231,8 +229,7 @@ def generate_executive_summary(df, api_key=None):
                 stats_info = df[numeric_cols].describe().to_string()
 
             prompt = (
-                "You are a senior data analyst preparing an executive briefing for "
-                "business stakeholders. Write a concise 3-5 paragraph executive summary "
+                "Write a concise 3-5 paragraph executive summary "
                 "of the dataset below. Frame your analysis professionally, cite specific "
                 "quantified figures (counts, means, ranges, percentages), highlight notable "
                 "patterns and risks, and close with concrete, actionable recommendations. "
@@ -243,7 +240,17 @@ def generate_executive_summary(df, api_key=None):
                 f"First few rows:\n{df.head(5).to_string()}"
             )
 
-            response = model.generate_content(prompt)
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    system_instruction=(
+                        "You are a senior data analyst preparing an executive briefing "
+                        "for business stakeholders. Be precise, cite numbers, and use "
+                        "professional business language."
+                    )
+                ),
+            )
             if response and response.text:
                 return response.text
         except Exception as e:
