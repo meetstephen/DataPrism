@@ -282,7 +282,24 @@ DataPrism pages are interconnected. Data loaded on one page is automatically ava
 
 ## Screenshots
 
-> Screenshots coming soon. The platform features a premium dark theme with cyan accent colors and enterprise-grade UI components.
+> To add screenshots: take a capture of each page, save to `assets/screenshots/`, and replace the paths below.
+
+**Home Screen — 3-Path Landing**
+![Home Screen](assets/screenshots/home.png)
+
+**Guided Analysis Mode**
+![Guided Analysis](assets/screenshots/guided_analysis.png)
+
+**Data Cleaning Engine**
+![Data Cleaning](assets/screenshots/data_cleaning.png)
+
+**AI Insights Engine**
+![AI Insights](assets/screenshots/ai_insights.png)
+
+**Dashboard Builder**
+![Dashboard](assets/screenshots/dashboard.png)
+
+> *Live demo → [dataprism-ai.streamlit.app](https://dataprism-ai.streamlit.app)*
 
 ---
 
