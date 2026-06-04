@@ -48,6 +48,12 @@ def save_template(name, config_dict):
                 "config": config_dict,
             }
             client.table(T_TEMPLATES).insert(payload).execute()
+            # Invalidate cache so next list_templates() fetches fresh data
+            try:
+                import streamlit as st
+                st.session_state["dp_templates_cache"] = None
+            except Exception:
+                pass
             return True, f"Template '{name}' saved to cloud."
         except Exception as e:
             return False, f"Could not save template: {e}"
@@ -58,6 +64,11 @@ def save_template(name, config_dict):
             path = os.path.join(TEMPLATES_DIR, f"{safe_name}.json")
             with open(path, "w", encoding="utf-8") as f:
                 json.dump(config_dict, f, indent=2, default=str)
+            try:
+                import streamlit as st
+                st.session_state["dp_templates_cache"] = None
+            except Exception:
+                pass
             return True, f"Template '{name}' saved locally."
         except Exception as e:
             return False, f"Could not save template: {e}"
@@ -130,6 +141,15 @@ def list_templates():
         except Exception as e:
             return False, f"Could not list templates: {e}"
     else:
+        # Use session-state cache to avoid rescanning disk on every page rerun
+        try:
+            import streamlit as st
+            cached = st.session_state.get("dp_templates_cache")
+            if cached is not None:
+                return True, cached
+        except Exception:
+            pass
+
         try:
             _ensure_local_dir()
             templates = []
@@ -144,6 +164,11 @@ def list_templates():
                         "description": data.get("description", ""),
                         "created_at": data.get("created_at", ""),
                     })
+            try:
+                import streamlit as st
+                st.session_state["dp_templates_cache"] = templates
+            except Exception:
+                pass
             return True, templates
         except Exception as e:
             return False, f"Could not list templates: {e}"
@@ -164,9 +189,15 @@ def delete_template(template_id_or_name):
             return False, err
         try:
             resp = client.table(T_TEMPLATES).delete().eq("id", template_id_or_name).execute()
-            # Verify that the delete actually matched a row
+            # PostgREST returns HTTP 200 with empty data when no rows matched
             if not resp.data or len(resp.data) == 0:
                 return False, "Template not found or already deleted."
+            # Invalidate local cache on successful delete
+            try:
+                import streamlit as st
+                st.session_state["dp_templates_cache"] = None
+            except Exception:
+                pass
             return True, "Template deleted."
         except Exception as e:
             return False, f"Could not delete template: {e}"
@@ -177,6 +208,11 @@ def delete_template(template_id_or_name):
             path = os.path.join(TEMPLATES_DIR, f"{safe_name}.json")
             if os.path.exists(path):
                 os.remove(path)
+                try:
+                    import streamlit as st
+                    st.session_state["dp_templates_cache"] = None
+                except Exception:
+                    pass
                 return True, "Template deleted."
             return False, "Template not found."
         except Exception as e:
