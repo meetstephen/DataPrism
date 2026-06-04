@@ -2,15 +2,21 @@ name: Keep Alive
 
 on:
   schedule:
-    # Run daily at 06:00 UTC to prevent Streamlit Cloud spindown
-    - cron: '0 6 * * *'
+    # Ping every 15 minutes to prevent Streamlit Cloud from sleeping
+    - cron: '*/15 * * * *'
   workflow_dispatch:
 
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping application
+      - name: Ping DataPrism
         run: |
           echo "Keep-alive ping at $(date -u)"
-          echo "This workflow prevents Streamlit Cloud from spinning down due to inactivity."
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 https://dataprism-ai.streamlit.app/)
+          echo "HTTP status: $STATUS"
+          if [ "$STATUS" -ge 200 ] && [ "$STATUS" -lt 400 ]; then
+            echo "App is alive."
+          else
+            echo "Warning: unexpected HTTP status $STATUS"
+          fi
