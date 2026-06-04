@@ -134,45 +134,6 @@ with st.expander("\U0001F50D Global Filters", expanded=False):
 
 st.markdown("---")
 
-# Tab layout
-tab_auto, tab_kpi, tab_charts = st.tabs(["\U0001F680 Auto-Build", "\U0001F4C8 KPI Cards", "\U0001F3A8 Chart Library"])
-
-# Auto-Build Tab
-with tab_auto:
-    st.markdown("### Auto-Build Dashboard")
-    st.markdown("Automatically generate a dashboard based on your dataset structure.")
-
-    if st.button("Auto-Build Dashboard", type="primary", key="auto_build_btn"):
-        with st.spinner("Building dashboard..."):
-            dashboard = auto_build_dashboard(df)
-            st.session_state["_auto_dashboard"] = dashboard
-
-    dashboard = st.session_state.get("_auto_dashboard")
-    if dashboard:
-        # KPI Row
-        kpis = dashboard.get("kpis", [])
-        if kpis:
-            kpi_cols = st.columns(len(kpis))
-            for i, kpi in enumerate(kpis):
-                with kpi_cols[i]:
-                    st.metric(kpi["label"], f"{kpi['value']:,.2f}" if isinstance(kpi["value"], float) else f"{kpi['value']:,}")
-
-        # Charts
-        charts = dashboard.get("charts", [])
-        for i in range(0, len(charts), 2):
-            chart_row = st.columns(2)
-            for j, col in enumerate(chart_row):
-                idx = i + j
-                if idx >= len(charts):
-                    break
-                chart_cfg = charts[idx]
-                with col:
-                    st.markdown(f"**{chart_cfg['title']}**")
-                    try:
-                        _render_auto_chart(df, chart_cfg)
-                    except Exception as e:
-                        st.error(f"Chart error: {str(e)}")
-
 
 def _render_auto_chart(df, chart_cfg):
     """Render a chart from auto-build configuration."""
@@ -230,6 +191,46 @@ def _render_auto_chart(df, chart_cfg):
         if x and y and x in df.columns and y in df.columns:
             fig = create_box_plot(df, x, y, chart_cfg["title"])
             st.plotly_chart(fig, use_container_width=True)
+
+
+# Tab layout
+tab_auto, tab_kpi, tab_charts = st.tabs(["\U0001F680 Auto-Build", "\U0001F4C8 KPI Cards", "\U0001F3A8 Chart Library"])
+
+# Auto-Build Tab
+with tab_auto:
+    st.markdown("### Auto-Build Dashboard")
+    st.markdown("Automatically generate a dashboard based on your dataset structure.")
+
+    if st.button("Auto-Build Dashboard", type="primary", key="auto_build_btn"):
+        with st.spinner("Building dashboard..."):
+            dashboard = auto_build_dashboard(df)
+            st.session_state["_auto_dashboard"] = dashboard
+
+    dashboard = st.session_state.get("_auto_dashboard")
+    if dashboard:
+        # KPI Row
+        kpis = dashboard.get("kpis", [])
+        if kpis:
+            kpi_cols = st.columns(len(kpis))
+            for i, kpi in enumerate(kpis):
+                with kpi_cols[i]:
+                    st.metric(kpi["label"], f"{kpi['value']:,.2f}" if isinstance(kpi["value"], float) else f"{kpi['value']:,}")
+
+        # Charts
+        charts = dashboard.get("charts", [])
+        for i in range(0, len(charts), 2):
+            chart_row = st.columns(2)
+            for j, col in enumerate(chart_row):
+                idx = i + j
+                if idx >= len(charts):
+                    break
+                chart_cfg = charts[idx]
+                with col:
+                    st.markdown(f"**{chart_cfg['title']}**")
+                    try:
+                        _render_auto_chart(df, chart_cfg)
+                    except Exception as e:
+                        st.error(f"Chart error: {str(e)}")
 
 
 # KPI Cards Tab
