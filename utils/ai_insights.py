@@ -19,11 +19,10 @@ def generate_insights_gemini(df_summary, api_key):
         str or None: AI-generated insights about the data, or None on failure.
     """
     try:
-        import google.generativeai as genai
+        from google import genai
+        from google.genai import types
 
-        genai.configure(api_key=api_key)
-
-        model = genai.GenerativeModel("gemini-2.5-flash")
+        client = genai.Client(api_key=api_key)
 
         system_instruction = (
             "You are a senior data analyst preparing a briefing for stakeholders. "
@@ -36,9 +35,15 @@ def generate_insights_gemini(df_summary, api_key):
             "Be precise, cite numbers, and use professional business language."
         )
 
-        prompt = f"{system_instruction}\n\nPlease analyze this dataset summary and provide insights:\n\n{df_summary}"
+        prompt = f"Please analyze this dataset summary and provide insights:\n\n{df_summary}"
 
-        response = model.generate_content(prompt)
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                system_instruction=system_instruction
+            ),
+        )
 
         if response and response.text:
             return response.text
