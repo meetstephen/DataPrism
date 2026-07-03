@@ -7,6 +7,7 @@ render_sidebar_nav()
 
 import pandas as pd
 import numpy as np
+from utils.data_loader import read_csv_robust
 from utils.data_engine import (
     init_cleaning_state,
     apply_cleaning_step,
@@ -58,7 +59,9 @@ with source_tab1:
     if cleaning_upload is not None:
         try:
             if cleaning_upload.name.endswith(".csv"):
-                new_df = pd.read_csv(cleaning_upload)
+                new_df, load_err = read_csv_robust(cleaning_upload)
+                if load_err:
+                    raise ValueError(load_err)
             else:
                 new_df = pd.read_excel(cleaning_upload)
             if new_df.empty or len(new_df.columns) < 1:

@@ -12,7 +12,7 @@ import numpy as np
 import plotly.graph_objects as go
 
 from utils.styles import inject_global_css, render_sidebar_nav
-from utils.data_loader import init_all_session_state
+from utils.data_loader import init_all_session_state, read_csv_robust
 from utils.ai_client import get_api_key, generate_content
 from utils.data_engine import (
     init_cleaning_state, apply_cleaning_step,
@@ -204,7 +204,10 @@ def render_stage_2():
         if uploaded:
             try:
                 if uploaded.name.endswith(".csv"):
-                    df = pd.read_csv(uploaded)
+                    df, load_err = read_csv_robust(uploaded)
+                    if load_err:
+                        st.error(load_err)
+                        df = None
                 elif uploaded.name.endswith((".xlsx", ".xls")):
                     df = pd.read_excel(uploaded)
                 elif uploaded.name.endswith(".json"):

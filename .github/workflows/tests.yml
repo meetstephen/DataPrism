@@ -1,0 +1,37 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Check for undefined names / broken imports (new/changed files)
+        # NOTE: scoped to the files touched during the July 2026 hardening pass.
+        # The rest of the codebase has ~46 pre-existing pyflakes warnings
+        # (mostly harmless unused imports) tracked separately as tech debt -
+        # see TESTING.md. Widen this list as more files get cleaned up.
+        run: |
+          python -m pyflakes \
+            utils/chat_charts.py \
+            utils/data_loader.py \
+            pages/8_Chat_With_Data.py \
+            tests/
+
+      - name: Run test suite
+        run: pytest tests/ -v

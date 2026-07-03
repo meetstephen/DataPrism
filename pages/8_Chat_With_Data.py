@@ -13,10 +13,15 @@ inject_global_css()
 render_sidebar_nav()
 
 import pandas as pd
-import numpy as np
-from io import StringIO, BytesIO
-from utils.ai_client import get_api_key, generate_content, GEMINI_MODEL
+from utils.ai_client import get_api_key, generate_content
 from utils.persistence import save_session_state
+from utils.data_loader import read_csv_robust
+from utils.chat_charts import (
+    CHART_SPEC_INSTRUCTIONS,
+    build_chart_from_spec,
+    extract_chart_spec,
+    strip_chart_spec,
+)
 
 st.title("\U0001f4ac Chat With Your Data")
 st.markdown(
@@ -48,11 +53,8 @@ STRUCTURED_SYSTEM_INSTRUCTION = (
     "their dataset in clear, executive-ready business English, grounded strictly in the "
     "actual data provided. Be specific and quantified: cite exact figures, percentages, "
     "and column names, and surface relevant trends, comparisons, anomalies, and caveats. "
-    "If a visualization would materially help, include Python code in a ```python code "
-    "block that builds a Plotly figure assigned to a variable named 'fig', using the "
-    "dataframe variable 'df' (already defined). Always use the plotly_dark template and "
-    "the accent color #00D4FF. Keep responses well-structured with concise headings and "
-    "bullet points."
+    + CHART_SPEC_INSTRUCTIONS +
+    " Keep responses well-structured with concise headings and bullet points."
 )
 
 DOCUMENT_SYSTEM_INSTRUCTION = (
@@ -100,7 +102,9 @@ def extract_text_from_file(uploaded_file):
             content = uploaded_file.read().decode("utf-8", errors="replace")
 
         elif file_type == "csv":
-            df = pd.read_csv(uploaded_file)
+            df, load_err = read_csv_robust(uploaded_file)
+            if load_err:
+                raise ValueError(load_err)
             content = f"CSV File: {uploaded_file.name}\n"
             content += f"Shape: {df.shape[0]} rows x {df.shape[1]} columns\n"
             content += f"Columns: {', '.join(df.columns.tolist())}\n\n"
@@ -210,7 +214,9 @@ def render_structured_chat():
         if chat_upload is not None:
             try:
                 if chat_upload.name.endswith(".csv"):
-                    new_df = pd.read_csv(chat_upload)
+                    new_df, load_err = read_csv_robust(chat_upload)
+                    if load_err:
+                        raise ValueError(load_err)
                 else:
                     new_df = pd.read_excel(chat_upload)
                 if new_df.empty or len(new_df.columns) < 1:
@@ -334,36 +340,20 @@ def render_structured_chat():
                 )
 
                 if response_text:
-                    # Check for Python code blocks (chart generation)
-                    fig = None
-                    if "```python" in response_text:
-                        code_blocks = response_text.split("```python")
-                        for block in code_blocks[1:]:
-                            code = block.split("```")[0].strip()
-                            # Basic safety check - reject dangerous patterns
-                            dangerous_patterns = ['import os', 'import subprocess', 'import sys', '__import__',
-                                                  'eval(', 'exec(', 'open(', 'import shutil', 'import socket']
-                            code_lower = code.lower()
-                            if any(pattern in code_lower for pattern in dangerous_patterns):
-                                continue  # Skip this code block
-                            try:
-                                local_vars = {"df": chat_df, "pd": pd, "np": np}
-                                import plotly.express as px
-                                import plotly.graph_objects as go
-                                local_vars["px"] = px
-                                local_vars["go"] = go
-                                exec(code, {"__builtins__": {}}, local_vars)
-                                if "fig" in local_vars:
-                                    fig = local_vars["fig"]
-                                    break
-                            except Exception:
-                                pass
+                    # Chart generation: the model returns a small JSON "chartspec"
+                    # (see utils/chat_charts.py) which is rendered through an
+                    # allow-listed builder. No model- or user-supplied code is
+                    # ever executed — this intentionally replaces an earlier
+                    # exec()-based implementation that was a real RCE risk.
+                    spec = extract_chart_spec(response_text)
+                    fig = build_chart_from_spec(chat_df, spec) if spec else None
+                    display_text = strip_chart_spec(response_text) if spec else response_text
 
-                    st.markdown(response_text)
+                    st.markdown(display_text)
                     if fig:
                         st.plotly_chart(fig, use_container_width=True)
 
-                    history_entry = {"role": "assistant", "content": response_text}
+                    history_entry = {"role": "assistant", "content": display_text}
                     if fig:
                         history_entry["figure"] = fig
                     st.session_state.chat_history.append(history_entry)

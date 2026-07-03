@@ -9,7 +9,7 @@ inject_global_css()
 render_sidebar_nav()
 
 import pandas as pd
-from utils.data_loader import ensure_builtin_data
+from utils.data_loader import ensure_builtin_data, read_csv_robust
 from utils.ai_client import get_api_key, generate_content, GEMINI_MODEL
 from utils.supabase_client import is_configured
 from utils import database as db
@@ -83,7 +83,9 @@ with st.expander("📁 Upload a new file for analysis", expanded=False):
     if ai_upload is not None:
         try:
             if ai_upload.name.endswith(".csv"):
-                new_df = pd.read_csv(ai_upload)
+                new_df, load_err = read_csv_robust(ai_upload)
+                if load_err:
+                    raise ValueError(load_err)
             else:
                 new_df = pd.read_excel(ai_upload)
             if not new_df.empty and len(new_df.columns) >= 1:

@@ -1,7 +1,14 @@
 """Shared data loading helpers to ensure datasets are always available."""
+import io
 import os
 import streamlit as st
 import pandas as pd
+
+# Max upload size this helper will fully materialize in memory. Mirrors
+# .streamlit/config.toml's server.maxUploadSize (200 MB) so the two stay in
+# sync; if you raise one, raise the other.
+MAX_UPLOAD_MB = 200
+CSV_ENCODING_CANDIDATES = ("utf-8", "utf-8-sig", "cp1252", "latin-1")
 
 
 def ensure_builtin_data():
@@ -83,7 +90,6 @@ def _gen_iris():
     """Generate Iris-like dataset."""
     import numpy as np
     np.random.seed(42)
-    n = 150
     species = np.repeat(["setosa", "versicolor", "virginica"], 50)
     sepal_length = np.concatenate([
         np.random.normal(5.0, 0.35, 50),
@@ -233,6 +239,69 @@ def parse_pasted_csv(text):
         return None, f"Could not parse pasted data: {str(e)}"
 
 
+def read_csv_robust(file_obj, sep=","):
+    """Read a CSV/TSV file-like object into a DataFrame, tolerating the
+    non-UTF-8 encodings that are extremely common in real-world exports
+    (Excel's default Windows-1252, legacy Latin-1 systems, BOM-prefixed
+    UTF-8 from some ERPs, etc.). This is the single place encoding
+    detection happens; every upload path in the app should route through
+    here (or ``load_file_flexible``) instead of calling ``pd.read_csv``
+    directly, so a fix here fixes every page at once.
+
+    Returns (df, error_message) tuple; df is None on failure.
+    """
+    try:
+        file_obj.seek(0)
+    except Exception:
+        pass  # Not all file-like objects support seek (e.g. plain BytesIO past EOF is fine, others may not)
+
+    try:
+        raw = file_obj.read()
+    except Exception as e:
+        return None, f"Could not read file: {e}"
+
+    if isinstance(raw, str):
+        raw = raw.encode("utf-8", errors="replace")
+
+    size_mb = len(raw) / (1024 * 1024)
+    if size_mb > MAX_UPLOAD_MB:
+        return None, (
+            f"File is {size_mb:.0f} MB, which exceeds the {MAX_UPLOAD_MB} MB limit. "
+            f"Try a filtered export or a smaller sample."
+        )
+    if size_mb == 0:
+        return None, "File is empty."
+
+    last_error = None
+    for encoding in CSV_ENCODING_CANDIDATES:
+        try:
+            df = pd.read_csv(io.BytesIO(raw), sep=sep, encoding=encoding)
+            return df, None
+        except UnicodeDecodeError as e:
+            last_error = e
+            continue
+        except Exception as e:
+            # Not an encoding problem (bad delimiter, corrupt file, etc.) -
+            # retrying other encodings won't help, surface it immediately.
+            return None, f"Could not parse CSV: {e}"
+
+    # Fixed candidates all failed to decode - fall back to chardet's guess.
+    try:
+        import chardet
+        detected = chardet.detect(raw[:200_000])
+        guess = detected.get("encoding")
+        if guess and guess.lower() not in {e.lower() for e in CSV_ENCODING_CANDIDATES}:
+            df = pd.read_csv(io.BytesIO(raw), sep=sep, encoding=guess)
+            return df, None
+    except Exception:
+        pass
+
+    return None, (
+        "Could not determine this file's text encoding. Please re-save it as "
+        f"UTF-8 CSV and try again. (Last error: {last_error})"
+    )
+
+
 def load_file_flexible(uploaded_file):
     """Load a file supporting CSV, Excel, JSON, TSV, and Parquet.
 
@@ -244,18 +313,24 @@ def load_file_flexible(uploaded_file):
     name = uploaded_file.name.lower()
     try:
         if name.endswith(".csv"):
-            df = pd.read_csv(uploaded_file)
+            df, err = read_csv_robust(uploaded_file)
+            if err:
+                return None, err
         elif name.endswith((".xlsx", ".xls")):
             df = pd.read_excel(uploaded_file)
         elif name.endswith(".json"):
             df = pd.read_json(uploaded_file)
         elif name.endswith(".tsv"):
-            df = pd.read_csv(uploaded_file, sep="\t")
+            df, err = read_csv_robust(uploaded_file, sep="\t")
+            if err:
+                return None, err
         elif name.endswith(".parquet"):
             df = pd.read_parquet(uploaded_file)
         else:
-            # Try CSV as fallback
-            df = pd.read_csv(uploaded_file)
+            # Unknown extension - try CSV as a best-effort fallback
+            df, err = read_csv_robust(uploaded_file)
+            if err:
+                return None, err
 
         if df is None or df.empty:
             return None, "File loaded but contains no data."

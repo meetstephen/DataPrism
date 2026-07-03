@@ -5,7 +5,7 @@ inject_global_css()
 render_sidebar_nav()
 
 import pandas as pd
-from utils.data_loader import ensure_builtin_data
+from utils.data_loader import ensure_builtin_data, read_csv_robust
 from utils.ai_client import get_api_key, generate_content, GEMINI_MODEL
 from utils.report_generator import generate_html_report, generate_executive_summary, generate_pdf_report, generate_docx_report
 from utils.exporters import render_export_buttons
@@ -29,7 +29,9 @@ with st.expander("📁 Upload a new file for report", expanded=False):
     if report_upload is not None:
         try:
             if report_upload.name.endswith(".csv"):
-                new_df = pd.read_csv(report_upload)
+                new_df, load_err = read_csv_robust(report_upload)
+                if load_err:
+                    raise ValueError(load_err)
             else:
                 new_df = pd.read_excel(report_upload)
             if not new_df.empty and len(new_df.columns) >= 1:
