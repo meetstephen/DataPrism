@@ -43,6 +43,34 @@ class AnalysisPipelineTests(unittest.TestCase):
     result = load_source(output.getvalue(), "book.xlsx")
     self.assertEqual(set(result.datasets), {"First_sheet", "Second"})
 
+ def test_pdf_ingestion_extracts_selectable_text(self):
+    import fitz
+
+    document = fitz.open()
+    page = document.new_page()
+    page.insert_text((72, 72), "Revenue increased 18 percent in 2026.")
+    raw = document.tobytes()
+    document.close()
+    result = load_source(raw, "report.pdf")
+    self.assertIn("Revenue increased", result.document_text)
+    self.assertEqual(result.metadata["pages"], 1)
+
+ def test_docx_ingestion_extracts_text_and_tables(self):
+    from docx import Document
+
+    output = io.BytesIO()
+    document = Document()
+    document.add_paragraph("Quarterly operating review")
+    table = document.add_table(rows=2, cols=2)
+    table.cell(0, 0).text = "Region"
+    table.cell(0, 1).text = "Revenue"
+    table.cell(1, 0).text = "West"
+    table.cell(1, 1).text = "1200"
+    document.save(output)
+    result = load_source(output.getvalue(), "review.docx")
+    self.assertIn("Quarterly operating review", result.document_text)
+    self.assertEqual(result.datasets["table_1"].loc[0, "Region"], "West")
+
 
  def test_profile_finds_missing_duplicates_types_and_outliers(self):
     df = pd.DataFrame({
