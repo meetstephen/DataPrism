@@ -46,7 +46,10 @@ def _validate_query(query):
 
     Returns None if valid, or an error string if rejected.
     """
-    # Strip leading whitespace and SQL comments (-- line comments, /* block */)
+    if len(query) > 20_000:
+        return "Query is too long (maximum 20,000 characters)."
+
+    # Strip comments before inspecting the statement class.
     stripped = query.strip()
     stripped = re.sub(r"--[^\n]*", "", stripped)
     stripped = re.sub(r"/\*.*?\*/", "", stripped, flags=re.DOTALL)
@@ -63,6 +66,18 @@ def _validate_query(query):
             f"Got: '{first_keyword}'. Statements like ATTACH DATABASE, PRAGMA, "
             f"INSERT, UPDATE, DELETE, DROP, and CREATE are blocked for security."
         )
+    # Validate explicitly rather than relying on a driver's stacked-statement
+    # behavior, which could change during a dependency upgrade.
+    without_literals = re.sub(r"'(?:''|[^'])*'|\"(?:\"\"|[^\"])*\"", "''", stripped)
+    if ";" in without_literals.rstrip(";"):
+        return "Only one read-only query may be executed at a time."
+    forbidden = (
+        "ATTACH", "DETACH", "PRAGMA", "INSERT", "UPDATE", "DELETE", "DROP",
+        "CREATE", "ALTER", "REPLACE", "VACUUM", "REINDEX", "LOAD_EXTENSION",
+    )
+    match = re.search(r"\b(" + "|".join(forbidden) + r")\b", without_literals, flags=re.IGNORECASE)
+    if match:
+        return f"Blocked read-only SQL keyword: {match.group(1).upper()}."
     return None
 
 
