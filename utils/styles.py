@@ -68,23 +68,14 @@ NAV_ITEMS = [
 
 
 def render_sidebar_nav():
-    """Render the COMPLETE sidebar on every page so it is identical app-wide:
-    brand, navigation menu, user info / sign-out, theme switcher, session
-    controls, and the feedback widget. Previously the session/feedback/theme
-    controls only existed on the home page; consolidating them here makes the
-    full sidebar (and its scrollable bottom content) appear on every page.
-    """
+    """Render one compact sidebar with a single, stable scroll surface."""
     with st.sidebar:
-        # --- Brand ---
-        st.markdown("## \U0001F4A0 DataPrism")
-        st.markdown("---")
-
-        # --- Navigation ---
         st.markdown(
-            '<div class="dp-nav-header">\U0001F4CD Navigation</div>',
+            '<div class="dp-sidebar-brand"><span>\U0001F4A0</span>'
+            '<div><strong>DataPrism</strong><small>ANALYTICS WORKSPACE</small></div></div>',
             unsafe_allow_html=True,
         )
-        st.caption("Navigate to")
+        st.markdown('<div class="dp-nav-header">Workspace</div>', unsafe_allow_html=True)
         for path, icon, label in NAV_ITEMS:
             try:
                 st.page_link(path, label=label, icon=icon)
@@ -102,64 +93,48 @@ def render_sidebar_nav():
                 )
         except Exception:
             pass
-        st.markdown("---")
+        st.markdown('<div class="dp-sidebar-divider"></div>', unsafe_allow_html=True)
 
-        # --- User info / Sign out ---
-        try:
-            from utils.auth import get_current_user, sign_out
-            current_user = get_current_user()
-            if current_user and not current_user.get("is_mock"):
-                st.markdown(f"**\U0001F464 {current_user.get('display_name', 'User')}**")
-                st.caption(
-                    f"{current_user.get('email', '')} | "
-                    f"Role: {current_user.get('role', 'viewer').title()}"
-                )
-                if st.button("\U0001F6AA Sign Out", key="sidebar_signout", use_container_width=True):
-                    sign_out()
-                    st.rerun()
-                st.markdown("---")
-            elif current_user and current_user.get("is_mock"):
-                st.caption("\U0001F464 Local Dev Mode (no login required)")
-                st.markdown("---")
-        except Exception:
-            pass
+        # Secondary controls stay collapsed so navigation remains the visual
+        # priority and the sidebar is much shorter on ordinary page loads.
+        with st.expander("\u2699\uFE0F Workspace controls", expanded=False):
+            try:
+                from utils.auth import get_current_user, sign_out
+                current_user = get_current_user()
+                if current_user and not current_user.get("is_mock"):
+                    st.markdown(f"**\U0001F464 {current_user.get('display_name', 'User')}**")
+                    st.caption(f"{current_user.get('email', '')} · {current_user.get('role', 'viewer').title()}")
+                    if st.button("Sign out", key="sidebar_signout", use_container_width=True):
+                        sign_out()
+                        st.rerun()
+                elif current_user and current_user.get("is_mock"):
+                    st.caption("\U0001F464 Local mode")
+            except Exception:
+                pass
+            try:
+                render_theme_switcher()
+            except Exception:
+                pass
+            try:
+                from utils.persistence import save_session_state, get_last_saved_time, clear_persisted_session
+                last_saved = get_last_saved_time()
+                if last_saved:
+                    st.caption(f"Last saved: {last_saved[:19]}")
+                scol, ccol = st.columns(2)
+                with scol:
+                    if st.button("\U0001F4BE Save", key="sidebar_session_save", use_container_width=True):
+                        save_session_state()
+                        st.toast("Session saved", icon="\U0001F4BE")
+                with ccol:
+                    if st.button("Clear", key="sidebar_session_clear", use_container_width=True):
+                        clear_persisted_session()
+                        st.toast("Session cleared")
+            except Exception:
+                pass
 
-        # --- Theme switcher ---
         try:
-            render_theme_switcher()
-        except Exception:
-            pass
-
-        # --- Session controls ---
-        try:
-            from utils.persistence import (
-                save_session_state, get_last_saved_time, clear_persisted_session,
-            )
-            st.markdown("---")
-            st.markdown("##### \U0001F4BE Session")
-            last_saved = get_last_saved_time()
-            if last_saved:
-                st.caption(f"Last saved: {last_saved[:19]}")
-            scol, ccol = st.columns(2)
-            with scol:
-                if st.button("\U0001F4BE Save", key="sidebar_session_save",
-                             use_container_width=True, help="Save current work"):
-                    save_session_state()
-                    st.toast("\u2705 Session saved!", icon="\U0001F4BE")
-            with ccol:
-                if st.button("\U0001F5D1\uFE0F Clear", key="sidebar_session_clear",
-                             use_container_width=True, help="Clear saved session"):
-                    clear_persisted_session()
-                    st.toast("\U0001F5D1\uFE0F Session cleared!", icon="\U0001F5D1\uFE0F")
-        except Exception:
-            pass
-
-        # --- Feedback widget ---
-        try:
-            st.markdown("---")
-            st.markdown("##### \U0001F4AC Feedback")
-            st.caption("Report bugs, suggestions, or observations to the team.")
-            with st.expander("\u270F\uFE0F Submit Feedback", expanded=False):
+            with st.expander("\U0001F4AC Feedback", expanded=False):
+                st.caption("Report a bug, suggestion, or UX issue.")
                 fb_type = st.selectbox(
                     "Type",
                     ["\U0001F41B Bug Report", "\U0001F4A1 Suggestion",
@@ -193,9 +168,7 @@ def render_sidebar_nav():
                             st.error(msg)
         except Exception:
             pass
-
-        st.markdown("---")
-        st.caption("DataPrism | Enterprise Data Intelligence")
+        st.markdown('<div class="dp-sidebar-footer">DataPrism · Evidence-first analytics</div>', unsafe_allow_html=True)
 
 
 def _get_active_theme():
@@ -228,19 +201,30 @@ def _build_css(theme):
 html, body, [class*="css"] {{ font-family: 'DM Sans', 'Segoe UI', sans-serif; }}
 h1, h2, h3 {{ letter-spacing: -0.02em; }}
 
-/* Sidebar - distinctly darker than main, fully scrollable */
+/* Sidebar: exactly one element owns vertical scrolling. Applying overflow to
+   several nested Streamlit wrappers created competing scroll surfaces and
+   caused wheel/touchpad position to jump. */
 [data-testid="stSidebar"] {{
     background: {theme['sidebar_bg']} !important;
     border-right: 1px solid {theme['sidebar_border']};
+    overflow: hidden !important;
 }}
-/* Make the ENTIRE sidebar scrollable on all pages (not just home) */
-[data-testid="stSidebar"] > div,
-[data-testid="stSidebar"] > div:first-child,
-[data-testid="stSidebar"] [data-testid="stSidebarContent"],
-section[data-testid="stSidebar"] > div {{
+[data-testid="stSidebar"] > div {{
+    overflow: hidden !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+}}
+[data-testid="stSidebar"] [data-testid="stSidebarContent"] {{
     overflow-y: auto !important;
-    max-height: 100vh !important;
-    padding-bottom: 4rem !important;
+    overflow-x: hidden !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    padding: 1.15rem 1rem 2rem !important;
+    overscroll-behavior-y: contain;
+    scrollbar-gutter: stable;
+    scroll-behavior: auto !important;
+    overflow-anchor: none;
+    -webkit-overflow-scrolling: touch;
 }}
 /* Remove any max-height clipping on the page navigation list */
 [data-testid="stSidebarNav"],
@@ -268,16 +252,57 @@ section[data-testid="stSidebar"] > div {{
 
 /* Custom navigation header */
 .dp-nav-header {{
-    font-size: 1.1rem;
+    font-size: 0.72rem;
     font-weight: 700;
     color: {theme['accent']};
-    margin: 0.3rem 0 0.1rem 0;
-    letter-spacing: 0.02em;
+    margin: 1rem 0 0.4rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}}
+.dp-sidebar-brand {{
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.25rem 0.2rem 0.75rem;
+}}
+.dp-sidebar-brand > span {{
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 11px;
+    background: linear-gradient(135deg, {theme['accent']}2E, {theme['accent_secondary']}42);
+    border: 1px solid {theme['accent']}5C;
+    box-shadow: 0 6px 18px {theme['accent_secondary']}24;
+}}
+.dp-sidebar-brand strong {{
+    display: block;
+    color: {theme['text_primary']};
+    font-size: 1.05rem;
+    line-height: 1.1;
+}}
+.dp-sidebar-brand small {{
+    display: block;
+    margin-top: 0.2rem;
+    color: {theme['text_secondary']};
+    font-size: 0.58rem;
+    letter-spacing: 0.11em;
+}}
+.dp-sidebar-divider {{
+    height: 1px;
+    margin: 0.8rem 0;
+    background: linear-gradient(90deg, transparent, {theme['accent']}45, transparent);
+}}
+.dp-sidebar-footer {{
+    color: {theme['text_secondary']};
+    font-size: 0.68rem;
+    text-align: center;
+    padding: 1rem 0 0.25rem;
 }}
 
 /* Sidebar page_link items styled as interactive bars/boxes */
 [data-testid="stSidebar"] [data-testid="stPageLink"] {{
-    margin: 0.3rem 0 !important;
+    margin: 0.14rem 0 !important;
 }}
 [data-testid="stSidebar"] [data-testid="stPageLink"] a {{
     display: flex !important;
@@ -285,9 +310,9 @@ section[data-testid="stSidebar"] > div {{
     gap: 0.6rem !important;
     background: rgba(255,255,255,0.03) !important;
     border: 1px solid {theme['sidebar_border']} !important;
-    border-radius: 10px !important;
-    padding: 0.6rem 0.85rem !important;
-    font-size: 0.97rem !important;
+    border-radius: 9px !important;
+    padding: 0.48rem 0.7rem !important;
+    font-size: 0.9rem !important;
     font-weight: 500 !important;
     color: {theme['text_primary']} !important;
     transition: all 0.18s ease !important;
@@ -295,7 +320,7 @@ section[data-testid="stSidebar"] > div {{
 [data-testid="stSidebar"] [data-testid="stPageLink"] a:hover {{
     background: {theme['accent']}1A !important;
     border-color: {theme['accent']}80 !important;
-    transform: translateX(3px) !important;
+    transform: none !important;
     box-shadow: 0 2px 12px {theme['accent']}33 !important;
 }}
 /* Highlight the CURRENT page in the nav (Streamlit sets aria-current="page") */
@@ -313,7 +338,7 @@ section[data-testid="stSidebar"] > div {{
     color: {theme['accent']} !important;
 }}
 [data-testid="stSidebar"] [data-testid="stPageLink"] a p {{
-    font-size: 0.97rem !important;
+    font-size: 0.9rem !important;
     font-weight: 500 !important;
     margin: 0 !important;
 }}
