@@ -5,6 +5,12 @@
 __pycache__/
 *.pyc
 *.pyo
+.venv/
+.venv2/
+.pip-tmp/
+.pip-cache/
+.testdeps/
+.task-temp/
 
 # IDE
 .vscode/

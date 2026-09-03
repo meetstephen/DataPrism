@@ -1,4 +1,6 @@
 """Data cleaning engine with undo/redo support and audit logging."""
+import ast
+import re
 import streamlit as st
 import pandas as pd
 from datetime import datetime
@@ -94,10 +96,47 @@ def add_calculated_column(df, new_col_name, expression):
 
     Returns (new_df, rows_affected).
     """
+    validate_calculated_expression(expression, df.columns)
     df = df.copy()
     result = df.eval(expression, engine="python")
     df[new_col_name] = result
     return df, len(df)
+
+
+def validate_calculated_expression(expression, columns):
+    """Reject calls, attributes, indexing, local variables and unknown names."""
+    if not expression or len(expression) > 500:
+        raise ValueError("Expression must contain 1 to 500 characters.")
+    if "@" in expression or "__" in expression:
+        raise ValueError("Local variables and private names are not allowed.")
+    quoted = []
+
+    def replace_backtick(match):
+        name = match.group(1)
+        if name not in columns:
+            raise ValueError(f"Unknown column: {name}")
+        token = f"BACKTICK_COLUMN_{len(quoted)}"
+        quoted.append(token)
+        return token
+
+    translated = re.sub(r"`([^`]+)`", replace_backtick, expression)
+    try:
+        tree = ast.parse(translated, mode="eval")
+    except SyntaxError as exc:
+        raise ValueError("Expression syntax is invalid.") from exc
+    allowed_nodes = (
+        ast.Expression, ast.BinOp, ast.UnaryOp, ast.BoolOp, ast.Compare, ast.Name,
+        ast.Load, ast.Constant, ast.Add, ast.Sub, ast.Mult, ast.Div, ast.FloorDiv,
+        ast.Mod, ast.Pow, ast.USub, ast.UAdd, ast.And, ast.Or, ast.Eq, ast.NotEq,
+        ast.Lt, ast.LtE, ast.Gt, ast.GtE, ast.Not,
+    )
+    allowed_names = {str(column) for column in columns if str(column).isidentifier()} | set(quoted)
+    for node in ast.walk(tree):
+        if not isinstance(node, allowed_nodes):
+            raise ValueError(f"Unsupported expression element: {type(node).__name__}")
+        if isinstance(node, ast.Name) and node.id not in allowed_names:
+            raise ValueError(f"Unknown column: {node.id}")
+    return True
 
 
 def build_arithmetic_expression(left, operator, right, right_is_column=True):

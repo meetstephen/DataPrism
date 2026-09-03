@@ -49,7 +49,7 @@ THEMES = {
 # ---------------------------------------------------------------------------
 NAV_ITEMS = [
     ("app.py", "\U0001F3E0", "Home"),
-    ("pages/0_Guided_Analysis.py", "\U0001F9ED", "Guided Analysis"),
+    ("pages/0_Guided_Analysis.py", "\U0001F9ED", "Analysis Workbench"),
     ("pages/1_Getting_Started.py", "\U0001F680", "Getting Started"),
     ("pages/2_Upload_and_Analyze.py", "\U0001F4C1", "Upload & Analyze"),
     ("pages/3_Data_Cleaning.py", "\U0001F9F9", "Data Cleaning"),
@@ -168,7 +168,7 @@ def render_sidebar_nav():
                 )
                 fb_page = st.selectbox(
                     "Which page?",
-                    ["Home", "Guided Analysis", "Getting Started", "Upload & Analyze",
+                    ["Home", "Analysis Workbench", "Getting Started", "Upload & Analyze",
                      "Data Cleaning", "AI Insights", "Advanced Analytics",
                      "Online Explorer", "Report Generator", "Chat With Data",
                      "Cloud Workspace", "Data Profiling", "Dashboard",

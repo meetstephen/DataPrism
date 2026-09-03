@@ -53,9 +53,9 @@ st.markdown(
 st.markdown("### Raw Data. Refined Intelligence.")
 st.markdown(
     """
-    DataPrism is an enterprise-grade data intelligence platform that transforms raw data
-    into actionable insights. Explore interactive dashboards, clean and transform datasets,
-    generate AI-powered analysis, and have natural conversations with your data.
+    DataPrism turns supported datasets and documents into traceable analysis. Its unified
+    workbench validates ingestion, profiles quality, applies reviewable cleaning steps,
+    computes evidence-backed findings, and exports the data, report, and audit manifest.
     """
 )
 
@@ -84,7 +84,7 @@ if not st.session_state.dp_onboarding_dismissed:
                 <li><strong>Report it</strong> \u2014 Generate a professional PDF/DOCX/HTML report in <em>Report Generator</em></li>
             </ol>
             <p style="margin:0.8rem 0 0 0; color:#94A3B8; font-size:0.85rem;">
-                \U0001F4A1 <strong>Tip:</strong> If you're brand new to data analysis, start with <em>\U0001F9ED Guided Analysis</em> \u2014 it walks you through every step automatically.
+                \U0001F4A1 <strong>Tip:</strong> Start with the <em>\U0001F9ED Analysis Workbench</em> for the complete, auditable workflow.
             </p>
         </div>
         """,
@@ -123,8 +123,8 @@ with start_col1:
     _start_card(
         "\U0001F4C1",
         "I have my own data",
-        "Upload a CSV or Excel file (including Power BI exports) for instant "
-        "automated analysis, distributions, and data-quality checks.",
+        "Upload CSV, TSV, Excel, JSON/JSONL, Parquet, PDF, DOCX, text, or Markdown. "
+        "Tables and document evidence are extracted through one validated pipeline.",
     )
     st.page_link(
         "pages/2_Upload_and_Analyze.py",
@@ -141,7 +141,7 @@ with start_col2:
     )
     st.page_link(
         "pages/0_Guided_Analysis.py",
-        label="Launch Guided Analysis",
+        label="Open Analysis Workbench",
         icon="\U0001F9ED",
         use_container_width=True,
     )
@@ -204,7 +204,7 @@ else:
 
 st.markdown("---")
 
-# Guided Analysis callout (the dedicated page is wired up separately)
+# Analysis Workbench callout
 st.markdown(
     """
     <div style="border:1px solid rgba(0,212,255,0.35); border-radius:14px;
@@ -212,20 +212,20 @@ st.markdown(
                 background:linear-gradient(135deg, rgba(0,212,255,0.10), rgba(123,97,255,0.08));">
         <span style="font-size:0.75rem; font-weight:700; color:#00D4FF;
                      text-transform:uppercase; letter-spacing:0.08em;">
-            \U0001F9ED New &middot; Recommended for beginners
+            \U0001F9ED Recommended starting point
         </span>
-        <h3 style="margin:0.35rem 0 0.4rem 0; color:#E2E8F0;">Guided Analysis Mode</h3>
+        <h3 style="margin:0.35rem 0 0.4rem 0; color:#E2E8F0;">Analysis Workbench</h3>
         <p style="margin:0; color:#94A3B8; max-width:760px;">
-            Not sure where to start? Guided Analysis Mode walks you through the full
-            workflow step by step - load data, clean it, explore insights, and generate a
-            report - without needing to know which page to open first.
-            <strong>Look for &ldquo;\U0001F9ED Guided Analysis&rdquo; at the top of the sidebar.</strong>
+            Use one evidence-first workflow to ingest, profile, clean, analyze, and report.
+            Cleaning decisions are reviewable, calculations are deterministic, and every
+            report includes provenance and limitations.
+            <strong>Look for &ldquo;\U0001F9ED Analysis Workbench&rdquo; at the top of the sidebar.</strong>
         </p>
     </div>
     """,
     unsafe_allow_html=True,
 )
-st.page_link("pages/0_Guided_Analysis.py", label="\U0001F9ED Launch Guided Analysis", icon="\U0001F9ED")
+st.page_link("pages/0_Guided_Analysis.py", label="\U0001F9ED Open Analysis Workbench", icon="\U0001F9ED")
 
 st.markdown("---")
 

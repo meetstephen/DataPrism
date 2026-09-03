@@ -303,37 +303,23 @@ def read_csv_robust(file_obj, sep=","):
 
 
 def load_file_flexible(uploaded_file):
-    """Load a file supporting CSV, Excel, JSON, TSV, and Parquet.
+    """Load the primary table from any format supported by the shared pipeline.
 
-    Returns (df, error_message) tuple.
+    Multi-table files (Excel, PDF and Word) are fully available in the Analysis
+    Workbench. Legacy pages receive the first extracted table through this
+    compatibility helper.
     """
     if uploaded_file is None:
         return None, "No file provided."
-
-    name = uploaded_file.name.lower()
     try:
-        if name.endswith(".csv"):
-            df, err = read_csv_robust(uploaded_file)
-            if err:
-                return None, err
-        elif name.endswith((".xlsx", ".xls")):
-            df = pd.read_excel(uploaded_file)
-        elif name.endswith(".json"):
-            df = pd.read_json(uploaded_file)
-        elif name.endswith(".tsv"):
-            df, err = read_csv_robust(uploaded_file, sep="\t")
-            if err:
-                return None, err
-        elif name.endswith(".parquet"):
-            df = pd.read_parquet(uploaded_file)
-        else:
-            # Unknown extension - try CSV as a best-effort fallback
-            df, err = read_csv_robust(uploaded_file)
-            if err:
-                return None, err
+        from utils.analysis_pipeline import load_source
 
-        if df is None or df.empty:
-            return None, "File loaded but contains no data."
-        return df, None
+        result = load_source(uploaded_file, uploaded_file.name)
+        if result.primary is None:
+            return None, (
+                "The file contains readable document text but no reliable table. "
+                "Open it in the Analysis Workbench for document analysis."
+            )
+        return result.primary, None
     except Exception as e:
         return None, f"Error reading file: {str(e)}"
