@@ -47,52 +47,9 @@ THEMES = {
 # ---------------------------------------------------------------------------
 # Sidebar navigation items: (page_path, emoji_icon, label)
 # ---------------------------------------------------------------------------
-NAV_ITEMS = [
-    ("app.py", "\U0001F3E0", "Home"),
-    ("pages/0_Guided_Analysis.py", "\U0001F9ED", "Analysis Workbench"),
-    ("pages/1_Getting_Started.py", "\U0001F680", "Getting Started"),
-    ("pages/2_Upload_and_Analyze.py", "\U0001F4C1", "Upload & Analyze"),
-    ("pages/3_Data_Cleaning.py", "\U0001F9F9", "Data Cleaning"),
-    ("pages/4_AI_Insights_Engine.py", "\U0001F916", "AI Insights"),
-    ("pages/5_Advanced_Analytics.py", "\U0001F527", "Advanced Analytics"),
-    ("pages/6_Online_Data_Explorer.py", "\U0001F310", "Online Explorer"),
-    ("pages/7_Report_Generator.py", "\U0001F4CB", "Report Generator"),
-    ("pages/8_Chat_With_Data.py", "\U0001F4AC", "Chat With Data"),
-    ("pages/9_Cloud_Workspace.py", "\u2601\uFE0F", "Cloud Workspace"),
-    ("pages/10_Data_Profiling.py", "\U0001F50D", "Data Profiling"),
-    ("pages/11_Dashboard.py", "\U0001F4CA", "Dashboard"),
-    ("pages/13_Data_Join.py", "\U0001F517", "Data Join"),
-    ("pages/14_SQL_Query.py", "\U0001F4DD", "SQL Query"),
-    ("pages/15_Data_Dictionary.py", "\U0001F4D6", "Data Dictionary"),
-]
-
-
 def render_sidebar_nav():
-    """Render one compact sidebar with a single, stable scroll surface."""
+    """Render controls below Streamlit's stable native page navigation."""
     with st.sidebar:
-        st.markdown(
-            '<div class="dp-sidebar-brand"><span>\U0001F4A0</span>'
-            '<div><strong>DataPrism</strong><small>ANALYTICS WORKSPACE</small></div></div>',
-            unsafe_allow_html=True,
-        )
-        st.markdown('<div class="dp-nav-header">Workspace</div>', unsafe_allow_html=True)
-        for path, icon, label in NAV_ITEMS:
-            try:
-                st.page_link(path, label=label, icon=icon)
-            except Exception:
-                pass
-        # Admin Panel link only visible to admins
-        try:
-            from utils.auth import get_current_user
-            current = get_current_user()
-            if current and current.get("role") == "admin":
-                st.page_link(
-                    "pages/12_Admin_Panel.py",
-                    label="Admin Panel",
-                    icon="\U0001F6E1\uFE0F",
-                )
-        except Exception:
-            pass
         st.markdown('<div class="dp-sidebar-divider"></div>', unsafe_allow_html=True)
 
         # Secondary controls stay collapsed so navigation remains the visual
@@ -116,19 +73,25 @@ def render_sidebar_nav():
             except Exception:
                 pass
             try:
-                from utils.persistence import save_session_state, get_last_saved_time, clear_persisted_session
-                last_saved = get_last_saved_time()
-                if last_saved:
-                    st.caption(f"Last saved: {last_saved[:19]}")
-                scol, ccol = st.columns(2)
-                with scol:
-                    if st.button("\U0001F4BE Save", key="sidebar_session_save", use_container_width=True):
-                        save_session_state()
-                        st.toast("Session saved", icon="\U0001F4BE")
-                with ccol:
-                    if st.button("Clear", key="sidebar_session_clear", use_container_width=True):
-                        clear_persisted_session()
-                        st.toast("Session cleared")
+                from utils.persistence import (
+                    clear_persisted_session, get_last_saved_time,
+                    is_local_persistence_enabled, save_session_state,
+                )
+                if is_local_persistence_enabled():
+                    last_saved = get_last_saved_time()
+                    if last_saved:
+                        st.caption(f"Last saved: {last_saved[:19]}")
+                    scol, ccol = st.columns(2)
+                    with scol:
+                        if st.button("\U0001F4BE Save", key="sidebar_session_save", use_container_width=True):
+                            save_session_state()
+                            st.toast("Session saved", icon="\U0001F4BE")
+                    with ccol:
+                        if st.button("Clear", key="sidebar_session_clear", use_container_width=True):
+                            clear_persisted_session()
+                            st.toast("Session cleared")
+                else:
+                    st.caption("This browser session is private. Use Cloud Workspace for durable storage.")
             except Exception:
                 pass
 
@@ -201,63 +164,51 @@ def _build_css(theme):
 html, body, [class*="css"] {{ font-family: 'DM Sans', 'Segoe UI', sans-serif; }}
 h1, h2, h3 {{ letter-spacing: -0.02em; }}
 
-/* Sidebar: exactly one element owns vertical scrolling. Applying overflow to
-   several nested Streamlit wrappers created competing scroll surfaces and
-   caused wheel/touchpad position to jump. */
+/* Native multipage navigation. Streamlit owns the sidebar scroll viewport;
+   overriding overflow on its nested wrappers causes scroll restoration jumps. */
 [data-testid="stSidebar"] {{
     background: {theme['sidebar_bg']} !important;
     border-right: 1px solid {theme['sidebar_border']};
-    overflow: hidden !important;
 }}
-[data-testid="stSidebar"] > div {{
-    overflow: hidden !important;
-    height: 100dvh !important;
-    max-height: 100dvh !important;
+[data-testid="stSidebarNav"] {{
+    display: block !important;
+    padding: 1rem 0.8rem 0.35rem !important;
 }}
-[data-testid="stSidebar"] [data-testid="stSidebarContent"] {{
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-    height: 100dvh !important;
-    max-height: 100dvh !important;
-    padding: 1.15rem 1rem 2rem !important;
-    overscroll-behavior-y: contain;
-    scrollbar-gutter: stable;
-    scroll-behavior: auto !important;
-    overflow-anchor: none;
-    -webkit-overflow-scrolling: touch;
-}}
-/* Remove any max-height clipping on the page navigation list */
-[data-testid="stSidebarNav"],
-[data-testid="stSidebarNav"] ul,
-[data-testid="stSidebarNav"] > ul {{
-    max-height: none !important;
-    overflow: visible !important;
-}}
-/* Bigger, more readable sidebar nav links */
-[data-testid="stSidebarNav"] a,
-[data-testid="stSidebarNav"] a span {{
-    font-size: 0.95rem !important;
-    font-weight: 500 !important;
-    letter-spacing: 0.01em !important;
-}}
-/* Also increase the custom sidebar text */
-[data-testid="stSidebar"] .stMarkdown p,
-[data-testid="stSidebar"] .stMarkdown li {{
-    font-size: 0.92rem !important;
-    line-height: 1.6 !important;
-}}
-
-/* Hide the default auto-generated page nav - we use a custom styled nav */
-[data-testid="stSidebarNav"] {{ display: none !important; }}
-
-/* Custom navigation header */
-.dp-nav-header {{
-    font-size: 0.72rem;
+[data-testid="stSidebarNav"]::before {{
+    content: "DataPrism";
+    display: block;
+    color: {theme['text_primary']};
+    font-size: 1.08rem;
     font-weight: 700;
-    color: {theme['accent']};
-    margin: 1rem 0 0.4rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    padding: 0.35rem 0.6rem 0.8rem;
+    margin-bottom: 0.45rem;
+    border-bottom: 1px solid {theme['sidebar_border']};
+}}
+[data-testid="stSidebarNav"] ul {{ gap: 0.18rem !important; }}
+[data-testid="stSidebarNav"] a {{
+    min-height: 2.55rem;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    padding: 0.48rem 0.7rem !important;
+    transition: background-color 120ms ease, border-color 120ms ease !important;
+}}
+[data-testid="stSidebarNav"] a:hover {{
+    background: {theme['accent']}14 !important;
+    border-color: {theme['accent']}45 !important;
+}}
+[data-testid="stSidebarNav"] a[aria-current="page"] {{
+    color: {theme['accent']} !important;
+    background: {theme['accent']}20 !important;
+    border-color: {theme['accent']}70 !important;
+    box-shadow: inset 3px 0 0 {theme['accent']};
+}}
+[data-testid="stSidebarNav"] a span,
+[data-testid="stSidebarNav"] a p {{
+    font-size: 0.91rem !important;
+    font-weight: 550 !important;
+}}
+[data-testid="stSidebarUserContent"] {{
+    padding: 0 1rem 1.5rem !important;
 }}
 .dp-sidebar-brand {{
     display: flex;
@@ -298,49 +249,6 @@ h1, h2, h3 {{ letter-spacing: -0.02em; }}
     font-size: 0.68rem;
     text-align: center;
     padding: 1rem 0 0.25rem;
-}}
-
-/* Sidebar page_link items styled as interactive bars/boxes */
-[data-testid="stSidebar"] [data-testid="stPageLink"] {{
-    margin: 0.14rem 0 !important;
-}}
-[data-testid="stSidebar"] [data-testid="stPageLink"] a {{
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.6rem !important;
-    background: rgba(255,255,255,0.03) !important;
-    border: 1px solid {theme['sidebar_border']} !important;
-    border-radius: 9px !important;
-    padding: 0.48rem 0.7rem !important;
-    font-size: 0.9rem !important;
-    font-weight: 500 !important;
-    color: {theme['text_primary']} !important;
-    transition: all 0.18s ease !important;
-}}
-[data-testid="stSidebar"] [data-testid="stPageLink"] a:hover {{
-    background: {theme['accent']}1A !important;
-    border-color: {theme['accent']}80 !important;
-    transform: none !important;
-    box-shadow: 0 2px 12px {theme['accent']}33 !important;
-}}
-/* Highlight the CURRENT page in the nav (Streamlit sets aria-current="page") */
-[data-testid="stSidebar"] [data-testid="stPageLink"] a[aria-current],
-[data-testid="stSidebar"] [data-testid="stPageLink"] a[aria-current="page"],
-[data-testid="stSidebar"] [data-testid="stPageLink"] a.active {{
-    background: {theme['accent']}2B !important;
-    border-color: {theme['accent']} !important;
-    border-left: 4px solid {theme['accent']} !important;
-    font-weight: 700 !important;
-    color: {theme['accent']} !important;
-}}
-[data-testid="stSidebar"] [data-testid="stPageLink"] a[aria-current="page"] p {{
-    font-weight: 700 !important;
-    color: {theme['accent']} !important;
-}}
-[data-testid="stSidebar"] [data-testid="stPageLink"] a p {{
-    font-size: 0.9rem !important;
-    font-weight: 500 !important;
-    margin: 0 !important;
 }}
 
 /* Main content area */
@@ -858,3 +766,4 @@ def render_confidence_badge(level, score=None, source_label="AI-generated", reas
     )
     if reasons:
         st.caption("Confidence factors: " + " &nbsp;|&nbsp; ".join(reasons))
+
