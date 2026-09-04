@@ -41,9 +41,27 @@ def main():
                     link = nav.get_by_role("link", name=target, exact=True)
                     link.scroll_into_view_if_needed()
                     before = sidebar.evaluate("el => el.scrollTop")
+                    sidebar.evaluate("""el => {
+                        window.navSamples = [];
+                        window.sampleNavigation = true;
+                        const sample = () => {
+                            const style = getComputedStyle(el);
+                            window.navSamples.push({top: el.scrollTop, connected: el.isConnected,
+                                width: el.getBoundingClientRect().width,
+                                visible: style.display !== 'none' && style.visibility !== 'hidden'
+                                    && Number(style.opacity) > 0});
+                            if (window.sampleNavigation) requestAnimationFrame(sample);
+                        };
+                        sample();
+                    }""")
                     link.click()
                     page.wait_for_function("name => Array.from(document.querySelectorAll('[data-testid=stSidebarNav] a')).some(a => a.textContent.includes(name) && a.getAttribute('aria-current') === 'page')", arg=target)
                     page.wait_for_timeout(1200)
+                    samples = page.evaluate("() => {window.sampleNavigation = false; return window.navSamples;}")
+                    assert len(samples) > 5
+                    assert all(s["connected"] and s["visible"] for s in samples), "Sidebar blinked or detached"
+                    assert max(s["width"] for s in samples) - min(s["width"] for s in samples) <= 1
+                    assert max(abs(s["top"] - before) for s in samples) <= 3, (target, before, samples)
                     page.screenshot(path=str(artifacts / (target.replace(" ", "-") + ".png")), full_page=True)
                     assert handle.evaluate("el => el.isConnected"), "Sidebar was remounted"
                     after = sidebar.evaluate("el => el.scrollTop")
@@ -54,6 +72,16 @@ def main():
                 nav.get_by_role("link", name="Report Generator", exact=True).wait_for()
                 page.wait_for_function("() => document.querySelector('[data-testid=stSidebarNav] a[aria-current=page]')?.textContent.includes('Report Generator')")
                 page.screenshot(path=str(artifacts / "direct-refresh.png"), full_page=True)
+                page.set_viewport_size({"width": 1000, "height": 600})
+                sidebar.evaluate("el => el.scrollTop = 0")
+                sidebar.hover()
+                page.mouse.wheel(0, 320)
+                page.wait_for_timeout(500)
+                wheel_position = sidebar.evaluate("el => el.scrollTop")
+                assert wheel_position > 0, "Sidebar does not respond to wheel scrolling"
+                page.wait_for_timeout(700)
+                assert abs(sidebar.evaluate("el => el.scrollTop") - wheel_position) <= 1
+                page.screenshot(path=str(artifacts / "short-viewport.png"), full_page=True)
                 browser.close()
                 print("PASS: menu visible, active route correct, sidebar retained, scroll offset stable, direct refresh valid")
         finally:
