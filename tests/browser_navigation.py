@@ -44,6 +44,7 @@ def main():
                     link.click()
                     page.wait_for_function("name => Array.from(document.querySelectorAll('[data-testid=stSidebarNav] a')).some(a => a.textContent.includes(name) && a.getAttribute('aria-current') === 'page')", arg=target)
                     page.wait_for_timeout(1200)
+                    page.screenshot(path=str(artifacts / (target.replace(" ", "-") + ".png")), full_page=True)
                     assert handle.evaluate("el => el.isConnected"), "Sidebar was remounted"
                     after = sidebar.evaluate("el => el.scrollTop")
                     assert abs(after - before) <= 3, (target, before, after)

@@ -43,14 +43,16 @@ def test_data_cleaning_entry_script_is_ascii_safe():
 
 
 
-def test_router_navigation_and_shared_widget_state():
+def test_router_boot_and_shared_widget_rerun():
     from streamlit.testing.v1 import AppTest
 
     app = AppTest.from_file(str(ROOT / "app.py")).run(timeout=20)
     assert not app.exception
     app.selectbox(key="dp_theme_selector").select("Ocean Blue").run(timeout=20)
-    for path in ["pages/7_Report_Generator.py", "pages/3_Data_Cleaning.py", "pages/7_Report_Generator.py"]:
-        app.switch_page(path).run(timeout=20)
+    # AppTest.switch_page executes a standalone legacy page script, bypassing
+    # st.navigation's entrypoint. Actual routing is covered by Chromium below.
+    for _ in range(2):
+        app.run(timeout=20)
         assert not app.exception
         assert app.selectbox(key="dp_theme_selector").value == "Ocean Blue"
         assert not any(s.label == "Navigate to" for s in app.sidebar.selectbox)
