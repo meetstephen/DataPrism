@@ -11,3 +11,9 @@ headless = true
 
 [browser]
 gatherUsageStats = false
+
+[client]
+# The native multipage navigator is the single navigation owner. Hiding it and
+# rebuilding page links in Python causes scroll position resets on every rerun.
+showSidebarNavigation = true
+

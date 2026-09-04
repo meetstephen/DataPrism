@@ -17,6 +17,36 @@ T_FEEDBACK = "dp_feedback"
 LOCAL_FILE = ".dataprism/feedback.json"
 
 
+def _read_local_feedback():
+    """Read legacy local feedback without exposing decode failures to the UI."""
+    try:
+        with open(LOCAL_FILE, "rb") as handle:
+            raw = handle.read()
+        encodings = ["utf-8-sig", "cp1252"]
+        if raw.startswith((b"\xff\xfe", b"\xfe\xff")):
+            encodings.insert(0, "utf-16")
+        for encoding in encodings:
+            try:
+                return json.loads(raw.decode(encoding))
+            except UnicodeDecodeError:
+                continue
+            except (ValueError, TypeError):
+                return []
+    except OSError:
+        pass
+    return []
+
+
+def _write_local_feedback(entries):
+    payload = json.dumps(entries, indent=2, ensure_ascii=False)
+    temp_path = f"{LOCAL_FILE}.tmp-{os.getpid()}"
+    with open(temp_path, "w", encoding="utf-8", newline="") as handle:
+        handle.write(payload)
+        handle.flush()
+        os.fsync(handle.fileno())
+    os.replace(temp_path, LOCAL_FILE)
+
+
 def save_feedback(feedback_type, page, text):
     """Save a feedback entry. Returns (True, msg) on success, (False, msg) on failure."""
     entry = {
@@ -39,13 +69,9 @@ def save_feedback(feedback_type, page, text):
     # Local fallback
     try:
         os.makedirs(os.path.dirname(LOCAL_FILE), exist_ok=True)
-        existing = []
-        if os.path.exists(LOCAL_FILE):
-            with open(LOCAL_FILE, "r") as f:
-                existing = json.load(f)
+        existing = _read_local_feedback() if os.path.exists(LOCAL_FILE) else []
         existing.append(entry)
-        with open(LOCAL_FILE, "w") as f:
-            json.dump(existing, f, indent=2)
+        _write_local_feedback(existing)
         return True, "Feedback saved locally."
     except Exception as e:
         return False, f"Could not save feedback: {e}"
@@ -70,9 +96,8 @@ def list_feedback():
     # Local fallback
     try:
         if os.path.exists(LOCAL_FILE):
-            with open(LOCAL_FILE, "r") as f:
-                data = json.load(f)
-            return True, data
+            return True, _read_local_feedback()
         return True, []
     except Exception as e:
         return False, f"Could not read feedback: {e}"
+

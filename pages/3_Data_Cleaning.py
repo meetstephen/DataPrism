@@ -1,4 +1,11 @@
-"""Data Cleaning Engine - Interactive data cleaning with undo/redo support."""
+# -*- coding: utf-8 -*-
+"""Data Cleaning Engine - Interactive data cleaning with undo/redo support.
+
+This entry script intentionally contains ASCII source bytes only. Streamlit
+Cloud reads a page script before executing any of its error handling; keeping
+the entry file encoding-neutral prevents a platform-level decoder failure from
+blocking the entire Data Cleaning route.
+"""
 import streamlit as st
 st.set_page_config(page_title="Data Cleaning", page_icon="\U0001f4a0", layout="wide")
 from utils.styles import inject_global_css, render_sidebar_nav
@@ -48,7 +55,7 @@ st.markdown("---")
 # --- Data Source Selection ---
 st.markdown("### Load Data")
 
-source_tab1, source_tab2 = st.tabs(["üìÅ Upload New File", "üìÇ Use Existing Data"])
+source_tab1, source_tab2 = st.tabs(["\U0001F4C1 Upload New File", "\U0001F4C2 Use Existing Data"])
 
 with source_tab1:
     cleaning_upload = st.file_uploader(
@@ -75,7 +82,7 @@ with source_tab1:
                 st.session_state.cleaning_history = []
                 st.session_state["_cleaning_source"] = "Uploaded Data"
                 save_session_state()
-                st.success(f"‚úÖ Loaded **{cleaning_upload.name}** ({len(new_df):,} rows x {len(new_df.columns)} columns)")
+                st.success(f"\u2705 Loaded **{cleaning_upload.name}** ({len(new_df):,} rows x {len(new_df.columns)} columns)")
         except Exception as e:
             st.error(f"Error reading file: {str(e)}")
 
@@ -105,13 +112,13 @@ with source_tab2:
             st.session_state.cleaning_history = []
             st.session_state["_cleaning_source"] = selected_source
             save_session_state()
-            st.success(f"‚úÖ Loaded '{selected_source}' for cleaning.")
+            st.success(f"\u2705 Loaded '{selected_source}' for cleaning.")
             st.rerun()
 
 # Check if working_df is loaded
 if st.session_state.working_df is None:
     st.info("\U0001F446 Select a data source above to begin cleaning.")
-    st.page_link("pages/2_Upload_and_Analyze.py", label="\U0001F4C1 Or go to Upload & Analyze to load a file", icon="\U0001F4C1")
+    st.markdown("[\U0001F4C1 Or go to Upload & Analyze to load a file](/Upload_and_Analyze)")
     st.stop()
 
 df = st.session_state.working_df
@@ -367,7 +374,175 @@ with tab_columns:
 with tab_calc:
     st.markdown("#### Create a Calculated Column")
     st.markdown(
-        "Engineer new features from pectations",
+        "Engineer new features from existing columns using arithmetic. "
+        "Build a formula with the guided builder, or write a custom expression."
+    )
+
+    numeric_cols_calc = df.select_dtypes(include=[np.number]).columns.tolist()
+
+    calc_mode = st.radio(
+        "Builder mode:",
+        ["Guided builder", "Custom expression"],
+        horizontal=True,
+        key="calc_mode_radio",
+    )
+
+    new_col_name = st.text_input(
+        "New column name:",
+        key="calc_new_col_name",
+        placeholder="e.g. Cost_Per_Credit",
+    )
+
+    if calc_mode == "Guided builder":
+        if len(numeric_cols_calc) < 1:
+            st.info("No numeric columns available to build a calculated column.")
+        else:
+            gb1, gb2, gb3, gb4 = st.columns([3, 1, 2, 3])
+            with gb1:
+                left_col = st.selectbox("Column", numeric_cols_calc, key="calc_left_col")
+            with gb2:
+                operator = st.selectbox("Op", ["+", "-", "*", "/"], key="calc_operator")
+            with gb3:
+                right_kind = st.radio(
+                    "Operand", ["Column", "Value"], key="calc_right_kind", horizontal=False
+                )
+            with gb4:
+                if right_kind == "Column":
+                    right_operand = st.selectbox("With column", numeric_cols_calc, key="calc_right_col")
+                    right_is_column = True
+                else:
+                    right_operand = st.number_input("With value", value=1.0, key="calc_right_val")
+                    right_is_column = False
+
+            expression_preview = build_arithmetic_expression(
+                left_col, operator, right_operand, right_is_column=right_is_column
+            )
+            st.caption(f"Formula: `{new_col_name or 'new_column'} = {expression_preview}`")
+
+            if st.button("Add Calculated Column", type="primary", key="calc_add_guided"):
+                if not new_col_name.strip():
+                    st.error("Please enter a name for the new column.")
+                else:
+                    try:
+                        validate_calculated_expression(expression_preview, df.columns)
+                        rows_affected = apply_cleaning_step(
+                            f"Add calculated column '{new_col_name}' = {expression_preview}",
+                            add_calculated_column,
+                            new_col_name.strip(),
+                            expression_preview,
+                        )
+                        save_session_state()
+                        st.success(f"Created column '{new_col_name}' ({rows_affected:,} values).")
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"Could not create column: {e}")
+
+    else:  # Custom expression
+        st.markdown(
+            "Reference existing columns by name. Wrap names with spaces in "
+            "backticks, e.g. `` `Course Cost` * 1.1 ``. Supported operators: "
+            "`+ - * / // % **` and comparisons."
+        )
+        custom_expr = st.text_input(
+            "Expression:",
+            key="calc_custom_expr",
+            placeholder="e.g. `Course_Cost` / `Credits`",
+        )
+        if custom_expr:
+            st.caption(f"Formula: `{new_col_name or 'new_column'} = {custom_expr}`")
+        if st.button("Add Calculated Column", type="primary", key="calc_add_custom"):
+            if not new_col_name.strip():
+                st.error("Please enter a name for the new column.")
+            elif not custom_expr.strip():
+                st.error("Please enter an expression.")
+            else:
+                try:
+                    validate_calculated_expression(custom_expr, df.columns)
+                    rows_affected = apply_cleaning_step(
+                        f"Add calculated column '{new_col_name}' = {custom_expr}",
+                        add_calculated_column,
+                        new_col_name.strip(),
+                        custom_expr.strip(),
+                    )
+                    save_session_state()
+                    st.success(f"Created column '{new_col_name}' ({rows_affected:,} values).")
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Could not evaluate expression: {e}")
+
+# --- Validation Rules Tab ---
+with tab_validate:
+    st.markdown("#### Data Validation Rules")
+    st.markdown(
+        "Define expectations your data should meet, then run them to get a "
+        "pass/fail report and inspect any violating rows."
+    )
+
+    vb1, vb2 = st.columns(2)
+    with vb1:
+        v_column = st.selectbox("Column", df.columns.tolist(), key="val_column")
+    with vb2:
+        v_rule_type = st.selectbox(
+            "Rule type",
+            list(RULE_TYPES.keys()),
+            format_func=lambda k: RULE_TYPES[k],
+            key="val_rule_type",
+        )
+
+    params = {}
+    if v_rule_type == "range":
+        rc1, rc2 = st.columns(2)
+        with rc1:
+            min_raw = st.text_input("Minimum (optional)", key="val_min")
+        with rc2:
+            max_raw = st.text_input("Maximum (optional)", key="val_max")
+        if min_raw.strip():
+            params["min"] = min_raw.strip()
+        if max_raw.strip():
+            params["max"] = max_raw.strip()
+    elif v_rule_type == "allowed_values":
+        allowed_raw = st.text_input(
+            "Allowed values (comma-separated)", key="val_allowed",
+            placeholder="e.g. Active, Inactive, Pending",
+        )
+        if allowed_raw.strip():
+            params["allowed"] = [v.strip() for v in allowed_raw.split(",") if v.strip()]
+    elif v_rule_type == "regex":
+        params["pattern"] = st.text_input(
+            "Regex pattern", key="val_pattern", placeholder=r"e.g. ^\d{4}-\d{2}-\d{2}$"
+        )
+
+    if st.button("Add Rule", key="val_add_rule"):
+        new_rule = {"column": v_column, "rule_type": v_rule_type, "params": params}
+        st.session_state.validation_rules.append(new_rule)
+        st.success(f"Added rule: {describe_rule(new_rule)}")
+        st.rerun()
+
+    st.markdown("---")
+    if st.session_state.validation_rules:
+        st.markdown("##### Active Rules")
+        for idx, rule in enumerate(st.session_state.validation_rules):
+            rcol1, rcol2 = st.columns([8, 1])
+            with rcol1:
+                st.markdown(f"{idx + 1}. {describe_rule(rule)}")
+            with rcol2:
+                if st.button("\U0001F5D1\uFE0F", key=f"val_del_{idx}", help="Remove rule"):
+                    st.session_state.validation_rules.pop(idx)
+                    st.rerun()
+
+        run_col, clear_col = st.columns([1, 1])
+        with run_col:
+            run_now = st.button("Run Validation", type="primary", key="val_run")
+        with clear_col:
+            if st.button("Clear All Rules", key="val_clear"):
+                st.session_state.validation_rules = []
+                st.rerun()
+
+        # Optional: persist this rule set to the cloud
+        if is_configured():
+            rs_name = st.text_input(
+                "Save rule set as", key="val_cloud_rs_name",
+                placeholder="e.g. Enrollment expectations",
             )
             if st.button("\u2601\uFE0F Save rules to cloud", key="val_cloud_save"):
                 if not rs_name.strip():
@@ -708,4 +883,25 @@ if is_configured():
                 if ok:
                     try:
                         from utils.auth import log_user_activity
-                        log_user_activity("cleaning_saveeÃµ±•≠îÅëÖ—ÖÕï–∏ààà(ÄÄÄÅ•µ¡Ω…–Åπ’µ¡‰ÅÖÃÅπ¿(ÄÄÄÅπ¿π…ÖπëΩ¥πÕïïê†–»§(ÄÄÄÅÕ¡ïç•ïÃÄÙÅπ¿π…ï¡ïÖ–°lâÕï—ΩÕÑà∞ÄâŸï…Õ•çΩ±Ω»à∞ÄâŸ•…ù•π•çÑât∞Ä‘¿§(ÄÄÄÅÕï¡Ö±}±ïπù—†ÄÙÅπ¿πçΩπçÖ—ïπÖ—î°l(ÄÄÄÄÄÄÄÅπ¿π…ÖπëΩ¥ππΩ…µÖ±πÃÄÙÅπ¿π…ÖπëΩ¥πç°Ω•çî°lâ9Ω…—†à∞ÄâMΩ’—†à∞ÄâÖÕ–à∞Äâ]ïÕ–ât∞Å∏§(ÄÄÄÅ¡…Ωë’ç—ÃÄÙÅπ¿π…ÖπëΩ¥πç°Ω•çî°lâ]•ëùï–Åà∞Äâ]•ëùï–Åà∞ÄâÖëùï–Å`à∞ÄâÖëùï–Ådà∞ÄâA…ïµ•’¥Åhât∞Å∏§(ÄÄÄÅëÖ—ïÃÄÙÅ¡êπëÖ—ï}…Öπùî†à»¿»Ã¥¬" ¢Fb“FbÊ6˜íÇê¢ñb÷WFÜˆB”“&ó"#†¢“Fe∂6ˆ«V÷Â“ÁVÁFñ∆RÉ„#Rê¢2“Fe∂6ˆ«V÷Â“ÁVÁFñ∆RÉ„sRê¢ï"“2“¢∆˜vW"““◊V«Fó∆ñW"¢ï ¢WW"“2≤◊V«Fó∆ñW"¢ï ¢V«6S†¢2W&6VÁFñ∆R÷WFÜˆ@¢∆˜vW"“Fe∂6ˆ«V÷Â“ÁVÁFñ∆RÉ„ê¢WW"“Fe∂6ˆ«V÷Â“ÁVÁFñ∆RÉ„ìíê†¢÷6≤“ÜFe∂6ˆ«V÷Â“¬∆˜vW"í¬ÜFe∂6ˆ«V÷Â“‚WW"ê¢&˜w5ˆffV7FVB“ñÁBÜ÷6≤Á7V“Çíê¢Fe∂6ˆ«V÷Â““Fe∂6ˆ«V÷Â“Ê6∆óÜ∆˜vW#÷∆˜vW"¬WW#◊WW"ê¢&WGW&‚Fb¬&˜w5ˆffV7FV@††¶FVb7∆óEˆ6ˆ«V÷‚ÜFb¬6ˆ«V÷‚¬FV∆ñ÷óFW#“"¬"¬ÊWuˆ6ˆ≈ˆÊ÷W3‘ÊˆÊRì†¢""%7∆óBFWáB6ˆ«V÷‚ñÁFÚ◊V«Fó∆R6ˆ«V÷Á2'íFV∆ñ÷óFW"‡†¢&WGW&Á2ÜFb¬&˜w5ˆffV7FVBí‡¢"" ¢Fb“FbÊ6˜íÇê¢7∆óE˜&W7V«B“Fe∂6ˆ«V÷Â“Ê7GóRá7G"íÁ7G"Á7∆óBÜFV∆ñ÷óFW"¬WáÊC’G'VRê¢ÂˆÊWuˆ6ˆ«2“7∆óE˜&W7V«BÁ6ÜU≥–†¢ñbÊWuˆ6ˆ≈ˆÊ÷W2ÊB∆V‚ÜÊWuˆ6ˆ≈ˆÊ÷W2í„“ÂˆÊWuˆ6ˆ«3†¢Ê÷W2“ÊWuˆ6ˆ≈ˆÊ÷W5≥¶ÂˆÊWuˆ6ˆ«5–¢V«6S†¢Ê÷W2“∂b'∂6ˆ«V÷Á’˜'G∂í≥“"f˜"íñ‚&ÊvRÜÂˆÊWuˆ6ˆ«2ï–†¢f˜"í¬Ê÷Rñ‚VÁV÷W&FRÜÊ÷W2ì†¢Fe∂Ê÷U““7∆óE˜&W7V«E∂ï“Á7G"Á7G&óÇíñb7∆óE˜&W7V«E∂ï“ó2Ê˜BÊˆÊRV«6RÊˆÊP†¢&˜w5ˆffV7FVB“ñÁBÜFe∂6ˆ«V÷Â“ÊÊ˜FÊÇíÁ7V“Çíê¢&WGW&‚Fb¬&˜w5ˆffV7FV@††¶FVb÷W&vUˆ6ˆ«V÷Á2ÜFb¬6ˆ«V÷Á2¬ÊWuˆ6ˆ≈ˆÊ÷R¬6W&F˜#“""ì†¢""$÷W&vR◊V«Fó∆R6ˆ«V÷Á2ñÁFÚˆÊR'í6ˆÊ6FVÊFñÊrFÜVó"7G&ñÊrf«VW2‡†¢&WGW&Á2ÜFb¬&˜w5ˆffV7FVBí‡¢"" ¢Fb“FbÊ6˜íÇê¢Fe∂ÊWuˆ6ˆ≈ˆÊ÷U““Fe∂6ˆ«V÷Á5“Ê7GóRá7G"íÊvrá6W&F˜"Ê¶ˆñ‚¬Üó3”ê¢&˜w5ˆffV7FVB“∆V‚ÜFbê¢&WGW&‚Fb¬&˜w5ˆffV7FV@††¶FVb7FÊF&Fó¶U˜FWáBÜFb¬6ˆ«V÷‚¬÷WFÜˆC“&∆˜vW&66R"ì†¢""%7FÊF&Fó¶RFWáBñ‚6ˆ«V÷‚‡†¢÷WFÜˆG3¢∆˜vW&66R¬WW&66R¬FóF∆V66R¬7G&ó¬7G&óˆ∆¬‡¢&WGW&Á2ÜFb¬&˜w5ˆffV7FVBí‡¢"" ¢Fb“FbÊ6˜íÇê¢6W&ñW2“Fe∂6ˆ«V÷Â–¢&˜w5ˆffV7FVB“ñÁBá6W&ñW2ÊÊ˜FÊÇíÁ7V“Çíê†¢ñb÷WFÜˆB”“&∆˜vW&66R#†¢Fe∂6ˆ«V÷Â““6W&ñW2Ê7GóRá7G"íÁ7G"Ê∆˜vW"Çê¢V∆ñb÷WFÜˆB”“'WW&66R#†¢Fe∂6ˆ«V÷Â““6W&ñW2Ê7GóRá7G"íÁ7G"ÁWW"Çê¢V∆ñb÷WFÜˆB”“'FóF∆V66R#†¢Fe∂6ˆ«V÷Â““6W&ñW2Ê7GóRá7G"íÁ7G"ÁFóF∆RÇê¢V∆ñb÷WFÜˆB”“'7G&ó#†¢Fe∂6ˆ«V÷Â““6W&ñW2Ê7GóRá7G"íÁ7G"Á7G&óÇê¢V∆ñb÷WFÜˆB”“'7G&óˆ∆¬#†¢Fe∂6ˆ«V÷Â““6W&ñW2Ê7GóRá7G"íÁ7G"Á&W∆6Rá"%«2≤"¬""¬&VvWÉ’G'VRíÁ7G"Á7G&óÇê†¢&WGW&‚Fb¬&˜w5ˆffV7FV@††¶FVb6ˆÁfW'Eˆ6ˆ«V÷Â˜GóRÜFb¬6ˆ«V÷‚¬F&vWE˜GóRì†¢""$6ˆÁfW'B6ˆ«V÷‚FÚFñffW&VÁBFFGóR‡†¢7W˜'FVBF&vWE˜GóS¢vÁV÷W&ñ2r¬wFWáBr¬vFFWFñ÷Rr¬vñÁFVvW"r¬vf∆ˆBr‡¢&WGW&Á2ÜFb¬&˜w5ˆffV7FVBí‡¢"" ¢Fb“FbÊ6˜íÇê¢&˜w5ˆffV7FVB“ñÁBÜFe∂6ˆ«V÷Â“ÊÊ˜FÊÇíÁ7V“Çíê†¢ñbF&vWE˜GóR”“&ÁV÷W&ñ2#†¢Fe∂6ˆ«V÷Â““BÁFıˆÁV÷W&ñ2ÜFe∂6ˆ«V÷Â“¬W'&˜'3“&6ˆW&6R"ê¢V∆ñbF&vWE˜GóR”“&ñÁFVvW"#†¢Fe∂6ˆ«V÷Â““BÁFıˆÁV÷W&ñ2ÜFe∂6ˆ«V÷Â“¬W'&˜'3“&6ˆW&6R"ê¢Fe∂6ˆ«V÷Â““Fe∂6ˆ«V÷Â“Ê7GóRÇ$ñÁCcB"ê¢V∆ñbF&vWE˜GóR”“&f∆ˆB#†¢Fe∂6ˆ«V÷Â““BÁFıˆÁV÷W&ñ2ÜFe∂6ˆ«V÷Â“¬W'&˜'3“&6ˆW&6R"íÊ7GóRÜf∆ˆBê¢V∆ñbF&vWE˜GóR”“'FWáB#†¢Fe∂6ˆ«V÷Â““Fe∂6ˆ«V÷Â“Ê7GóRá7G"ê¢V∆ñbF&vWE˜GóR”“&FFWFñ÷R#†¢Fe∂6ˆ«V÷Â““BÁFıˆFFWFñ÷RÜFe∂6ˆ«V÷Â“¬W'&˜'3“&6ˆW&6R"ê†¢&WGW&‚Fb¬&˜w5ˆffV7FV@†
+                        log_user_activity("cleaning_saved", details=clean_name.strip(), page="data_cleaning")
+                    except Exception:
+                        pass
+else:
+    st.caption(
+        "\u2601\uFE0F Tip: connect a database (see SUPABASE_SETUP.md) to save cleaned datasets to the cloud."
+    )
+
+# Cross-module navigation
+st.markdown("---")
+st.markdown("### \U0001F517 Next Steps")
+col1, col2, col3 = st.columns(3)
+try:
+    with col1:
+        st.page_link("pages/4_AI_Insights_Engine.py", label="\U0001F916 Analyze with AI", icon="\U0001F916")
+    with col2:
+        st.page_link("pages/8_Chat_With_Data.py", label="\U0001F4AC Chat With Data", icon="\U0001F4AC")
+    with col3:
+        st.page_link("pages/7_Report_Generator.py", label="\U0001F4CB Generate Report", icon="\U0001F4CB")
+except Exception:
+    pass
+
