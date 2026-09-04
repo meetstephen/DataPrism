@@ -118,7 +118,7 @@ with source_tab2:
 # Check if working_df is loaded
 if st.session_state.working_df is None:
     st.info("\U0001F446 Select a data source above to begin cleaning.")
-    st.page_link("pages/2_Upload_and_Analyze.py", label="\U0001F4C1 Or go to Upload & Analyze to load a file", icon="\U0001F4C1")
+    st.markdown("[\U0001F4C1 Or go to Upload & Analyze to load a file](/Upload_and_Analyze)")
     st.stop()
 
 df = st.session_state.working_df
