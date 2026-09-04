@@ -12,7 +12,8 @@ def test_sidebar_uses_one_compact_route_picker():
         "def _get_active_theme", 1
     )[0]
     assert "st.page_link" not in render_body
-    assert render_body.count("st.selectbox(") == 1
+    navigation_body = render_body.split('class="dp-sidebar-divider"', 1)[0]
+    assert navigation_body.count("st.selectbox(") == 1
     assert "st.switch_page" in render_body
 
 
@@ -69,3 +70,29 @@ def test_data_cleaning_page_boots_without_exception():
     app.run(timeout=15)
     assert not app.exception
 
+
+def test_report_indicator_survives_rerun():
+    from streamlit.testing.v1 import AppTest
+
+    app = AppTest.from_file(str(ROOT / "pages" / "7_Report_Generator.py"))
+    for _ in range(2):
+        app.run(timeout=20)
+        assert not app.exception
+        assert app.selectbox(key="_dp_nav_destination").value == "Report Generator"
+        assert any(
+            'class="dp-current-page"' in item.value and "Report Generator" in item.value
+            for item in app.sidebar.markdown
+        )
+
+
+def test_picker_dispatches_report_destination(monkeypatch):
+    import streamlit as st
+    from streamlit.testing.v1 import AppTest
+
+    destinations = []
+    monkeypatch.setattr(st, "switch_page", destinations.append)
+    app = AppTest.from_file(str(ROOT / "pages" / "3_Data_Cleaning.py"))
+    app.run(timeout=15)
+    app.selectbox(key="_dp_nav_destination").select("Report Generator").run(timeout=15)
+    assert not app.exception
+    assert destinations == ["pages/7_Report_Generator.py"]

@@ -116,7 +116,9 @@ def render_sidebar_nav():
             f'<span>{current["group"]}</span></div>',
             unsafe_allow_html=True,
         )
-        st.session_state["_dp_nav_destination"] = current["label"]
+        st.session_state["_dp_nav_destination"] = (
+            current["label"] if current["label"] in item_by_label else "Home"
+        )
         st.selectbox(
             "Navigate to",
             option_labels,
@@ -861,4 +863,3 @@ def render_confidence_badge(level, score=None, source_label="AI-generated", reas
     )
     if reasons:
         st.caption("Confidence factors: " + " &nbsp;|&nbsp; ".join(reasons))
-
