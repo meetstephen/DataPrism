@@ -13,7 +13,7 @@ headless = true
 gatherUsageStats = false
 
 [client]
-# The native multipage navigator is the single navigation owner. Hiding it and
-# rebuilding page links in Python causes scroll position resets on every rerun.
-showSidebarNavigation = true
+# DataPrism uses a compact fixed-position route picker instead of a long list
+# whose scroll position is lost when Streamlit replaces the page DOM.
+showSidebarNavigation = false
 
