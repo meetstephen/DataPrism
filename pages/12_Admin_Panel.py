@@ -2,18 +2,9 @@
 
 import streamlit as st
 
-from utils.styles import inject_global_css, render_sidebar_nav
 from utils.supabase_client import get_client, is_configured, status_message
 from utils.auth import require_role, get_current_user, log_user_activity
 
-st.set_page_config(
-    page_title="Admin Panel | DataPrism",
-    page_icon="\U0001F6E1\uFE0F",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
-inject_global_css()
-render_sidebar_nav()
 
 # --- Admin-only access check ---
 user = require_role("admin")

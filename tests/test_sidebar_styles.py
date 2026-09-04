@@ -1,26 +1,18 @@
-"""Regression tests for the compact, non-scroll-dependent navigation shell."""
-import unittest
-
+"""Navigation styles must not change geometry when the active page changes."""
 from utils.styles import THEMES, _build_css
 
 
-class SidebarStyleTests(unittest.TestCase):
+def test_scrollable_navigation_is_visible():
+    css = _build_css(THEMES["Enterprise Dark"])
+    assert '[data-testid="stSidebarNav"] a' in css
+    assert "max-height: none !important" in css
+    assert 'a[aria-current="page"]' in css
+    assert "display: none !important" not in css
+    assert "_dp_nav_destination" not in css
 
-    def test_streamlit_owns_sidebar_scrolling(self):
-        css = _build_css(THEMES["Enterprise Dark"])
-        self.assertNotIn("overflow-y: auto !important", css)
-        self.assertNotIn('[data-testid="stSidebar"] > div {', css)
-        self.assertNotIn('[data-testid="stSidebar"] [data-testid="stSidebarContent"] {', css)
 
-    def test_long_native_navigation_is_hidden(self):
-        css = _build_css(THEMES["Enterprise Dark"])
-        self.assertIn('[data-testid="stSidebarNav"] {', css)
-        self.assertIn("display: none !important", css)
-
-    def test_current_page_indicator_is_fixed_and_branded(self):
-        css = _build_css(THEMES["Enterprise Dark"])
-        self.assertIn(".dp-current-page", css)
-        self.assertIn(".dp-sidebar-brand", css)
-        self.assertIn(".dp-sidebar-footer", css)
-        self.assertIn('[data-testid="stSelectbox"]', css)
-
+def test_sidebar_ancestors_have_no_forced_viewport_dimensions():
+    css = _build_css(THEMES["Enterprise Dark"])
+    assert "100dvh" not in css
+    assert '[data-testid="stSidebar"] > div' not in css
+    assert "scrollbar-gutter: stable" in css

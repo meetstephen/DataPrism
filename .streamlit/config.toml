@@ -13,7 +13,4 @@ headless = true
 gatherUsageStats = false
 
 [client]
-# DataPrism uses a compact fixed-position route picker instead of a long list
-# whose scroll position is lost when Streamlit replaces the page DOM.
-showSidebarNavigation = false
-
+showSidebarNavigation = true

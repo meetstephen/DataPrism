@@ -22,12 +22,8 @@ from utils.analysis_pipeline import (
     render_markdown_report,
 )
 from utils.data_loader import SAMPLE_DATASETS, init_all_session_state, load_sample_dataset
-from utils.styles import inject_global_css, render_sidebar_nav
 
 
-st.set_page_config(page_title="Analysis Workbench - DataPrism", page_icon="💠", layout="wide")
-inject_global_css()
-render_sidebar_nav()
 init_all_session_state()
 
 DEFAULTS = {
