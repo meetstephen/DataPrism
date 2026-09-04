@@ -6,19 +6,36 @@ from utils import persistence
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 
-def test_sidebar_uses_native_navigation_only():
+def test_sidebar_uses_one_compact_route_picker():
     source = (ROOT / "utils" / "styles.py").read_text(encoding="utf-8")
     render_body = source.split("def render_sidebar_nav():", 1)[1].split(
         "def _get_active_theme", 1
     )[0]
     assert "st.page_link" not in render_body
-    assert '[data-testid="stSidebarNav"] {{ display: none' not in source
+    navigation_body = render_body.split('class="dp-sidebar-divider"', 1)[0]
+    assert navigation_body.count("st.selectbox(") == 1
+    assert "st.switch_page" in render_body
+
+
+def test_route_registry_has_one_unique_entry_per_page():
+    from utils.styles import NAV_ITEMS
+
+    assert len(NAV_ITEMS) == 17
+    assert len({item["file"] for item in NAV_ITEMS}) == len(NAV_ITEMS)
+    assert len({item["path"] for item in NAV_ITEMS}) == len(NAV_ITEMS)
+    report = next(item for item in NAV_ITEMS if item["label"] == "Report Generator")
+    assert report["path"] == "pages/7_Report_Generator.py"
 
 
 def test_sidebar_does_not_override_streamlit_scroll_ownership():
     source = (ROOT / "utils" / "styles.py").read_text(encoding="utf-8")
     assert '[data-testid="stSidebarContent"] {{\n    overflow-y:' not in source
     assert '[data-testid="stSidebar"] > div {{\n    overflow:' not in source
+
+
+def test_native_long_navigation_is_disabled():
+    config = (ROOT / ".streamlit" / "config.toml").read_text(encoding="utf-8")
+    assert "showSidebarNavigation = false" in config
 
 
 def test_hosted_local_persistence_is_opt_in(monkeypatch):
@@ -53,3 +70,29 @@ def test_data_cleaning_page_boots_without_exception():
     app.run(timeout=15)
     assert not app.exception
 
+
+def test_report_indicator_survives_rerun():
+    from streamlit.testing.v1 import AppTest
+
+    app = AppTest.from_file(str(ROOT / "pages" / "7_Report_Generator.py"))
+    for _ in range(2):
+        app.run(timeout=20)
+        assert not app.exception
+        assert app.selectbox(key="_dp_nav_destination").value == "Report Generator"
+        assert any(
+            'class="dp-current-page"' in item.value and "Report Generator" in item.value
+            for item in app.sidebar.markdown
+        )
+
+
+def test_picker_dispatches_report_destination(monkeypatch):
+    import streamlit as st
+    from streamlit.testing.v1 import AppTest
+
+    destinations = []
+    monkeypatch.setattr(st, "switch_page", destinations.append)
+    app = AppTest.from_file(str(ROOT / "pages" / "3_Data_Cleaning.py"))
+    app.run(timeout=15)
+    app.selectbox(key="_dp_nav_destination").select("Report Generator").run(timeout=15)
+    assert not app.exception
+    assert destinations == ["pages/7_Report_Generator.py"]
