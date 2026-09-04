@@ -1,0 +1,307 @@
+"""DataPrism welcome page; application setup lives in app.py."""
+import streamlit as st
+
+st.markdown(
+    "<h1 class='dp-gradient-title' style='font-size:3rem; margin-bottom:0;'>"
+    "\U0001f4a0 DataPrism</h1>",
+    unsafe_allow_html=True,
+)
+st.markdown("### Raw Data. Refined Intelligence.")
+st.markdown(
+    """
+    DataPrism turns supported datasets and documents into traceable analysis. Its unified
+    workbench validates ingestion, profiles quality, applies reviewable cleaning steps,
+    computes evidence-backed findings, and exports the data, report, and audit manifest.
+    """
+)
+
+st.markdown("---")
+
+# --- First-Time Onboarding Wizard ---
+# Shows a step-by-step checklist for new users. Dismissed permanently when they click "Got it".
+if "dp_onboarding_dismissed" not in st.session_state:
+    st.session_state.dp_onboarding_dismissed = False
+
+if not st.session_state.dp_onboarding_dismissed:
+    st.markdown(
+        """
+        <div style="border:2px solid rgba(0,212,255,0.4); border-radius:16px;
+                    padding:1.5rem 1.8rem; margin-bottom:1.5rem;
+                    background:linear-gradient(135deg, rgba(0,212,255,0.12), rgba(123,97,255,0.08));">
+            <h3 style="margin:0 0 0.5rem 0; color:#E2E8F0;">
+                \U0001F44B Welcome to DataPrism! Here's how to get started:
+            </h3>
+            <ol style="margin:0; padding-left:1.4rem; color:#CBD5E1; line-height:2.0; font-size:0.95rem;">
+                <li><strong>Load your data</strong> \u2014 Click <em>"I have my own data"</em> below to upload a file, or pick <em>"Show me how it works"</em> to use a sample dataset</li>
+                <li><strong>Profile it</strong> \u2014 Go to <em>Data Profiling</em> to see a quality score and column breakdown</li>
+                <li><strong>Clean it</strong> \u2014 Go to <em>Data Cleaning</em> to fix missing values, duplicates, and outliers</li>
+                <li><strong>Analyze it</strong> \u2014 Use <em>Advanced Analytics</em>, <em>SQL Query</em>, or <em>AI Insights</em> to explore patterns</li>
+                <li><strong>Visualize it</strong> \u2014 Build charts and KPIs on the <em>Dashboard</em> page</li>
+                <li><strong>Report it</strong> \u2014 Generate a professional PDF/DOCX/HTML report in <em>Report Generator</em></li>
+            </ol>
+            <p style="margin:0.8rem 0 0 0; color:#94A3B8; font-size:0.85rem;">
+                \U0001F4A1 <strong>Tip:</strong> Start with the <em>\U0001F9ED Analysis Workbench</em> for the complete, auditable workflow.
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    if st.button("\u2705 Got it! Don't show this again", key="dismiss_onboarding"):
+        st.session_state.dp_onboarding_dismissed = True
+        st.rerun()
+
+# --- Start Here: 3-button decision tree ---
+st.markdown(
+    "<h2 style='margin-bottom:0.2rem;'>\U0001F9ED Start Here</h2>",
+    unsafe_allow_html=True,
+)
+st.markdown("Pick the path that matches what you want to do right now.")
+
+
+def _start_card(emoji, title, description):
+    st.markdown(
+        f"""
+        <div style="border:1px solid rgba(0,212,255,0.22); border-radius:14px;
+                    padding:1.2rem 1.3rem; min-height:160px; margin-bottom:0.6rem;
+                    background:linear-gradient(135deg, rgba(0,212,255,0.07), rgba(123,97,255,0.05));
+                    display:flex; flex-direction:column; justify-content:flex-start;">
+            <div style="font-size:1.9rem; line-height:1; margin-bottom:0.4rem;">{emoji}</div>
+            <h4 style="margin:0 0 0.35rem 0; color:#E2E8F0; font-size:1.05rem;">{title}</h4>
+            <p style="margin:0; color:#94A3B8; font-size:0.85rem; line-height:1.4;">{description}</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+start_col1, start_col2, start_col3 = st.columns(3)
+with start_col1:
+    _start_card(
+        "\U0001F4C1",
+        "I have my own data",
+        "Upload CSV, TSV, Excel, JSON/JSONL, Parquet, PDF, DOCX, text, or Markdown. "
+        "Tables and document evidence are extracted through one validated pipeline.",
+    )
+    st.page_link(
+        "pages/2_Upload_and_Analyze.py",
+        label="Upload & Analyze",
+        icon="\U0001F4C1",
+        use_container_width=True,
+    )
+with start_col2:
+    _start_card(
+        "\U0001F9ED",
+        "Show me how it works",
+        "New to DataPrism? Take the guided, step-by-step workflow using the "
+        "built-in sample dataset \u2014 load, clean, explore, and report.",
+    )
+    st.page_link(
+        "pages/0_Guided_Analysis.py",
+        label="Open Analysis Workbench",
+        icon="\U0001F9ED",
+        use_container_width=True,
+    )
+with start_col3:
+    _start_card(
+        "\U0001F310",
+        "Find data online",
+        "No data yet? Fetch a dataset from any URL or browse the curated "
+        "catalog of verified public datasets to get started fast.",
+    )
+    st.page_link(
+        "pages/6_Online_Data_Explorer.py",
+        label="Online Data Explorer",
+        icon="\U0001F310",
+        use_container_width=True,
+    )
+
+st.markdown("---")
+
+# --- Your Current Session ---
+st.markdown("### 📋 Your Current Session")
+
+has_data = False
+session_col1, session_col2, session_col3 = st.columns(3)
+
+with session_col1:
+    if st.session_state.get("uploaded_df") is not None:
+        df = st.session_state.uploaded_df
+        st.markdown(f"**📁 Uploaded Data**")
+        st.caption(f"{len(df):,} rows x {len(df.columns)} cols")
+        has_data = True
+    else:
+        st.markdown("**📁 Uploaded Data**")
+        st.caption("None loaded")
+
+with session_col2:
+    if st.session_state.get("working_df") is not None:
+        df = st.session_state.working_df
+        st.markdown(f"**🧹 Cleaned Data**")
+        st.caption(f"{len(df):,} rows x {len(df.columns)} cols")
+        has_data = True
+    else:
+        st.markdown("**🧹 Cleaned Data**")
+        st.caption("None yet")
+
+with session_col3:
+    if st.session_state.get("online_df") is not None:
+        df = st.session_state.online_df
+        st.markdown(f"**🌐 Online Data**")
+        st.caption(f"{len(df):,} rows x {len(df.columns)} cols")
+        has_data = True
+    else:
+        st.markdown("**🌐 Online Data**")
+        st.caption("None fetched")
+
+if has_data:
+    st.success("You have data loaded! Navigate to any analysis page to continue working.")
+else:
+    st.info("No data in your session yet. Use the paths above to get started.")
+
+st.markdown("---")
+
+# Analysis Workbench callout
+st.markdown(
+    """
+    <div style="border:1px solid rgba(0,212,255,0.35); border-radius:14px;
+                padding:1.25rem 1.5rem; margin-bottom:0.5rem;
+                background:linear-gradient(135deg, rgba(0,212,255,0.10), rgba(123,97,255,0.08));">
+        <span style="font-size:0.75rem; font-weight:700; color:#00D4FF;
+                     text-transform:uppercase; letter-spacing:0.08em;">
+            \U0001F9ED Recommended starting point
+        </span>
+        <h3 style="margin:0.35rem 0 0.4rem 0; color:#E2E8F0;">Analysis Workbench</h3>
+        <p style="margin:0; color:#94A3B8; max-width:760px;">
+            Use one evidence-first workflow to ingest, profile, clean, analyze, and report.
+            Cleaning decisions are reviewable, calculations are deterministic, and every
+            report includes provenance and limitations.
+            <strong>Look for &ldquo;\U0001F9ED Analysis Workbench&rdquo; at the top of the sidebar.</strong>
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+st.page_link("pages/0_Guided_Analysis.py", label="\U0001F9ED Open Analysis Workbench", icon="\U0001F9ED")
+
+st.markdown("---")
+
+# Feature cards
+col1, col2 = st.columns(2)
+
+with col1:
+    st.markdown(
+        """
+        #### \U0001F4C1 Upload & Analyze
+        Upload and analyze any dataset:
+        - Support for CSV and Excel files (incl. **Power BI exports**)
+        - Automatic column type detection
+        - Summary statistics and distributions
+        - Correlation analysis, data quality reports, and automated insights
+        """
+    )
+    st.markdown(
+        """
+        #### \U0001F916 AI Insights Engine
+        Get automated insights powered by AI:
+        - Natural language data analysis
+        - Pattern and trend detection
+        - Anomaly identification
+        - Actionable recommendations
+        """
+    )
+
+with col2:
+    st.markdown(
+        """
+        #### \U0001f9f9 Data Cleaning Engine
+        Transform and prepare your data for analysis:
+        - Handle missing values with multiple strategies
+        - Remove duplicates and outliers (IQR method)
+        - Drop or rename columns interactively
+        - Full undo support and audit logging
+        - Export cleaned data as CSV
+        """
+    )
+    st.markdown(
+        """
+        #### \U0001F527 Advanced Analytics
+        Powerful analytical tools:
+        - Pivot table builder
+        - Custom chart creator
+        - Group-by analysis
+        - Statistical summaries
+        """
+    )
+
+# Additional feature cards
+col3, col4 = st.columns(2)
+with col3:
+    st.markdown(
+        """
+        #### \U0001F310 Online Data Explorer
+        Fetch datasets from anywhere on the web:
+        - Load CSV, JSON, or Excel from any URL
+        - Browse curated public dataset catalog
+        - Scrape tables from web pages
+        - Preview and use remote data instantly
+        """
+    )
+
+with col4:
+    st.markdown(
+        """
+        #### \U0001F4CB Report Generator
+        Create professional analysis reports:
+        - Comprehensive HTML reports with charts
+        - AI-generated executive summaries
+        - Embedded interactive visualizations
+        - One-click download for sharing
+        """
+    )
+
+# Unified Chat With Data card (structured data AND documents)
+col5, _col6 = st.columns(2)
+with col5:
+    st.markdown(
+        """
+        #### \U0001f4ac Chat With Your Data
+        One assistant for **both structured data and documents**:
+        - Chat with CSV/Excel data - answers with data citations and auto-generated Plotly charts
+        - Chat with documents - PDF, Word, Excel, CSV, JSON, text, **and Power BI exports**
+        - Upload a file, get expert insights, summaries, and recommendations
+        - Contextual follow-up questions, powered by Gemini 2.5 Flash
+        """
+    )
+
+st.markdown("---")
+
+# Dataset overview
+st.markdown("### Dataset Overview")
+df = st.session_state.df
+st.markdown(
+    f"The built-in dataset currently loaded contains **{len(df):,}** "
+    f"records with **{len(df.columns)}** columns."
+)
+
+col1, col2, col3, col4 = st.columns(4)
+with col1:
+    st.metric("Total Records", f"{len(df):,}")
+with col2:
+    st.metric("Columns", len(df.columns))
+with col3:
+    if "Major" in df.columns:
+        st.metric("Majors", df["Major"].nunique())
+    else:
+        # Generic fallback when the built-in schema is not present
+        numeric_cols = df.select_dtypes(include="number").shape[1]
+        st.metric("Numeric Columns", numeric_cols)
+with col4:
+    if "Year" in df.columns:
+        st.metric("Years Covered", df["Year"].nunique())
+    else:
+        text_cols = df.select_dtypes(include=["object", "category"]).shape[1]
+        st.metric("Text Columns", text_cols)
+
+st.markdown("---")
+st.markdown("*Select a page from the sidebar to get started.*")
+st.caption("DataPrism | Enterprise Data Intelligence")

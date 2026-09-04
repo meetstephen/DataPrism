@@ -7,10 +7,6 @@ the entry file encoding-neutral prevents a platform-level decoder failure from
 blocking the entire Data Cleaning route.
 """
 import streamlit as st
-st.set_page_config(page_title="Data Cleaning", page_icon="\U0001f4a0", layout="wide")
-from utils.styles import inject_global_css, render_sidebar_nav
-inject_global_css()
-render_sidebar_nav()
 
 import pandas as pd
 import numpy as np
@@ -904,4 +900,3 @@ try:
         st.page_link("pages/7_Report_Generator.py", label="\U0001F4CB Generate Report", icon="\U0001F4CB")
 except Exception:
     pass
-

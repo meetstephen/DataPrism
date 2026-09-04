@@ -1,6 +1,4 @@
-"""DataPrism premium enterprise styling and compact navigation shell."""
-from pathlib import Path
-
+"""DataPrism shared styling and application-frame controls."""
 import streamlit as st
 
 # ---------------------------------------------------------------------------
@@ -46,91 +44,9 @@ THEMES = {
 }
 
 
-# One compact route registry replaces the long, scroll-dependent link list.
-NAV_ITEMS = [
-    {"file": "app.py", "path": "app.py", "icon": "\U0001F3E0", "label": "Home", "group": "Overview"},
-    {"file": "0_Guided_Analysis.py", "path": "pages/0_Guided_Analysis.py", "icon": "\U0001F9ED", "label": "Analysis Workbench", "group": "Analyze"},
-    {"file": "1_Getting_Started.py", "path": "pages/1_Getting_Started.py", "icon": "\U0001F680", "label": "Getting Started", "group": "Overview"},
-    {"file": "2_Upload_and_Analyze.py", "path": "pages/2_Upload_and_Analyze.py", "icon": "\U0001F4C1", "label": "Upload & Analyze", "group": "Prepare"},
-    {"file": "3_Data_Cleaning.py", "path": "pages/3_Data_Cleaning.py", "icon": "\U0001F9F9", "label": "Data Cleaning", "group": "Prepare"},
-    {"file": "4_AI_Insights_Engine.py", "path": "pages/4_AI_Insights_Engine.py", "icon": "\U0001F916", "label": "AI Insights", "group": "Analyze"},
-    {"file": "5_Advanced_Analytics.py", "path": "pages/5_Advanced_Analytics.py", "icon": "\U0001F527", "label": "Advanced Analytics", "group": "Analyze"},
-    {"file": "6_Online_Data_Explorer.py", "path": "pages/6_Online_Data_Explorer.py", "icon": "\U0001F310", "label": "Online Explorer", "group": "Prepare"},
-    {"file": "7_Report_Generator.py", "path": "pages/7_Report_Generator.py", "icon": "\U0001F4CB", "label": "Report Generator", "group": "Present"},
-    {"file": "8_Chat_With_Data.py", "path": "pages/8_Chat_With_Data.py", "icon": "\U0001F4AC", "label": "Chat With Data", "group": "Analyze"},
-    {"file": "9_Cloud_Workspace.py", "path": "pages/9_Cloud_Workspace.py", "icon": "\u2601\uFE0F", "label": "Cloud Workspace", "group": "Manage"},
-    {"file": "10_Data_Profiling.py", "path": "pages/10_Data_Profiling.py", "icon": "\U0001F50D", "label": "Data Profiling", "group": "Prepare"},
-    {"file": "11_Dashboard.py", "path": "pages/11_Dashboard.py", "icon": "\U0001F4CA", "label": "Dashboard", "group": "Present"},
-    {"file": "12_Admin_Panel.py", "path": "pages/12_Admin_Panel.py", "icon": "\U0001F6E1\uFE0F", "label": "Admin Panel", "group": "Manage"},
-    {"file": "13_Data_Join.py", "path": "pages/13_Data_Join.py", "icon": "\U0001F517", "label": "Data Join", "group": "Prepare"},
-    {"file": "14_SQL_Query.py", "path": "pages/14_SQL_Query.py", "icon": "\U0001F4DD", "label": "SQL Query", "group": "Analyze"},
-    {"file": "15_Data_Dictionary.py", "path": "pages/15_Data_Dictionary.py", "icon": "\U0001F4D6", "label": "Data Dictionary", "group": "Manage"},
-]
-
-
-def _current_nav_item():
-    """Resolve the executing page without relying on browser scroll or URL state."""
-    try:
-        import inspect
-        caller_file = Path(inspect.currentframe().f_back.f_back.f_globals["__file__"]).name
-    except Exception:
-        caller_file = "app.py"
-    return next((item for item in NAV_ITEMS if item["file"] == caller_file), NAV_ITEMS[0])
-
-
-def render_sidebar_nav():
-    """Render a fixed-height command navigator and secondary controls.
-
-    The active-page indicator is derived from the executing script, so it is
-    correct after direct links, refreshes and page switches. Destinations live
-    in a select overlay rather than a scrollable sidebar list.
-    """
-    current = _current_nav_item()
-    allowed_items = NAV_ITEMS
-    try:
-        from utils.auth import get_current_user
-        user = get_current_user()
-        if not user or user.get("role") != "admin":
-            allowed_items = [item for item in NAV_ITEMS if item["label"] != "Admin Panel"]
-    except Exception:
-        allowed_items = [item for item in NAV_ITEMS if item["label"] != "Admin Panel"]
-
-    option_labels = [item["label"] for item in allowed_items]
-    item_by_label = {item["label"]: item for item in allowed_items}
-
-    def _switch_destination():
-        selected = st.session_state.get("_dp_nav_destination")
-        target = item_by_label.get(selected)
-        if target and target["path"] != current["path"]:
-            st.switch_page(target["path"])
-
+def render_sidebar_controls():
+    """Shared controls rendered once by the application entrypoint."""
     with st.sidebar:
-        st.markdown(
-            '<div class="dp-sidebar-brand"><span>\U0001F4A0</span>'
-            '<div><strong>DataPrism</strong><small>ANALYTICS WORKSPACE</small></div></div>',
-            unsafe_allow_html=True,
-        )
-        st.markdown(
-            f'<div class="dp-current-page"><small>YOU ARE HERE</small>'
-            f'<strong>{current["icon"]} {current["label"]}</strong>'
-            f'<span>{current["group"]}</span></div>',
-            unsafe_allow_html=True,
-        )
-        st.session_state["_dp_nav_destination"] = (
-            current["label"] if current["label"] in item_by_label else "Home"
-        )
-        st.selectbox(
-            "Navigate to",
-            option_labels,
-            key="_dp_nav_destination",
-            format_func=lambda label: (
-                f'{item_by_label[label]["group"]}  \u00b7  '
-                f'{item_by_label[label]["icon"]} {label}'
-            ),
-            on_change=_switch_destination,
-        )
-        st.markdown('<div class="dp-sidebar-divider"></div>', unsafe_allow_html=True)
-
         # Secondary controls stay collapsed so navigation remains the visual
         # priority and the sidebar is much shorter on ordinary page loads.
         with st.expander("\u2699\uFE0F Workspace controls", expanded=False):
@@ -243,69 +159,39 @@ def _build_css(theme):
 html, body, [class*="css"] {{ font-family: 'DM Sans', 'Segoe UI', sans-serif; }}
 h1, h2, h3 {{ letter-spacing: -0.02em; }}
 
-/* The long native route list is replaced by one fixed-height command picker.
-   Streamlit still owns scrolling; no overflow or viewport heights are forced. */
+/* The common entrypoint owns the sidebar. Only the native sidebar content
+   scrolls; expanding navigation avoids the separate collapsed-menu viewport. */
 [data-testid="stSidebar"] {{
     background: {theme['sidebar_bg']} !important;
     border-right: 1px solid {theme['sidebar_border']};
 }}
-[data-testid="stSidebarNav"] {{
-    display: none !important;
+[data-testid="stSidebarNav"] ul {{
+    max-height: none !important;
+    overflow: visible !important;
 }}
-[data-testid="stSidebarUserContent"] {{
-    padding: 1rem 1rem 1.5rem !important;
-}}
-.dp-current-page {{
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 0.22rem 0.6rem;
-    padding: 0.78rem 0.85rem;
-    margin: 0.15rem 0 0.8rem;
-    border: 1px solid {theme['accent']}62;
-    border-left: 3px solid {theme['accent']};
-    border-radius: 11px;
-    background: linear-gradient(135deg, {theme['accent']}1D, {theme['accent_secondary']}0D);
-    box-shadow: 0 7px 22px rgba(0,0,0,0.2);
-}}
-.dp-current-page small {{
-    grid-column: 1 / -1;
-    color: {theme['accent']};
-    font-size: 0.59rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-}}
-.dp-current-page strong {{
+[data-testid="stSidebarNav"] a {{
+    min-height: 2.45rem;
+    border: 1px solid transparent;
+    border-radius: 8px;
     color: {theme['text_primary']};
-    font-size: 0.91rem;
-    line-height: 1.35;
+    transition: background-color 120ms ease, border-color 120ms ease;
 }}
-.dp-current-page span {{
-    align-self: center;
-    color: {theme['text_secondary']};
-    font-size: 0.66rem;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
+[data-testid="stSidebarNav"] a:hover {{
+    background: {theme['accent']}15;
+    border-color: {theme['accent']}30;
 }}
-[data-testid="stSidebar"] [data-testid="stSelectbox"] {{
-    margin-bottom: 0.15rem;
+[data-testid="stSidebarNav"] a[aria-current="page"] {{
+    background: {theme['accent']}22 !important;
+    box-shadow: inset 3px 0 0 {theme['accent']};
+    color: {theme['accent']} !important;
+    font-weight: 700;
 }}
-[data-testid="stSidebar"] [data-testid="stSelectbox"] label p {{
-    color: {theme['text_secondary']} !important;
-    font-size: 0.72rem !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+[data-testid="stSidebarNav"] a:focus-visible {{
+    outline: 2px solid {theme['accent']};
+    outline-offset: -2px;
 }}
-[data-testid="stSidebar"] [data-baseweb="select"] > div {{
-    min-height: 2.75rem;
-    border-color: {theme['sidebar_border']} !important;
-    border-radius: 10px !important;
-    background: rgba(255,255,255,0.035) !important;
-    transition: border-color 120ms ease, box-shadow 120ms ease;
-}}
-[data-testid="stSidebar"] [data-baseweb="select"] > div:hover {{
-    border-color: {theme['accent']}85 !important;
-    box-shadow: 0 0 0 2px {theme['accent']}18;
+[data-testid="stSidebarContent"] {{
+    scrollbar-gutter: stable;
 }}
 .dp-sidebar-brand {{
     display: flex;

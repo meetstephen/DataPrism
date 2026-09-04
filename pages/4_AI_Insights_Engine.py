@@ -3,10 +3,7 @@ AI Insights Engine - Generate automated insights with Google Gemini or rule-base
 """
 
 import streamlit as st
-st.set_page_config(page_title="AI Insights Engine", page_icon="\U0001f4a0", layout="wide")
-from utils.styles import inject_global_css, compute_confidence, render_confidence_badge, render_sidebar_nav
-inject_global_css()
-render_sidebar_nav()
+from utils.styles import compute_confidence, render_confidence_badge
 
 import pandas as pd
 from utils.data_loader import ensure_builtin_data, read_csv_robust

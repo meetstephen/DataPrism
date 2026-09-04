@@ -3,10 +3,6 @@ Upload and Analyze - Universal dataset analysis tool.
 """
 
 import streamlit as st
-st.set_page_config(page_title="Upload & Analyze", page_icon="\U0001f4a0", layout="wide")
-from utils.styles import inject_global_css, render_sidebar_nav
-inject_global_css()
-render_sidebar_nav()
 
 import pandas as pd
 import numpy as np
@@ -275,4 +271,3 @@ else:
         st.markdown("### Preview with Built-in Data")
         st.markdown("While no file is uploaded, here is a preview using the built-in community college dataset.")
         st.dataframe(st.session_state.df.head(5), use_container_width=True)
-

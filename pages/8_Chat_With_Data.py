@@ -7,10 +7,7 @@ Two modes:
     exports, JSON, text, markdown, RTF) and have an AI conversation about it.
 """
 import streamlit as st
-st.set_page_config(page_title="Chat With Data", page_icon="\U0001f4a0", layout="wide")
-from utils.styles import inject_global_css, render_empty_state, render_sidebar_nav
-inject_global_css()
-render_sidebar_nav()
+from utils.styles import render_empty_state
 
 import pandas as pd
 from utils.ai_client import get_api_key, generate_content

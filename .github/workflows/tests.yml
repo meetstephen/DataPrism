@@ -35,3 +35,18 @@ jobs:
 
       - name: Run test suite
         run: pytest tests/ -v
+
+      - name: Install browser regression runtime
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Verify real sidebar navigation and scrolling
+        run: python tests/browser_navigation.py
+
+      - name: Preserve navigation screenshots and server log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: navigation-browser-evidence
+          path: navigation-artifacts/
