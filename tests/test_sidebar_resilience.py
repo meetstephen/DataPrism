@@ -39,3 +39,17 @@ def test_legacy_non_utf8_text_is_decoded(tmp_path, monkeypatch):
     (tmp_path / "doc_content.txt").write_bytes("caf\u00e9".encode("cp1252"))
     assert persistence.load_text("doc_content") == "caf\u00e9"
 
+
+def test_data_cleaning_entry_script_is_ascii_safe():
+    """Streamlit must be able to discover this page under any host locale."""
+    raw = (ROOT / "pages" / "3_Data_Cleaning.py").read_bytes()
+    raw.decode("ascii")
+
+
+def test_data_cleaning_page_boots_without_exception():
+    from streamlit.testing.v1 import AppTest
+
+    app = AppTest.from_file(str(ROOT / "pages" / "3_Data_Cleaning.py"))
+    app.run(timeout=15)
+    assert not app.exception
+
